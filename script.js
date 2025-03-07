@@ -4,7 +4,7 @@ function selectTemplate(template) {
    // alert(`You selected the ${template} template!`);
 
     if (template == "url-android") {
-        window.location.href = "https://forms.gle/FXa6B8eJc3yDxnLB6";
+        window.open("token.html", "_blank");
 
     }
     else {

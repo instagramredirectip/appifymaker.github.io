@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Maker</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase v8 (Fix for Import Errors) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase Configuration (Replace with your actual Firebase Config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8GB5CYsGisWu4LsS0KXglV1_UfapdEgs",
+            authDomain: "app-maker-90749.firebaseapp.com",
+            projectId: "app-maker-90749",
+            storageBucket: "app-maker-90749.firebasestorage.app",
+            messagingSenderId: "308353351547",
+            appId: "1:308353351547:web:ae1723f4baa4d85aa2c7de",
+            measurementId: "G-NGF8YBM4N6"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let generatedToken = null;
+
+        // Generate Unique Token and Save to Firebase
+        function generateToken() {
+            generatedToken = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit token
+
+            let tokenRef = db.ref("apps/" + generatedToken);
+            tokenRef.set({
+                status: "pending",
+                createdAt: new Date().toISOString()
+            }).then(() => {
+                document.getElementById("tokenDisplay").innerText = `Your Token: ${generatedToken}`;
+                document.getElementById("tokenDisplay").classList.remove("hidden");
+                document.getElementById("copyButton").classList.remove("hidden");
+                document.getElementById("generateAppButton").classList.remove("hidden");
+
+                alert(`✅ Your token is ${generatedToken}. Note it down.`);
+            }).catch(error => {
+                console.error("Error saving token:", error);
+                alert("⚠ Error generating token. Check console for details.");
+            });
+        }
+
+        // Copy Token to Clipboard
+        function copyToken() {
+            if (!generatedToken) {
+                alert("Generate a token first!");
+                return;
+            }
+            navigator.clipboard.writeText(generatedToken);
+            alert("✅ Token copied to clipboard!");
+        }
+
+        // Redirect to App Generation Page
+        function redirectToAppGeneration() {
+            if (!generatedToken) {
+                alert("Generate a token first!");
+                return;
+            }
+            window.location.href = `https://forms.gle/ChJoy2grJgNpxE7GA`;
+        }
+
+        // Check App Status and Download
+        function checkAppStatus() {
+            let token = document.getElementById("tokenInput").value;
+            if (!token) {
+                alert("Please enter a valid token.");
+                return;
+            }
+
+            let tokenRef = db.ref("apps/" + token);
+            document.getElementById("downloadButton").innerText = "Checking...";
+            document.getElementById("downloadButton").disabled = true;
+
+            tokenRef.on("value", snapshot => {
+                if (!snapshot.exists()) {
+                    alert("🚫 No request found for this token.");
+                    document.getElementById("downloadButton").innerText = "Download";
+                    document.getElementById("downloadButton").disabled = false;
+                    return;
+                }
+
+                let data = snapshot.val();
+                console.log("Fetched Data from Firebase:", data);
+
+                if (data.status === "ready" && data.downloadUrl) {
+                    alert("✅ Your app is ready! Redirecting to download...");
+                    window.open(data.downloadUrl, "_blank");
+                } else {
+                    alert("⏳ Your app is still under review. Please check back later.");
+                }
+                document.getElementById("downloadButton").innerText = "Download";
+                document.getElementById("downloadButton").disabled = false;
+            }, error => {
+                console.error("Error checking status:", error);
+                alert("⚠ Error checking token. See console for details.");
+                document.getElementById("downloadButton").innerText = "Download";
+                document.getElementById("downloadButton").disabled = false;
+            });
+        }
+    </script>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+
+
+    <!-- Token Generation Section -->
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md text-center">
+        <h2 class="text-2xl font-semibold text-gray-700">Generate a Unique Token</h2>
+        <button onclick="generateToken()" class="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+            Generate Token
+        </button>
+        <p id="tokenDisplay" class="hidden mt-3 text-lg text-gray-800 font-semibold"></p>
+        <button id="copyButton" onclick="copyToken()" class="hidden mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+            Copy Token
+        </button>
+
+
+        <button id="generateAppButton" onclick="redirectToAppGeneration()" class="hidden mt-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+            Generate App
+        </button>
+    </div>
+
+
+
+
+
+    <!-- App Download Section -->
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md text-center mt-8">
+        <h2 class="text-2xl font-semibold text-gray-700">Download Your App</h2>
+        <input type="text" id="tokenInput" placeholder="Enter Token" class="mt-3 p-2 border rounded w-full">
+        <button id="downloadButton" onclick="checkAppStatus()" class="mt-4 bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600">
+            Download
+        </button>
+    </div>
+
+</body>
+</html>
