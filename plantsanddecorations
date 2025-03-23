@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blooming Bliss: Your Guide to Plant Decoration, Care & Indoor Greenery</title>
+    <meta name="description" content="Discover the joy of plants! Learn about plant decoration ideas, essential plant care tips, and the best indoor plants for your space. Create your own indoor oasis today.">
+    <meta name="keywords" content="plant decoration, indoor plants, plant care, houseplants, gardening, indoor gardening, plant hobby, easy houseplants, low light plants, plant decor, urban jungle, plant tips">
+    <meta name="author" content="AI Plant Enthusiast">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #28a745; /* Green theme */
+            margin-bottom: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-img-top {
+            border-radius: 8px 8px 0 0;
+            object-fit: cover;
+            height: 250px; /* Consistent image height */
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+
+        /* Additional styling for plant-based theme */
+        .hero-section {
+            background: linear-gradient(to right, #e9f5ef, #ffffff);
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3em;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .plant-tip {
+            background-color: #f0fff0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .plant-tip strong {
+            color: #28a745;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <section class="hero-section">
+            <h1 class="hero-title">Blooming Bliss: Your Guide to Plant Decoration, Care & Indoor Greenery</h1>
+            <p>Welcome, fellow plant lover! Dive into the wonderful world of indoor gardening and discover how to transform your home into a vibrant, green oasis.</p>
+        </section>
+
+        <section>
+            <h2>Why Bring Plants Indoors? The Benefits Beyond Beauty</h2>
+            <p>Beyond their undeniable aesthetic appeal, indoor plants offer a plethora of benefits. They purify the air, boost your mood, reduce stress levels, and even increase productivity. Plus, nurturing plants is a rewarding and calming hobby.</p>
+        </section>
+
+        <section>
+            <h2>Plant Decoration Ideas: Styling Your Space with Greenery</h2>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="https://api.pexels.com/v1/search?query=plants+on+shelves&per_page=1" class="card-img-top" alt="Plants arranged beautifully on wooden shelves, creating a natural and inviting atmosphere.">
+                        <div class="card-body">
+                            <h3 class="card-title">Shelves of Green</h3>
+                            <p class="card-text">Use floating shelves or bookcases to display a variety of plants. Combine trailing plants like Pothos with upright plants for visual interest.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="https://api.pexels.com/v1/search?query=hanging+plants+indoor&per_page=1" class="card-img-top" alt="Various hanging plants cascading from the ceiling, adding a touch of bohemian elegance to the room.">
+                        <div class="card-body">
+                            <h3 class="card-title">Hanging Gardens</h3>
+                            <p class="card-text">Hanging planters are perfect for small spaces or adding vertical interest. Consider using macrame hangers for a trendy touch.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="https://api.pexels.com/v1/search?query=plants+on+windowsill&per_page=1" class="card-img-top" alt="Small potted plants neatly arranged on a sunlit windowsill, brightening up the space and adding a touch of nature.">
+                        <div class="card-body">
+                            <h3 class="card-title">Windowsill Wonders</h3>
+                            <p class="card-text">A windowsill is an ideal spot for sun-loving herbs or succulents. Ensure they receive adequate sunlight throughout the day.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Plant Care 101: Essential Tips for Thriving Indoor Plants</h2>
+
+            <div class="plant-tip">
+                <strong>Watering:</strong> Avoid overwatering! Let the top inch of soil dry out before watering again. Use a well-draining pot and soil mix.
+            </div>
+
+            <div class="plant-tip">
+                <strong>Light:</strong> Different plants have different light requirements. Research the specific needs of your plants and place them accordingly.
+            </div>
+
+            <div class="plant-tip">
+                <strong>Humidity:</strong> Many indoor plants thrive in humid environments. Consider using a humidifier or misting your plants regularly.
+            </div>
+
+             <div class="plant-tip">
+                <strong>Soil:</strong> Use high quality soil mix as per plant requirements to avoid root rot issues
+            </div>
+        </section>
+
+        <section>
+            <h2>Top Indoor Plants for Every Home & Skill Level</h2>
+
+            <h3>Easy-Care Plants for Beginners</h3>
+            <ul>
+                <li><strong>Snake Plant (Sansevieria trifasciata):</strong> Tolerates low light and infrequent watering.</li>
+                <li><strong>Pothos (Epipremnum aureum):</strong> A trailing vine that's easy to propagate and adaptable to various conditions.</li>
+                <li><strong>ZZ Plant (Zamioculcas zamiifolia):</strong> Extremely drought-tolerant and thrives in low-light environments.</li>
+            </ul>
+
+            <h3>Low-Light Plants</h3>
+            <ul>
+                <li><strong>Peace Lily (Spathiphyllum):</strong> Adds elegance with its white flowers and tolerates shade.</li>
+                <li><strong>Cast Iron Plant (Aspidistra elatior):</strong> Lives up to its name – incredibly resilient and low-maintenance.</li>
+            </ul>
+
+            <h3>Plants for Bright, Indirect Light</h3>
+            <ul>
+                <li><strong>Monstera Deliciosa:</strong> Known for its iconic split leaves, adding a tropical vibe.</li>
+                <li><strong>Fiddle Leaf Fig (Ficus lyrata):</strong> Requires bright, indirect light and consistent watering. Can be a bit finicky but worth the effort.</li>
+            </ul>
+
+              <h3>Air Purifying Plants</h3>
+            <ul>
+                <li><strong>Spider plant (Chlorophytum comosum):</strong> An easy-to-grow houseplant that is great at cleaning indoor air.</li>
+                <li><strong>Aloe Vera:</strong> Not only does it purify air, but it is also a great succulent for treating burns and cuts.</li>
+            </ul>
+        </section>
+
+          <section>
+            <h2>Common Plant Problems and Solutions</h2>
+
+            <div class="row">
+                 <div class="col-md-6">
+                    <div class="card">
+                       <img src="https://api.pexels.com/v1/search?query=overwatered+plant&per_page=1" class="card-img-top" alt="Close-up of an overwatered plant with yellowing leaves and soggy soil.">
+                        <div class="card-body">
+                            <h3 class="card-title">Overwatering</h3>
+                            <p class="card-text"><b>Symptoms:</b> Yellowing leaves, mushy stems, and moldy soil. <b>Solution:</b> Allow the soil to dry out completely before watering again. Improve drainage by repotting into a well-draining mix and ensure the pot has drainage holes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="col-md-6">
+                    <div class="card">
+                       <img src="https://api.pexels.com/v1/search?query=plant+pests&per_page=1" class="card-img-top" alt="Close-up of plant leaves infested with pests like aphids or spider mites.">
+                        <div class="card-body">
+                            <h3 class="card-title">Pest Infestation</h3>
+                            <p class="card-text"><b>Symptoms:</b> Visible insects, sticky residue, or damaged leaves. <b>Solution:</b> Isolate the affected plant and treat with insecticidal soap or neem oil. Regularly inspect plants for early signs of pests.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section>
+            <h2>Growing Your Plant Hobby: Beyond the Basics</h2>
+            <p>Once you've mastered the basics, explore advanced techniques like propagation, hydroponics, and creating your own potting mixes. Join online plant communities to share tips and connect with fellow enthusiasts.</p>
+        </section>
+
+        <section>
+            <h2>Conclusion: Cultivating Your Indoor Oasis</h2>
+            <p>With a little knowledge and care, you can create a thriving indoor garden that brings joy, beauty, and wellness to your home. Embrace the journey and watch your green thumb flourish!</p>
+        </section>
+
+         <section>
+              <h2>FAQ</h2>
+               <ul>
+                <li>
+                    <b>What is the best way to water indoor plants?</b>
+                    <p>The best way to water indoor plants is to check the soil moisture before watering. Stick your finger about an inch deep into the soil. If it feels dry, it's time to water. Water thoroughly until water drains out of the bottom of the pot. Always avoid overwatering, as this can lead to root rot.</p>
+                </li>
+                <li>
+                    <b>How do I choose the right pot size for my plant?</b>
+                    <p>Choose a pot that is slightly larger than the plant's current root ball. A general guideline is to increase the pot size by 1-2 inches in diameter. Ensure the pot has drainage holes to prevent waterlogging.</p>
+                </li>
+                 <li>
+                    <b>Which plants are best for purifying indoor air?</b>
+                    <p>Some of the best plants for purifying indoor air include the Spider Plant (Chlorophytum comosum), Snake Plant (Sansevieria trifasciata), Peace Lily (Spathiphyllum), and Aloe Vera. These plants are effective at removing common indoor pollutants.</p>
+                </li>
+            </ul>
+         </section>
+
+        <footer class="footer">
+            <p>&copy; 2024 Blooming Bliss. All rights reserved.</p>
+        </footer>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Function to dynamically fetch images from Pexels API
+        async function fetchImage(query, element) {
+            const apiKey = "XYYUcQ9XIjD3LLFrm7w6RNNfAN3sM4xnkJfqr7gMchkRE7O9thYhsqAd";
+            const url = `https://api.pexels.com/v1/search?query=${query}&per_page=1`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        "Authorization": apiKey
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.photos && data.photos.length > 0) {
+                    element.src = data.photos[0].src.medium; // Use medium size for better performance
+                } else {
+                    element.src = "placeholder_image.jpg"; // Replace with a placeholder image
+                    console.warn(`No image found for query: ${query}`);
+                }
+            } catch (error) {
+                console.error("Error fetching image:", error);
+                element.src = "placeholder_image.jpg"; // Replace with a placeholder image
+            }
+        }
+
+        // Get all image elements and fetch their corresponding images
+        document.addEventListener("DOMContentLoaded", () => {
+            const imageElements = document.querySelectorAll(".card-img-top");
+
+            imageElements.forEach(element => {
+                const query = element.alt.split(',')[0]; // Extract the search query from the alt text.
+                fetchImage(query, element);
+            });
+        });
+    </script>
+</body>
