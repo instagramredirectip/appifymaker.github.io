@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga & Healthy Lifestyle: Find Your Inner Peace and Vitality</title>
+    <meta name="description" content="Discover the transformative power of yoga and healthy living. Explore yoga poses, mindful eating, stress reduction techniques, and expert advice for a balanced and fulfilling life.">
+    <meta name="keywords" content="yoga, healthy lifestyle, mindfulness, meditation, healthy eating, stress reduction, yoga poses, wellness, fitness, mental health, holistic health, yoga benefits, healthy recipes, exercise, wellbeing">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        .card-img-top {
+            border-radius: 8px 8px 0 0;
+            object-fit: cover; /* Make sure images fill the space without distortion */
+            height: 250px; /* Define a standard height */
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            color: #343a40;
+            margin-bottom: 10px; 
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block; /* Remove extra space below image */
+            margin: 0 auto 20px; /* Center image and add bottom margin */
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin-top: 30px;
+            color: #777;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Yoga & Healthy Lifestyle: Your Path to Inner Peace and Vitality</h1>
+
+        <p>Welcome! Embark on a journey towards holistic well-being with the ancient practice of yoga and the power of a healthy lifestyle. Discover how these interconnected elements can transform your physical, mental, and emotional health, bringing you closer to a balanced and fulfilling life.</p>
+
+        <h2>The Magic of Yoga: More Than Just Poses</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                   <img src="https://api.pexels.com/v1/search?query=woman%20doing%20yoga%20outdoors&per_page=1" class="card-img-top" alt="Woman peacefully practicing yoga outdoors at sunrise">
+                    <div class="card-body">
+                        <h5 class="card-title">Understanding Yoga's Core Principles</h5>
+                        <p class="card-text">Yoga is an ancient Indian spiritual practice. The main aim of Yoga is to unite the individual spirit with the Universal Spirit. Explore the eight limbs of yoga and how they contribute to overall well-being, including ethical conduct (yamas), self-discipline (niyamas), physical postures (asanas), breath control (pranayama), and meditation (dhyana).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://api.pexels.com/v1/search?query=yoga%20poses%20studio&per_page=1" class="card-img-top" alt="Group of people practicing different yoga poses in a studio">
+                    <div class="card-body">
+                        <h5 class="card-title">Popular Yoga Styles and Their Benefits</h5>
+                        <p class="card-text">From the dynamic Vinyasa to the restorative Yin, discover the various yoga styles that suit your individual needs and preferences. Learn about the unique benefits of each style, including improved flexibility, strength, stress reduction, and enhanced mental clarity. Some popular styles include Hatha, Ashtanga, Bikram, and Kundalini yoga.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                   <img src="https://api.pexels.com/v1/search?query=woman%20meditating%20nature&per_page=1" class="card-img-top" alt="Young woman meditating outdoors in nature">
+                    <div class="card-body">
+                        <h5 class="card-title">Mindfulness and Meditation: Cultivating Inner Peace</h5>
+                        <p class="card-text">Explore the power of mindfulness and meditation to reduce stress, improve focus, and cultivate inner peace. Learn simple meditation techniques that can be incorporated into your daily routine to enhance your mental and emotional well-being. Discover the benefits of guided meditations, breathing exercises, and mindful movement.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://api.pexels.com/v1/search?query=woman%20doing%20yoga%20at%20home&per_page=1" class="card-img-top" alt="Woman practicing yoga at home in a bright living room">
+                    <div class="card-body">
+                        <h5 class="card-title">Yoga for Beginners: Getting Started on Your Journey</h5>
+                        <p class="card-text">New to yoga? No problem! This guide provides a gentle introduction to basic yoga poses and techniques, making it easy to get started on your yoga journey. Learn about proper alignment, breathing techniques, and modifications for beginners. Find resources for online yoga classes and local studios.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Nourishing Your Body: The Foundation of a Healthy Lifestyle</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                     <img src="https://api.pexels.com/v1/search?query=healthy%20balanced%20meal&per_page=1" class="card-img-top" alt="A colorful and healthy balanced meal with vegetables, protein, and grains">
+                    <div class="card-body">
+                        <h5 class="card-title">The Importance of a Balanced Diet</h5>
+                        <p class="card-text">Learn about the key nutrients your body needs to thrive and how to create a balanced diet that supports your overall health and well-being. Discover the benefits of whole foods, plant-based eating, and mindful eating habits. Find tips for meal planning, grocery shopping, and preparing healthy meals at home.</p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                   <img src="https://api.pexels.com/v1/search?query=woman%20preparing%20healthy%20food&per_page=1" class="card-img-top" alt="Woman preparing healthy food in a bright kitchen">
+                    <div class="card-body">
+                        <h5 class="card-title">Easy and Delicious Healthy Recipes</h5>
+                        <p class="card-text">Discover a collection of easy and delicious healthy recipes that nourish your body and satisfy your taste buds. Find recipes for breakfast, lunch, dinner, and snacks, featuring fresh, wholesome ingredients. Learn about the health benefits of different foods and how to incorporate them into your diet.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://api.pexels.com/v1/search?query=woman%20drinking%20water%20after%20exercise&per_page=1" class="card-img-top" alt="Woman drinking water after exercising, emphasizing hydration">
+                    <div class="card-body">
+                        <h5 class="card-title">The Power of Hydration: Staying Refreshed</h5>
+                        <p class="card-text">Understand the vital role of hydration in maintaining your health and well-being. Learn about the benefits of drinking enough water each day and how to incorporate healthy beverages into your routine. Discover tips for staying hydrated throughout the day, especially during exercise and hot weather.</p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://api.pexels.com/v1/search?query=woman%20exercising%20outdoors&per_page=1" class="card-img-top" alt="Woman exercising outdoors in a park, promoting regular physical activity">
+                    <div class="card-body">
+                        <h5 class="card-title">The Importance of Regular Exercise</h5>
+                        <p class="card-text">Discover the numerous benefits of regular physical activity for your physical and mental health. Learn about different types of exercise, including cardiovascular workouts, strength training, and flexibility exercises. Find tips for incorporating exercise into your daily routine and staying motivated.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Stress Reduction: Finding Balance in a Busy World</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://api.pexels.com/v1/search?query=woman%20taking%20a%20deep%20breath%20outdoors&per_page=1" class="card-img-top" alt="Woman practicing deep breathing exercises outdoors">
+                    <div class="card-body">
+                        <h5 class="card-title">Effective Stress Management Techniques</h5>
+                        <p class="card-text">Learn practical strategies for managing stress and promoting relaxation, including deep breathing exercises, progressive muscle relaxation, and mindfulness techniques. Discover the benefits of spending time in nature, practicing gratitude, and connecting with loved ones.</p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://api.pexels.com/v1/search?query=person%20sleeping%20peacefully&per_page=1" class="card-img-top" alt="Person sleeping peacefully, emphasizing the importance of quality sleep">
+                    <div class="card-body">
+                        <h5 class="card-title">The Importance of Quality Sleep</h5>
+                        <p class="card-text">Understand the crucial role of quality sleep in maintaining your physical and mental health. Learn about the sleep cycle and how to create a sleep-friendly environment. Discover tips for improving your sleep habits, including establishing a regular sleep schedule, creating a relaxing bedtime routine, and avoiding caffeine and alcohol before bed.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Creating a Holistic Lifestyle: Integrating Yoga and Healthy Habits</h2>
+
+        <p>Integrating yoga and healthy lifestyle habits is a powerful way to transform your overall well-being. By combining mindful movement, nourishing nutrition, and stress reduction techniques, you can create a balanced and fulfilling life that supports your physical, mental, and emotional health. Start small, be patient with yourself, and celebrate your progress along the way.</p>
+    </div>
+
+    <footer>
+        &copy; 2024 Yoga & Healthy Lifestyle. All rights reserved.
+    </footer>
+    <script>
+        //Pexel API Key
+        const pexelsApiKey = 'XYYUcQ9XIjD3LLFrm7w6RNNfAN3sM4xnkJfqr7gMchkRE7O9thYhsqAd';
+
+        // Function to fetch a Pexels image URL based on a query
+        async function getPexelsImageUrl(query) {
+            const url = `https://api.pexels.com/v1/search?query=${query}&per_page=1`;
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: pexelsApiKey
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.photos && data.photos.length > 0) {
+                    return data.photos[0].src.large2x; // Use large2x for high resolution
+                } else {
+                    console.warn(`No photos found for query: ${query}`);
+                    return null;
+                }
+            } catch (error) {
+                console.error("Error fetching Pexels image:", error);
+                return null;
+            }
+        }
+
+        // Function to dynamically load images
+        async function loadImages() {
+            const imageElements = document.querySelectorAll("img[src*='api.pexels.com']"); // Target only placeholders
+
+            for (const img of imageElements) {
+                const query = new URL(img.src).searchParams.get('query'); // Extract query from placeholder URL
+                const imageUrl = await getPexelsImageUrl(query);
+
+                if (imageUrl) {
+                    img.src = imageUrl;  //Replace the placeholder with the actual image URL
+                    img.onload = () => {  //Optional: Add a onload event for handling after image is loaded
+                        img.alt = query; // Assign alt text for better SEO
+                    };
+                    img.onerror = () => { //Optional: Error handling if image fails to load
+                        console.error(`Failed to load image for query: ${query}`);
+                        img.src = 'path/to/default/image.jpg';  //Replace with a default image
+                    };
+                } else {
+                    img.src = 'path/to/default/image.jpg'; // Default image if no Pexels result
+                    img.alt = 'Default Image';
+                    console.warn(`Failed to fetch image for query: ${query}`);
+
+                }
+            }
+        }
+
+        // Call the function to load images after the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', loadImages);
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
