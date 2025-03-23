@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Publisher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        textarea {
+            width: 80%;
+            height: 200px;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Publish Your HTML File</h1>
+    <textarea id="htmlCode" placeholder="Enter your HTML code here..."></textarea><br>
+    <input type="text" id="fileName" placeholder="Enter file name (without .html)"><br>
+    <button onclick="publishHTML()">Publish</button>
+    <p id="status"></p>
+    
+    <script>
+        async function publishHTML() {
+            const token = "your_github_token";  // 🔴 Replace with your GitHub token
+            const repoOwner = "your_github_username";  // Replace with your GitHub username
+            const repoName = "your_repository";  // Replace with your repository name
+            const branch = "main";  // Change if using a different branch
+
+            const htmlCode = document.getElementById("htmlCode").value;
+            let fileName = document.getElementById("fileName").value.trim();
+
+            if (!htmlCode || !fileName) {
+                alert("Please enter HTML code and a file name!");
+                return;
+            }
+
+            fileName = fileName.replace(/\s+/g, "-");  // Replace spaces with hyphens
+            const filePath = `users/${fileName}.html`;
+
+            document.getElementById("status").innerText = "Uploading...";
+            
+            // Convert HTML to Base64
+            const encodedContent = btoa(unescape(encodeURIComponent(htmlCode)));
+
+            // GitHub API URL
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+            // Prepare request body
+            const requestBody = JSON.stringify({
+                message: `Added ${fileName}.html`,
+                content: encodedContent,
+                branch: branch
+            });
+
+            try {
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: requestBody
+                });
+
+                if (response.ok) {
+                    document.getElementById("status").innerHTML = `✅ File Published!<br> 
+                        <a href="https://techtipsterzone.xyz/users/${fileName}.html" target="_blank">
+                            View Your Page
+                        </a>`;
+                } else {
+                    const errorData = await response.json();
+                    document.getElementById("status").innerText = "❌ Error: " + errorData.message;
+                }
+            } catch (error) {
+                document.getElementById("status").innerText = "❌ Failed to upload!";
+            }
+        }
+    </script>
+</body>
+</html>
