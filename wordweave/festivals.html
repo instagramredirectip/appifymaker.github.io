@@ -1,0 +1,290 @@
+"<html lang="en"><head></head><body>```html
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Kaleidoscope of Indian Festivals</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header img {
+            max-height: 70px;
+            margin-right: 20px; /* Space between logo and title */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #e44d26;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 20px; /* Space between card rows */
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            width: calc(33% - 30px); /* Adjust width for spacing */
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            color: #2c3e50;
+        }
+
+        .card p {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        footer a {
+            color: #e44d26;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        footer button {
+            background-color: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px; /* Space between logo and button */
+        }
+
+        footer button:hover {
+            background-color: #c63d1a;
+        }
+
+        footer img {
+            max-height: 50px;
+            margin-top: 10px;
+        }
+
+        #ad-banner {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                width: calc(50% - 30px);
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: calc(100% - 30px);
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <script>
+      async function fetchImage(query) {
+        const apiKey = 'XYYUcQ9XIjD3LLFrm7w6RNNfAN3sM4xnkJfqr7gMchkRE7O9thYhsqAd';
+        const url = `https://api.pexels.com/v1/search?query=${query}&per_page=1`;
+
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': apiKey
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          if (data.photos && data.photos.length > 0) {
+            return data.photos[0].src.medium;
+          } else {
+            console.warn(`No images found for query: ${query}`);
+            return null; // Or a default image URL
+          }
+        } catch (error) {
+          console.error('Error fetching image:', error);
+          return null; // Or a default image URL
+        }
+      }
+
+      async function updateCardImages() {
+          const cardData = [
+            { query: 'Diwali festival celebration', elementId: 'diwali-image' },
+            { query: 'Holi colorful celebration', elementId: 'holi-image' },
+            { query: 'Dussehra effigy burning', elementId: 'dussehra-image' },
+             { query: 'Raksha Bandhan siblings bond', elementId: 'raksha-bandhan-image' },
+            { query: 'Eid al-Fitr celebration', elementId: 'eid-image' },
+            { query: 'Ganesh Chaturthi idol procession', elementId: 'ganesh-chaturthi-image' }
+          ];
+
+          for (const item of cardData) {
+              const imageUrl = await fetchImage(item.query);
+              if (imageUrl) {
+                  document.getElementById(item.elementId).src = imageUrl;
+                  document.getElementById(item.elementId).alt = item.query;
+                  document.getElementById(item.elementId).parentElement.href = 'https://povaique.top/4/8634888';
+              }
+          }
+      }
+
+
+      window.onload = updateCardImages;
+
+    </script>
+
+
+
+    <header>
+        <img src="https://static.vecteezy.com/system/resources/thumbnails/035/657/698/small_2x/ai-generated-endearing-adventures-with-cute-cartoon-animal-babies-photo.jpg" alt="Logo">
+        <h1>A Tapestry of Traditions: Exploring Indian Festivals</h1>
+    </header>
+
+    <main>
+      <div id="ad-banner">
+        <a href="https://povaique.top/4/8634888">example.com</a>
+      </div>
+        <div class="card-container">
+            <div class="card">
+                <a href="https://povaique.top/4/8634888">
+                  <img id="diwali-image" src="https://images.pexels.com/photos/1590174/pexels-photo-1590174.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=350" alt="Diwali festival celebration" loading="lazy">
+                </a>
+                <div class="card-content">
+                    <h2>Diwali - The Festival of Lights</h2>
+                    <p>Diwali, the festival of lights, illuminates India with vibrant colors and joyful celebrations. Homes are adorned with diyas (oil lamps) and rangolis (intricate designs), symbolizing the triumph of good over evil.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <a href="https://povaique.top/4/8634888">
+                  <img id="holi-image" src="https://images.pexels.com/photos/1927595/pexels-photo-1927595.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=350" alt="Holi colorful celebration" loading="lazy">
+                </a>
+                <div class="card-content">
+                    <h2>Holi - The Festival of Colors</h2>
+                    <p>Holi, the festival of colors, bursts with playful energy as people smear each other with vibrant powders and water. It signifies the arrival of spring and the victory of good over evil.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                 <a href="https://povaique.top/4/8634888">
+                   <img id="dussehra-image" src="https://images.pexels.com/photos/13919587/pexels-photo-13919587.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=350" alt="Dussehra effigy burning" loading="lazy">
+                 </a>
+                <div class="card-content">
+                    <h2>Dussehra - Victory of Good Over Evil</h2>
+                    <p>Dussehra celebrates the triumph of Lord Rama over Ravana. Effigies of Ravana are burned, symbolizing the destruction of evil and the victory of righteousness.</p>
+                </div>
+            </div>
+        </div>
+
+         <div class="card-container">
+            <div class="card">
+                 <a href="https://povaique.top/4/8634888">
+                   <img id="raksha-bandhan-image" src="https://images.pexels.com/photos/7686247/pexels-photo-7686247.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=350" alt="Raksha Bandhan siblings bond" loading="lazy">
+                 </a>
+                <div class="card-content">
+                    <h2>Raksha Bandhan - The Bond of Siblinghood</h2>
+                    <p>Raksha Bandhan celebrates the sacred bond between brothers and sisters. Sisters tie a rakhi (a holy thread) on their brothers' wrists, symbolizing love and protection.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                 <a href="https://povaique.top/4/8634888">
+                   <img id="eid-image" src="https://images.pexels.com/photos/7957127/pexels-photo-7957127.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=350" alt="Eid al-Fitr celebration" loading="lazy">
+                 </a>
+                <div class="card-content">
+                    <h2>Eid-ul-Fitr - The Festival of Breaking the Fast</h2>
+                    <p>Eid-ul-Fitr marks the end of Ramadan, the Islamic holy month of fasting. It is a time for feasting, prayers, and acts of charity, strengthening community bonds.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                 <a href="https://povaique.top/4/8634888">
+                   <img id="ganesh-chaturthi-image" src="https://images.pexels.com/photos/18597970/pexels-photo-18597970.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=350" alt="Ganesh Chaturthi idol procession" loading="lazy">
+                 </a>
+                <div class="card-content">
+                    <h2>Ganesh Chaturthi - Celebrating Lord Ganesha</h2>
+                    <p>Ganesh Chaturthi honors Lord Ganesha, the elephant-headed god of wisdom and prosperity. Elaborate idols are installed and worshipped, followed by grand processions and immersion ceremonies.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by Word Weave AI</p>
+        <img src="https://play-lh.googleusercontent.com/Qr1klG33KOiUjTl2MlAmV-AO27h1lwE4i7DWg4gWZS1TOPGrn9kMbgQJv0WQxNgVH3o=w240-h480-rw" alt="Word Weave AI Logo">
+        <a href="https://play.google.com/store/apps/details?id=com.weave.kai"><button>Download Now</button></a>
+    </footer>
+
+
+
+```</body></html>"
