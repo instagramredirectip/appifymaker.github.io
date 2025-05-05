@@ -12,7 +12,7 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0a0a;
@@ -23,7 +23,7 @@
             touch-action: manipulation;
             color: #fff;
         }
-        
+
         .container {
             flex: 1;
             position: relative;
@@ -31,7 +31,7 @@
             background: radial-gradient(circle at center, #111 0%, #000 100%);
             cursor: crosshair;
         }
-        
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -43,22 +43,22 @@
             z-index: 10;
             border-bottom: 1px solid rgba(15, 238, 255, 0.2);
         }
-        
+
         .score {
             font-weight: bold;
             text-shadow: 0 0 5px #0fe;
         }
-        
+
         .time {
             font-weight: bold;
             text-shadow: 0 0 5px #0fe;
         }
-        
+
         .level {
             font-weight: bold;
             text-shadow: 0 0 5px #0fe;
         }
-        
+
         .bubble {
             position: absolute;
             border-radius: 50%;
@@ -75,42 +75,46 @@
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid currentColor;
         }
-        
+
         @keyframes float {
             0% {
                 transform: translateY(0) rotate(0deg);
             }
+
             100% {
                 transform: translateY(-10px) rotate(5deg);
             }
         }
-        
+
         @keyframes pop {
             0% {
                 transform: scale(1);
                 opacity: 1;
             }
+
             100% {
                 transform: scale(1.5);
                 opacity: 0;
             }
         }
-        
+
         @keyframes scorePopup {
             0% {
                 transform: scale(0.5);
                 opacity: 0;
             }
+
             50% {
                 transform: scale(1.2);
                 opacity: 1;
             }
+
             100% {
                 transform: translateY(-20px) scale(1);
                 opacity: 0;
             }
         }
-        
+
         .score-popup {
             position: absolute;
             color: #0fe;
@@ -120,7 +124,7 @@
             z-index: 100;
             text-shadow: 0 0 5px rgba(15, 238, 255, 0.8);
         }
-        
+
         .menu {
             position: absolute;
             top: 0;
@@ -135,7 +139,7 @@
             z-index: 1000;
             color: #0fe;
         }
-        
+
         .menu-content {
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(10px);
@@ -146,28 +150,28 @@
             box-shadow: 0 0 20px rgba(15, 238, 255, 0.3);
             border: 1px solid rgba(15, 238, 255, 0.2);
         }
-        
+
         .menu h1 {
             font-size: 28px;
             margin-bottom: 20px;
             color: #0fe;
             text-shadow: 0 0 10px rgba(15, 238, 255, 0.5);
         }
-        
+
         .menu p {
             margin-bottom: 20px;
             font-size: 16px;
             line-height: 1.5;
             color: #0fe;
         }
-        
+
         .hardcore-warning {
             color: #ff0055;
             font-weight: bold;
             margin: 10px 0;
             text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
         }
-        
+
         .menu button, .restart-button {
             background: linear-gradient(135deg, #0fe, #008080);
             border: none;
@@ -181,17 +185,17 @@
             box-shadow: 0 0 10px rgba(15, 238, 255, 0.5);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .menu button:hover, .restart-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(15, 238, 255, 0.8);
-        }
-        
-        .menu button:active, .restart-button:active {
-            transform: translateY(1px);
-            box-shadow: 0 0 5px rgba(15, 238, 255, 0.3);
-        }
-        
+
+            .menu button:hover, .restart-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0 15px rgba(15, 238, 255, 0.8);
+            }
+
+            .menu button:active, .restart-button:active {
+                transform: translateY(1px);
+                box-shadow: 0 0 5px rgba(15, 238, 255, 0.3);
+            }
+
         .results {
             margin: 20px 0;
             padding: 15px;
@@ -200,18 +204,18 @@
             text-align: left;
             border: 1px solid rgba(15, 238, 255, 0.2);
         }
-        
-        .results div {
-            margin: 8px 0;
-            font-size: 16px;
-        }
-        
+
+            .results div {
+                margin: 8px 0;
+                font-size: 16px;
+            }
+
         .highlight {
             color: #0fe;
             font-weight: bold;
             text-shadow: 0 0 5px rgba(15, 238, 255, 0.5);
         }
-        
+
         .footer {
             padding: 10px;
             text-align: center;
@@ -220,7 +224,7 @@
             font-size: 12px;
             box-shadow: 0 0 10px rgba(15, 238, 255, 0.3);
         }
-        
+
         .progress-container {
             width: 100%;
             height: 8px;
@@ -229,7 +233,7 @@
             overflow: hidden;
             margin-top: 20px;
         }
-        
+
         .progress-bar {
             height: 100%;
             background: linear-gradient(to right, #0fe, #008080);
@@ -237,7 +241,7 @@
             transition: width 0.3s;
             box-shadow: 0 0 10px rgba(15, 238, 255, 0.5);
         }
-        
+
         .combo-indicator {
             position: fixed;
             top: 70px;
@@ -250,31 +254,43 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
-        
+
         @keyframes shake {
-            0%, 100% { transform: translateX(-50%) rotate(0deg); }
-            20% { transform: translateX(-50%) rotate(5deg); }
-            40% { transform: translateX(-50%) rotate(-5deg); }
-            60% { transform: translateX(-50%) rotate(3deg); }
-            80% { transform: translateX(-50%) rotate(-3deg); }
+            0%, 100% {
+                transform: translateX(-50%) rotate(0deg);
+            }
+
+            20% {
+                transform: translateX(-50%) rotate(5deg);
+            }
+
+            40% {
+                transform: translateX(-50%) rotate(-5deg);
+            }
+
+            60% {
+                transform: translateX(-50%) rotate(3deg);
+            }
+
+            80% {
+                transform: translateX(-50%) rotate(-3deg);
+            }
         }
-        
+
         .combo-indicator.active {
             opacity: 1;
             animation: shake 0.5s;
         }
-        
+
         .grid {
             position: absolute;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(rgba(15, 238, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(15, 238, 255, 0.05) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(15, 238, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 238, 255, 0.05) 1px, transparent 1px);
             background-size: 30px 30px;
             pointer-events: none;
         }
-        
+
         .game-over-flash {
             position: absolute;
             top: 0;
@@ -287,7 +303,7 @@
             opacity: 0;
             transition: opacity 0.5s;
         }
-        
+
         .miss-indicator {
             position: absolute;
             pointer-events: none;
@@ -295,42 +311,44 @@
             height: 20px;
             opacity: 0;
         }
-        
-        .miss-indicator::before,
-        .miss-indicator::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background-color: #ff0055;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-        }
-        
-        .miss-indicator::before {
-            transform: translateY(-50%) rotate(45deg);
-        }
-        
-        .miss-indicator::after {
-            transform: translateY(-50%) rotate(-45deg);
-        }
-        
+
+            .miss-indicator::before,
+            .miss-indicator::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 2px;
+                background-color: #ff0055;
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%);
+            }
+
+            .miss-indicator::before {
+                transform: translateY(-50%) rotate(45deg);
+            }
+
+            .miss-indicator::after {
+                transform: translateY(-50%) rotate(-45deg);
+            }
+
         @keyframes missAnimation {
             0% {
                 opacity: 1;
                 transform: scale(0.5);
             }
+
             50% {
                 opacity: 1;
                 transform: scale(1.2);
             }
+
             100% {
                 opacity: 0;
                 transform: scale(1);
             }
         }
-        
+
         .lives-container {
             position: absolute;
             top: 10px;
@@ -338,7 +356,7 @@
             display: flex;
             z-index: 11;
         }
-        
+
         .life {
             width: 15px;
             height: 15px;
@@ -355,45 +373,45 @@
         <div class="score">Score: <span id="score">0</span></div>
         <div class="time">Time: <span id="time">30</span>s</div>
     </div>
-    
+
     <div class="container" id="game-container">
         <div class="grid"></div>
         <div class="game-over-flash" id="game-over-flash"></div>
     </div>
-    
+
     <div class="combo-indicator" id="combo-indicator">Combo x2!</div>
-    
+
     <div class="menu" id="start-menu">
         <div class="menu-content">
-            <h1>💀 Neon Bubbles - Hardcore 💀</h1>
+            <h1> Zen Bubbles </h1>
             <p>Pop the bubbles to score points! Bigger bubbles = more points.</p>
             <p>Create combos by popping bubbles quickly for bonus points!</p>
             <p class="hardcore-warning">WARNING: Click outside a bubble and it's GAME OVER!</p>
             <button id="start-button">Start Game</button>
         </div>
     </div>
-    
+
     <div class="menu" id="game-over-menu" style="display: none;">
         <div class="menu-content">
             <h1>Game Over!</h1>
-            
+
             <div class="results">
                 <div>Final Score: <span id="final-score" class="highlight">0</span></div>
                 <div>Highest Level: <span id="final-level" class="highlight">1</span></div>
                 <div>Bubbles Popped: <span id="bubbles-popped" class="highlight">0</span></div>
                 <div>Highest Combo: <span id="highest-combo" class="highlight">0</span></div>
             </div>
-            
+
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
             <p id="next-level-text">Need 500 more points for next level!</p>
             <p id="game-over-reason"></p>
-            
+
             <button class="restart-button" id="restart-button">Play Again</button>
         </div>
     </div>
-    
+
     <script>
         // Game variables
         let score = 0;
@@ -408,7 +426,13 @@
         let lastBubbleTime = 0;
         let highestCombo = 0;
         let gameOverReason = "";
-        
+
+        // Sound effects
+        let bgMusic;
+        let bubblePopSound;
+        let comboSound;
+        let levelUpSound;
+
         // Game settings
         const bubbleColors = [
             '#0fe',  // Cyan
@@ -418,9 +442,9 @@
             '#f00',  // Red
             '#08f'   // Blue
         ];
-        
+
         const pointValue = [5, 10, 15, 20, 25]; // Points for different bubble sizes
-        
+
         // DOM Elements
         const gameContainer = document.getElementById('game-container');
         const scoreElement = document.getElementById('score');
@@ -439,12 +463,42 @@
         const nextLevelText = document.getElementById('next-level-text');
         const gameOverReasonElement = document.getElementById('game-over-reason');
         let gameOverFlash = document.getElementById('game-over-flash');
-        
+
+        // Initialize sounds
+        function initSounds() {
+            bgMusic = new Audio('bg.mp3');
+            bgMusic.loop = true;
+            bgMusic.volume = 0.5;
+
+            bubblePopSound = new Audio('bubblepop.mp3');
+            bubblePopSound.volume = 0.7;
+
+            comboSound = new Audio('combo.mp3');
+            comboSound.volume = 0.8;
+
+            levelUpSound = new Audio('levelup.mp3');
+            levelUpSound.volume = 1.0;
+        }
+
+        // Play sound with option to create a new instance for overlapping sounds
+        function playSound(sound, createNew = false) {
+            if (createNew) {
+                // Create a new instance for overlapping sounds
+                const newSound = new Audio(sound.src);
+                newSound.volume = sound.volume;
+                newSound.play().catch(e => console.log("Sound play error:", e));
+            } else {
+                // Reset and play the same instance
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Sound play error:", e));
+            }
+        }
+
         // Calculate points needed for next level
         function pointsForNextLevel(currentLevel) {
             return currentLevel * 500;
         }
-        
+
         // Update progress bar
         function updateProgressBar() {
             const pointsNeeded = pointsForNextLevel(level);
@@ -452,54 +506,52 @@
             const currentLevelScore = score - previousLevelPoints;
             const progress = (currentLevelScore / (pointsNeeded - previousLevelPoints)) * 100;
             progressBar.style.width = progress + '%';
-            
+
             const remaining = pointsNeeded - score;
-            nextLevelText.textContent = remaining > 0 
-                ? `Need ${remaining} more points for next level!` 
+            nextLevelText.textContent = remaining > 0
+                ? `Need ${remaining} more points for next level!`
                 : 'Ready for next level!';
         }
-        
+
         // Create a random bubble
         function createBubble() {
             if (!gameRunning) return;
-            
+
             const bubble = document.createElement('div');
             bubble.className = 'bubble';
-            
+
             // Size depends on level (smaller bubbles as level increases)
             const minSize = Math.max(20, 50 - level * 3); // Smaller minimum size
             const maxSize = Math.max(40, 80 - level * 3); // Smaller maximum size
             const size = Math.floor(Math.random() * (maxSize - minSize) + minSize);
-            
+
             // Position
             const containerWidth = gameContainer.clientWidth;
             const containerHeight = gameContainer.clientHeight;
             const x = Math.random() * (containerWidth - size);
             const y = Math.random() * (containerHeight - size);
-            
+
             // Style the bubble
             const colorIndex = Math.floor(Math.random() * bubbleColors.length);
             const bubbleColor = bubbleColors[colorIndex];
-            
+
             bubble.style.width = `${size}px`;
             bubble.style.height = `${size}px`;
             bubble.style.left = `${x}px`;
             bubble.style.top = `${y}px`;
             bubble.style.color = bubbleColor;
             bubble.style.animationDelay = `${Math.random() * 2}s`;
-            
+
             // Calculate point value based on size (smaller = more points)
             const valueIndex = Math.floor((maxSize - size) / ((maxSize - minSize) / pointValue.length));
             const points = pointValue[Math.min(valueIndex, pointValue.length - 1)];
             bubble.dataset.points = points;
             bubble.textContent = points;
-            
+
             // Animation duration decreases with level (faster bubbles)
             const floatTime = Math.max(1.5, 4 - level * 0.3);
             bubble.style.animationDuration = `${floatTime}s`;
-            
-            // Add click event - we'll handle clicks at the container level
-            
+
             // Add to DOM
             gameContainer.appendChild(bubble);
             bubbles.push({
@@ -508,33 +560,33 @@
                 maxLife: Math.max(3, 6 - level * 0.5) // Bubbles last shorter time as level increases
             });
         }
-        
+
         // Create a miss indicator
         function createMissIndicator(x, y) {
             const indicator = document.createElement('div');
             indicator.className = 'miss-indicator';
             indicator.style.left = `${x - 10}px`;
             indicator.style.top = `${y - 10}px`;
-            
+
             gameContainer.appendChild(indicator);
-            
+
             // Animate and remove
             indicator.style.animation = 'missAnimation 0.5s forwards';
             setTimeout(() => {
                 indicator.remove();
             }, 500);
         }
-        
+
         // Handle clicks on the game container
         function handleContainerClick(e) {
             if (!gameRunning) return;
-            
+
             // Check if the click was on a bubble
             let clickedOnBubble = false;
-            
+
             // Get the element that was clicked
             const clickedElement = document.elementFromPoint(e.clientX, e.clientY);
-            
+
             if (clickedElement && clickedElement.classList.contains('bubble')) {
                 clickedOnBubble = true;
                 popBubble(clickedElement);
@@ -543,32 +595,35 @@
                 const containerRect = gameContainer.getBoundingClientRect();
                 const x = e.clientX - containerRect.left;
                 const y = e.clientY - containerRect.top;
-                
+
                 createMissIndicator(x, y);
                 gameOverReason = "You missed a bubble!";
-                
+
                 // Flash the screen red
                 gameOverFlash.style.opacity = '1';
                 setTimeout(() => {
                     gameOverFlash.style.opacity = '0';
                 }, 200);
-                
+
                 setTimeout(() => {
                     endGame();
                 }, 500);
             }
         }
-        
+
         // Pop a bubble
         function popBubble(bubble) {
             if (!gameRunning) return;
-            
+
+            // Play bubble pop sound
+            playSound(bubblePopSound, true);
+
             // Pop animation
             bubble.style.animation = 'pop 0.3s forwards';
-            
+
             // Calculate points
             const points = parseInt(bubble.dataset.points);
-            
+
             // Check for combo (if popped within 1 second of last bubble)
             const now = Date.now();
             if (now - lastBubbleTime < 1000) {
@@ -577,23 +632,26 @@
                 const comboBonus = Math.min(5, comboCount); // Caps at 5x
                 const totalPoints = points * comboBonus;
                 updateScore(totalPoints);
-                
+
                 // Show combo indicator
                 if (comboCount > 1) {
+                    // Play combo sound for combos above 1
+                    playSound(comboSound);
+
                     comboIndicator.textContent = `Combo x${comboBonus}!`;
                     comboIndicator.classList.add('active');
-                    
+
                     if (comboTimer) clearTimeout(comboTimer);
                     comboTimer = setTimeout(() => {
                         comboIndicator.classList.remove('active');
                     }, 1000);
-                    
+
                     // Track highest combo
                     if (comboCount > highestCombo) {
                         highestCombo = comboCount;
                     }
                 }
-                
+
                 // Show points popup with combo
                 createScorePopup(bubble, totalPoints, comboBonus > 1);
             } else {
@@ -601,9 +659,9 @@
                 updateScore(points);
                 createScorePopup(bubble, points, false);
             }
-            
+
             lastBubbleTime = now;
-            
+
             // Remove bubble from DOM and array
             setTimeout(() => {
                 const index = bubbles.findIndex(b => b.element === bubble);
@@ -612,9 +670,9 @@
                 }
                 bubble.remove();
             }, 300);
-            
+
             bubbleCount++;
-            
+
             // Add a little time as reward for popping bubbles
             if (level < 3) {
                 timeLeft += 0.5; // Add half a second per bubble in early levels
@@ -624,55 +682,58 @@
             timeLeft = Math.min(timeLeft, 30); // Cap at 30 seconds
             timeElement.textContent = Math.floor(timeLeft);
         }
-        
+
         // Create score popup
         function createScorePopup(bubble, points, isCombo) {
             const popup = document.createElement('div');
             popup.className = 'score-popup';
             popup.textContent = `+${points}`;
-            
+
             if (isCombo) {
                 popup.style.color = '#0f0';
                 popup.style.fontSize = '22px';
             }
-            
+
             // Position popup where the bubble was
             const rect = bubble.getBoundingClientRect();
             const containerRect = gameContainer.getBoundingClientRect();
-            
-            popup.style.left = `${rect.left - containerRect.left + rect.width/2}px`;
-            popup.style.top = `${rect.top - containerRect.top + rect.height/2}px`;
-            
+
+            popup.style.left = `${rect.left - containerRect.left + rect.width / 2}px`;
+            popup.style.top = `${rect.top - containerRect.top + rect.height / 2}px`;
+
             gameContainer.appendChild(popup);
-            
+
             // Remove popup after animation
             setTimeout(() => {
                 popup.remove();
             }, 1000);
         }
-        
+
         // Update score
         function updateScore(points) {
             score += points;
             scoreElement.textContent = score;
-            
+
             // Check for level up
             const pointsNeeded = pointsForNextLevel(level);
             if (score >= pointsNeeded) {
                 levelUp();
             }
-            
+
             updateProgressBar();
         }
-        
+
         // Level up
         function levelUp() {
             level++;
             levelElement.textContent = level;
-            
+
+            // Play level up sound
+            playSound(levelUpSound);
+
             // Increase bubble spawn rate and speed with each level
             updateGameDifficulty();
-            
+
             // Visual feedback for level up
             const levelUpPopup = document.createElement('div');
             levelUpPopup.className = 'score-popup';
@@ -683,36 +744,36 @@
             levelUpPopup.style.top = '50%';
             levelUpPopup.style.transform = 'translate(-50%, -50%)';
             gameContainer.appendChild(levelUpPopup);
-            
+
             setTimeout(() => {
                 levelUpPopup.remove();
             }, 1500);
-            
+
             // Add time bonus for level up
             timeLeft += 5; // Reduced time bonus
             timeElement.textContent = Math.floor(timeLeft);
-            
+
             updateProgressBar();
         }
-        
+
         // Update game difficulty based on level
         function updateGameDifficulty() {
             // Clear all interval timers
             if (window.bubbleSpawnInterval) {
                 clearInterval(window.bubbleSpawnInterval);
             }
-            
+
             // Create new timers with adjusted rates
             const spawnRate = Math.max(200, 800 - level * 100); // Spawn more bubbles with higher levels
             window.bubbleSpawnInterval = setInterval(createBubble, spawnRate);
         }
-        
+
         // Update bubbles
         function updateBubbles(deltaTime) {
             for (let i = bubbles.length - 1; i >= 0; i--) {
                 const bubble = bubbles[i];
                 bubble.lifeTime += deltaTime;
-                
+
                 // Calculate opacity based on life percentage
                 const lifePercentage = bubble.lifeTime / bubble.maxLife;
                 if (lifePercentage >= 1) {
@@ -725,38 +786,38 @@
                 }
             }
         }
-        
+
         // Game loop
         let lastTime = 0;
         function gameLoop(timestamp) {
             if (!gameRunning) return;
-            
+
             // Calculate delta time
             const deltaTime = (timestamp - lastTime) / 1000;
             lastTime = timestamp;
-            
+
             // Update bubbles
             updateBubbles(deltaTime);
-            
+
             // Update time
             timeLeft -= deltaTime;
             timeElement.textContent = Math.floor(timeLeft);
-            
+
             if (timeLeft <= 10) {
                 timeElement.style.color = '#ff0055';
             } else {
                 timeElement.style.color = '#0fe';
             }
-            
+
             if (timeLeft <= 0) {
                 gameOverReason = "Time's up!";
                 endGame();
                 return;
             }
-            
+
             requestAnimationFrame(gameLoop);
         }
-        
+
         // Start game
         function startGame() {
             // Reset game state
@@ -769,56 +830,63 @@
             lastBubbleTime = 0;
             bubbles = [];
             gameOverReason = "";
-            
+
             // Reset UI
             scoreElement.textContent = score;
             timeElement.textContent = Math.floor(timeLeft);
             levelElement.textContent = level;
             gameContainer.innerHTML = '<div class="grid"></div><div class="game-over-flash" id="game-over-flash"></div>';
-            
+
             // Re-assign flash element reference
             const newGameOverFlash = document.getElementById('game-over-flash');
             if (newGameOverFlash) {
                 gameOverFlash = newGameOverFlash;
             }
-            
+
             // Hide menus
             startMenu.style.display = 'none';
             gameOverMenu.style.display = 'none';
-            
+
+            // Play background music
+            bgMusic.currentTime = 0;
+            bgMusic.play().catch(e => console.log("Error playing background music:", e));
+
             // Add click event to container
             gameContainer.addEventListener('click', handleContainerClick);
-            
+
             // Start game loop
             gameRunning = true;
             lastTime = performance.now();
             requestAnimationFrame(gameLoop);
-            
+
             // Start creating bubbles
             updateGameDifficulty();
-            
+
             // Initialize progress bar
             updateProgressBar();
         }
-        
+
         // End game
         function endGame() {
             gameRunning = false;
-            
+
+            // Stop background music
+            bgMusic.pause();
+
             // Clear intervals
             if (window.bubbleSpawnInterval) {
                 clearInterval(window.bubbleSpawnInterval);
             }
-            
+
             // Remove event listeners
             gameContainer.removeEventListener('click', handleContainerClick);
-            
+
             // Remove all bubbles
             bubbles.forEach(bubble => {
                 bubble.element.remove();
             });
             bubbles = [];
-            
+
             // Show game over menu
             finalScoreElement.textContent = score;
             finalLevelElement.textContent = level;
@@ -826,15 +894,18 @@
             highestComboElement.textContent = highestCombo;
             gameOverReasonElement.textContent = gameOverReason;
             gameOverMenu.style.display = 'flex';
-            
+
             // Update progress bar for final display
             updateProgressBar();
         }
-        
+
+        // Initialize sounds when document is loaded
+        document.addEventListener('DOMContentLoaded', initSounds);
+
         // Event listeners
         startButton.addEventListener('click', startGame);
         restartButton.addEventListener('click', startGame);
-        
+
         // Handle window resize
         window.addEventListener('resize', () => {
             if (gameRunning) {
@@ -842,11 +913,11 @@
                 bubbles.forEach(bubble => {
                     const rect = bubble.element.getBoundingClientRect();
                     const containerRect = gameContainer.getBoundingClientRect();
-                    
+
                     if (rect.right > containerRect.right) {
                         bubble.element.style.left = `${containerRect.width - parseInt(bubble.element.style.width)}px`;
                     }
-                    
+
                     if (rect.bottom > containerRect.bottom) {
                         bubble.element.style.top = `${containerRect.height - parseInt(bubble.element.style.height)}px`;
                     }
