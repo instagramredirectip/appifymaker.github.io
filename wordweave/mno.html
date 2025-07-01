@@ -1,0 +1,459 @@
+"<html><head>
+    <title>Tic Tac Toe</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --neon: #00ffff;
+            --neon2: #ff00ff;
+            --neon3: #00ff00;
+            --bg: #0a0a0f;
+            --card: #1a1a2e;
+            --text: #fff
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui
+        }
+
+        .bg {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 255, 255, .1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 0, 255, .1) 0%, transparent 50%), var(--bg);
+            animation: bg 20s infinite;
+            z-index: -1
+        }
+
+        @keyframes bg {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.1)
+            }
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--neon);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 0 20px var(--neon);
+            transition: all .3s
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px var(--neon)
+        }
+
+        .title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(45deg, var(--neon), var(--neon2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: glow 2s infinite alternate
+        }
+
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 10px var(--neon))
+            }
+
+            to {
+                filter: drop-shadow(0 0 20px var(--neon2))
+            }
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: 2px solid var(--neon);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--neon);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all .3s;
+            position: relative;
+            overflow: hidden
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent);
+            transform: translateX(-100%);
+            transition: transform .5s
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%)
+        }
+
+        .btn:hover {
+            background: var(--neon);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--neon);
+            transform: translateY(-2px)
+        }
+
+        .btn2 {
+            border-color: var(--neon2);
+            color: var(--neon2)
+        }
+
+        .btn2:hover {
+            background: var(--neon2);
+            box-shadow: 0 0 20px var(--neon2)
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: rgba(22, 33, 62, .8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--neon3)
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background: var(--card);
+            border: 1px solid #666;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .3s;
+            font-size: 2rem;
+            user-select: none;
+        }
+
+        .cell:hover {
+            border-color: var(--neon);
+            box-shadow: inset 0 0 10px rgba(0, 255, 255, .3)
+        }
+
+        .cell.active {
+            background: var(--neon);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--neon);
+            animation: pulse 1s infinite
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.05)
+            }
+        }
+
+        .hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100
+        }
+
+        .hud-item {
+            background: rgba(26, 26, 46, .9);
+            border: 1px solid var(--neon3);
+            border-radius: 8px;
+            padding: 10px 15px;
+            backdrop-filter: blur(10px)
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--neon3);
+            text-shadow: 0 0 10px var(--neon3)
+        }
+
+        .progress {
+            width: 200px;
+            height: 8px;
+            background: rgba(22, 33, 62, .8);
+            border-radius: 4px;
+            border: 1px solid var(--neon);
+            overflow: hidden
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon), var(--neon2));
+            transition: width .3s;
+            box-shadow: 0 0 10px var(--neon)
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px)
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 2px solid var(--neon2);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px var(--neon2);
+            animation: slide .3s ease-out
+        }
+
+        @keyframes slide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .glow {
+            box-shadow: 0 0 20px var(--neon)
+        }
+
+        .glow2 {
+            box-shadow: 0 0 20px var(--neon2)
+        }
+
+        .glow3 {
+            box-shadow: 0 0 20px var(--neon3)
+        }
+
+        .center {
+            text-align: center
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .hidden {
+            display: none
+        }
+
+        @media (max-width:768px) {
+            .card {
+                padding: 1rem
+            }
+
+            .hud {
+                flex-direction: column;
+                gap: 10px;
+                position: relative;
+                top: 0
+            }
+
+            .hud-item {
+                width: 100%
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg"></div>
+    <div class="container">
+        <div id="start-screen" class="card hidden">
+            <h1 class="title">Tic Tac Toe</h1>
+            <p class="center">Full portrait game with animations and effects, using emojis</p>
+            <button class="btn" id="start-button">Play</button>
+        </div>
+
+        <div id="game-screen" class="">
+            <div class="hud">
+                <div class="hud-item">
+                    Player X Score: <span id="player-x-score" class="score">0</span>
+                </div>
+                <div class="hud-item">
+                    Player O Score: <span id="player-o-score" class="score">1</span>
+                </div>
+            </div>
+
+            <div class="board" id="board">
+                <div class="cell" data-cell-index="0"></div>
+                <div class="cell" data-cell-index="1"></div>
+                <div class="cell" data-cell-index="2"></div>
+                <div class="cell" data-cell-index="3"></div>
+                <div class="cell" data-cell-index="4"></div>
+                <div class="cell" data-cell-index="5"></div>
+                <div class="cell" data-cell-index="6"></div>
+                <div class="cell" data-cell-index="7"></div>
+                <div class="cell" data-cell-index="8"></div>
+            </div>
+        </div>
+
+        <div id="win-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="win-message" class="title">Player O Wins!</h2>
+                <button class="btn" id="restart-button">Restart</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const startButton = document.getElementById('start-button');
+        const board = document.getElementById('board');
+        const cells = document.querySelectorAll('.cell');
+        const winModal = document.getElementById('win-modal');
+        const winMessage = document.getElementById('win-message');
+        const restartButton = document.getElementById('restart-button');
+        const playerXScoreDisplay = document.getElementById('player-x-score');
+        const playerOScoreDisplay = document.getElementById('player-o-score');
+
+        let currentPlayer = 'X';
+        let gameBoard = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+        let playerXScore = 0;
+        let playerOScore = 0;
+
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+            [0, 4, 8], [2, 4, 6] 
+        ];
+
+        function handleCellClick(clickedCellEvent) {
+            const clickedCell = clickedCellEvent.target;
+            const clickedCellIndex = parseInt(clickedCell.dataset.cellIndex);
+
+            if (gameBoard[clickedCellIndex] !== "" || !gameActive) {
+                return;
+            }
+
+            gameBoard[clickedCellIndex] = currentPlayer;
+            clickedCell.textContent = currentPlayer === 'X' ? '❌' : '⭕';
+            clickedCell.classList.add('active');
+
+            checkGameResult();
+            switchPlayer();
+        }
+
+        function switchPlayer() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+
+        function checkGameResult() {
+            let roundWon = false;
+            for (let i = 0; i <= 7; i++) {
+                const winCondition = winningCombinations[i];
+                const a = gameBoard[winCondition[0]];
+                const b = gameBoard[winCondition[1]];
+                const c = gameBoard[winCondition[2]];
+                if (a === '' || b === '' || c === '') {
+                    continue;
+                }
+                if (a === b && b === c) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                gameActive = false;
+                updateScore();
+                showWinModal(`Player ${currentPlayer} Wins!`);
+                return;
+            }
+
+            let roundDraw = !gameBoard.includes("");
+            if (roundDraw) {
+                gameActive = false;
+                showWinModal("It's a Draw!");
+                return;
+            }
+        }
+
+        function updateScore() {
+            if (currentPlayer === 'X') {
+                playerXScore++;
+                playerXScoreDisplay.textContent = playerXScore;
+            } else {
+                playerOScore++;
+                playerOScoreDisplay.textContent = playerOScore;
+            }
+        }
+
+        function showWinModal(message) {
+            winMessage.textContent = message;
+            winModal.classList.remove('hidden');
+        }
+
+        function restartGame() {
+            gameActive = true;
+            currentPlayer = "X";
+            gameBoard = ["", "", "", "", "", "", "", "", ""];
+            cells.forEach(cell => {
+                cell.textContent = "";
+                cell.classList.remove('active');
+            });
+            winModal.classList.add('hidden');
+        }
+         function startGame() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            restartGame();
+        }
+
+        startButton.addEventListener('click', startGame);
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+        restartButton.addEventListener('click', restartGame);
+    </script>
+
+
+
+```</body></html>"
