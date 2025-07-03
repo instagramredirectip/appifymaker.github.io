@@ -1,17 +1,501 @@
-<html>
-<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Generator</title>
     <script src="https://js.puter.com/v2/"></script>
-    <script>
-        (async () => {
-            const response = await puter.ai.chat(
-                "Write a detailed essay on the impact of artificial intelligence on society", 
-                {model: 'claude-opus-4', stream: true}
-            );
-            
-            for await (const part of response) {
-                puter.print(part?.text);
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #f29303, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #b3b3b3;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .input-section, .output-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(242, 147, 3, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .input-section:hover, .output-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(242, 147, 3, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #f29303;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-field {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid rgba(242, 147, 3, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #f29303;
+            box-shadow: 0 0 20px rgba(242, 147, 3, 0.3);
+        }
+
+        .input-field::placeholder {
+            color: #888;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #f29303, #ff6b35);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(242, 147, 3, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(242, 147, 3, 0.3);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: translateY(0);
+        }
+
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
             }
-        })();
+        }
+
+        .progress-container {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: rgba(242, 147, 3, 0.3);
+            stroke-width: 4;
+            stroke-dasharray: 157;
+            stroke-dashoffset: 157;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .progress-ring-progress {
+            fill: none;
+            stroke: #f29303;
+            stroke-width: 4;
+            stroke-dasharray: 157;
+            stroke-dashoffset: 157;
+            transition: stroke-dashoffset 0.3s ease;
+            stroke-linecap: round;
+        }
+
+        .progress-text {
+            margin-left: 1rem;
+            font-size: 0.9rem;
+            color: #f29303;
+        }
+
+        .output-container {
+            position: relative;
+            min-height: 300px;
+            border: 2px solid rgba(242, 147, 3, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .output-placeholder {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(242, 147, 3, 0.8);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .output-section:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:hover {
+            background: #f29303;
+            transform: scale(1.05);
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #f29303;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .typing-indicator::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(242, 147, 3, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(242, 147, 3, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(242, 147, 3, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AI Code Generator</h1>
+            <p>Transform your ideas into clean, executable code</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">
+                    <span>💡</span>
+                    Input
+                </h2>
+                <div class="input-container">
+                    <textarea 
+                        class="input-field" 
+                        id="userInput" 
+                        placeholder="Describe what you want to code... (e.g., 'Create a Snake game in JavaScript', 'Build a todo list app', 'Make a password generator')"
+                        rows="6"
+                    ></textarea>
+                </div>
+                <button class="generate-btn" id="generateBtn">
+                    Generate Code
+                </button>
+                <div class="progress-container" id="progressContainer">
+                    <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="25"></circle>
+                        <circle class="progress-ring-progress" cx="30" cy="30" r="25" id="progressCircle"></circle>
+                    </svg>
+                    <span class="progress-text" id="progressText">Generating...</span>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <h2 class="section-title">
+                    <span>⚡</span>
+                    Generated Code
+                </h2>
+                <div class="output-container" id="outputContainer">
+                    <div class="output-placeholder">
+                        Your generated code will appear here...
+                    </div>
+                    <button class="copy-btn" id="copyBtn">Copy</button>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">AI is generating code</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userInput = document.getElementById('userInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const outputContainer = document.getElementById('outputContainer');
+        const copyBtn = document.getElementById('copyBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressCircle = document.getElementById('progressCircle');
+        const progressText = document.getElementById('progressText');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        let isGenerating = false;
+        let progressInterval;
+
+        // Add ripple effect to button
+        generateBtn.addEventListener('click', function(e) {
+            if (isGenerating) return;
+            
+            const rect = e.target.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('btn-ripple');
+            
+            e.target.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            generateCode();
+        });
+
+        // Copy functionality
+        copyBtn.addEventListener('click', async () => {
+            const code = outputContainer.textContent;
+            try {
+                await navigator.clipboard.writeText(code);
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        });
+
+        // Progress animation
+        function updateProgress(percent) {
+            const circumference = 2 * Math.PI * 25;
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            progressText.textContent = `${Math.round(percent)}%`;
+        }
+
+        function startProgress() {
+            let progress = 0;
+            progressContainer.style.display = 'flex';
+            typingIndicator.style.display = 'block';
+            
+            progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                updateProgress(progress);
+            }, 200);
+        }
+
+        function completeProgress() {
+            clearInterval(progressInterval);
+            updateProgress(100);
+            
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+                typingIndicator.style.display = 'none';
+                updateProgress(0);
+            }, 500);
+        }
+
+        // Generate code function
+        async function generateCode() {
+            const prompt = userInput.value.trim();
+            
+            if (!prompt) {
+                alert('Please enter a description of what you want to code!');
+                return;
+            }
+            
+            isGenerating = true;
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            generateBtn.classList.add('pulse');
+            
+            outputContainer.innerHTML = '';
+            startProgress();
+            
+            try {
+                const enhancedPrompt = `${prompt}. Return ONLY the code without any explanations, comments, or additional text. Just clean, executable code.`;
+                
+                const response = await puter.ai.chat(enhancedPrompt, {
+                    model: 'claude-opus-4',
+                    stream: true
+                });
+                
+                let generatedCode = '';
+                
+                for await (const part of response) {
+                    if (part?.text) {
+                        generatedCode += part.text;
+                        outputContainer.textContent = generatedCode;
+                        outputContainer.scrollTop = outputContainer.scrollHeight;
+                    }
+                }
+                
+                completeProgress();
+                
+            } catch (error) {
+                console.error('Error generating code:', error);
+                outputContainer.innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}</div>`;
+                completeProgress();
+            } finally {
+                isGenerating = false;
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Code';
+                generateBtn.classList.remove('pulse');
+            }
+        }
+
+        // Enter key support
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey && !isGenerating) {
+                generateCode();
+            }
+        });
+
+        // Auto-resize textarea
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(120, this.scrollHeight) + 'px';
+        });
     </script>
 </body>
 </html>
