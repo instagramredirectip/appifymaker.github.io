@@ -1,0 +1,853 @@
+"<html lang="en" style="--ground-height: 0px;"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Geometry Dash</title>
+  <style>
+    :root {
+      --player-size: 40px;
+      --obstacle-color: #e74c3c;
+      --collectible-color: #f1c40f;
+      --ground-color: #2c3e50;
+      --sky-color: #34495e;
+      --particle-color-1: #ecf0f1;
+      --particle-color-2: #bdc3c7;
+      --ui-color: #ecf0f1;
+      --ui-accent: #3498db;
+      --screen-shake-intensity: 8px;
+    }
+
+    /* Base Styles */
+    body {
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #1a232f; /* Dark background outside game */
+      font-family: Arial, sans-serif; /* Fallback for --ui-font */
+      -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+    }
+
+    @font-face { /* Add a pixel font for UI */
+      font-family: 'Press Start 2P';
+      src: url('https://fonts.gstatic.com/s/pressstart2p/v15/8U8-GPNDULLiTfS4uSMV7aaDCA.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    /* Game Container */
+    .game-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--sky-color);
+      touch-action: manipulation; /* Prevent default browser gestures like double-tap zoom */
+    }
+
+    /* Game Board */
+    .game-board {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.1s ease-out; /* For screen shake */
+    }
+
+    /* Ground */
+    .ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%; /* For continuous scrolling */
+      height: 10vh; /* Adjust ground height */
+      background-color: var(--ground-color);
+      box-shadow: inset 0 5px 10px rgba(0,0,0,0.3);
+      z-index: 1;
+      background-image:
+        linear-gradient(90deg, transparent 99%, rgba(255,255,255,0.1) 100%),
+        linear-gradient(90deg, transparent 99%, rgba(0,0,0,0.1) 100%);
+      background-size: 50px 100%, 50px 100%;
+      animation: ground-scroll linear infinite;
+    }
+
+    /* Player */
+    .player {
+      position: absolute;
+      bottom: var(--player-size); /* Initial position above ground */
+      left: 15%; /* Fixed X position */
+      width: var(--player-size);
+      height: var(--player-size);
+      background-color: #3498db; /* Player color */
+      border: 3px solid #2980b9;
+      z-index: 2;
+      transition: transform 0.05s ease-out, background-color 0.1s ease-in-out;
+      will-change: transform;
+    }
+    .player.jumping {
+      background-color: #5dade2; /* Lighter color when jumping */
+    }
+
+    /* Obstacles */
+    .obstacle {
+      position: absolute;
+      bottom: var(--ground-height); /* Will be set by JS dynamically based on player size */
+      background-color: var(--obstacle-color);
+      border: 2px solid #c0392b;
+      transform: translateX(0); /* Initial position */
+      z-index: 1;
+      transition: transform linear; /* For smooth movement */
+      will-change: transform;
+    }
+    /* Spike obstacle (triangle using clip-path) */
+    .obstacle.spike {
+        width: var(--player-size);
+        height: var(--player-size);
+        background-color: var(--obstacle-color);
+        clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+        border: none; /* No border for clip-path */
+    }
+    /* Block obstacle (square) */
+    .obstacle.block {
+        width: var(--player-size);
+        height: var(--player-size);
+    }
+    /* Tall block */
+    .obstacle.tall-block {
+        width: var(--player-size);
+        height: calc(var(--player-size) * 2); /* Double height */
+    }
+
+
+    /* Collectibles */
+    .collectible {
+      position: absolute;
+      bottom: calc(var(--ground-height) + var(--player-size) + 20px); /* Initial position above ground/player */
+      width: calc(var(--player-size) * 0.6);
+      height: calc(var(--player-size) * 0.6);
+      background-color: var(--collectible-color);
+      border-radius: 50%;
+      border: 2px solid #f39c12;
+      z-index: 1;
+      transition: transform linear; /* For smooth movement */
+      animation: collectible-spin 2s linear infinite;
+      will-change: transform;
+    }
+    /* Visual cue on collection */
+    .collectible.collected {
+      animation: collectible-collect 0.2s ease-out forwards;
+      opacity: 0;
+    }
+
+    /* Particles */
+    .particle {
+      position: absolute;
+      background-color: var(--particle-color-1);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      animation: particle-fade-out linear forwards;
+    }
+    .particle.jump {
+        background-color: var(--particle-color-2);
+        animation: particle-jump 0.5s ease-out forwards;
+    }
+    .particle.collision {
+        background-color: var(--obstacle-color);
+        animation: particle-collision 0.6s ease-out forwards;
+    }
+    .particle.collect {
+        background-color: var(--collectible-color);
+        animation: particle-collect 0.4s ease-out forwards;
+    }
+
+    /* UI Elements */
+    .ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--ui-color);
+      font-family: 'Press Start 2P', cursive;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 10;
+      pointer-events: none; /* Allow clicks through by default */
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+    }
+    .ui-overlay.active {
+      opacity: 1;
+      pointer-events: all; /* Enable clicks when active */
+    }
+
+    .ui-title {
+      font-size: 3em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px var(--ui-accent);
+    }
+    .ui-text {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    .game-button {
+      padding: 15px 30px;
+      background-color: var(--ui-accent);
+      color: var(--ui-color);
+      border: 3px solid #2980b9;
+      border-radius: 8px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      transition: transform 0.1s ease-out, background-color 0.1s ease-out;
+      min-width: 150px; /* Ensure 44px min touch target */
+      min-height: 44px;
+      box-sizing: border-box; /* Include padding and border in width/height */
+      display: flex; /* For centering text */
+      justify-content: center;
+      align-items: center;
+    }
+    .game-button:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      background-color: #2980b9;
+    }
+
+    .score-display, .combo-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: var(--ui-color);
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.5em;
+      z-index: 5;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+    .combo-display {
+      left: auto;
+      right: 20px;
+      transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+      opacity: 0;
+    }
+    .combo-display.active {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    .combo-display.active.large {
+        transform: scale(1.3);
+    }
+
+    .achievement-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(52, 152, 219, 0.95);
+      border: 3px solid #2980b9;
+      color: var(--ui-color);
+      font-family: 'Press Start 2P', cursive;
+      padding: 20px 30px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.2em;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    }
+    .achievement-popup.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .achievement-popup h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #f1c40f;
+    }
+
+    /* Animations */
+    @keyframes ground-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); } /* Scrolls half its width (100% of board width) */
+    }
+
+    @keyframes collectible-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes collectible-collect {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.8; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    @keyframes particle-fade-out {
+      0% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-50px) scale(0.5); }
+    }
+    @keyframes particle-jump {
+        0% { opacity: 1; transform: translate(0, 0) scale(1); }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.1); }
+    }
+    @keyframes particle-collision {
+        0% { opacity: 1; transform: translate(0, 0) scale(1); }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.1); }
+    }
+    @keyframes particle-collect {
+        0% { opacity: 1; transform: translate(0, 0) scale(1); }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.1); }
+    }
+
+    @keyframes screen-shake-x {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(calc(-1 * var(--screen-shake-intensity))); }
+      75% { transform: translateX(var(--screen-shake-intensity)); }
+    }
+    @keyframes screen-shake-y {
+      0%, 100% { transform: translateY(0); }
+      25% { transform: translateY(calc(-1 * var(--screen-shake-intensity))); }
+      75% { transform: translateY(var(--screen-shake-intensity)); }
+    }
+    .screen-shake-x {
+      animation: screen-shake-x 0.2s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    .screen-shake-y {
+      animation: screen-shake-y 0.2s cubic-bezier(.36,.07,.19,.97) both;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container" id="gameContainer">
+    <div class="game-board" id="gameBoard">
+      <div class="ground" id="ground"></div>
+      <div class="player" id="player" style="--player-size: 40px; bottom: 0px; left: 0px; transform: translateY(0px);"></div>
+
+      <!-- UI Elements -->
+      <div class="score-display" id="scoreDisplay">Score: 0</div>
+      <div class="combo-display" id="comboDisplay">Combo: 1x</div>
+
+      <div class="ui-overlay active" id="startScreen">
+        <h1 class="ui-title">Geometry Dash</h1>
+        <button class="game-button" id="startButton">START GAME</button>
+        <div class="ui-text">Tap to Jump</div>
+      </div>
+
+      <div class="ui-overlay" id="gameOverScreen">
+        <h1 class="ui-title">GAME OVER!</h1>
+        <p class="ui-text" id="finalScoreText"></p>
+        <button class="game-button" id="restartButton">RESTART</button>
+      </div>
+
+      <div class="achievement-popup" id="achievementPopup">
+        <h3 id="achievementTitle"></h3>
+        <p id="achievementDescription"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const gameContainer = document.getElementById('gameContainer');
+    const gameBoard = document.getElementById('gameBoard');
+    const player = document.getElementById('player');
+    const ground = document.getElementById('ground');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const comboDisplay = document.getElementById('comboDisplay');
+    const startScreen = document.getElementById('startScreen');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const finalScoreText = document.getElementById('finalScoreText');
+    const startButton = document.getElementById('startButton');
+    const restartButton = document.getElementById('restartButton');
+    const achievementPopup = document.getElementById('achievementPopup');
+    const achievementTitle = document.getElementById('achievementTitle');
+    const achievementDescription = document.getElementById('achievementDescription');
+
+    // Game Constants
+    const PLAYER_SIZE = 40; // px
+    const GROUND_HEIGHT_PERCENT = 10; // % of viewport height
+    const GRAVITY = 0.8; // px/frame^2
+    const JUMP_STRENGTH = 15; // px/frame
+    const INITIAL_GAME_SPEED = 5; // px/frame (how fast obstacles move left)
+    const MAX_GAME_SPEED = 15;
+    const SPEED_INCREMENT_INTERVAL = 10000; // ms
+    const OBSTACLE_SPAWN_INTERVAL = 1500; // ms
+    const COLLECTIBLE_SPAWN_CHANCE = 0.7; // 70% chance to spawn a collectible with an obstacle
+    const COMBO_DURATION = 1500; // ms, how long combo stays active after last collect
+    const SHAKE_DURATION = 200; // ms
+
+    // Game State Variables
+    let gameRunning = false;
+    let score = 0;
+    let combo = 0;
+    let lastComboTime = 0;
+    let playerY = 0; // Relative to ground
+    let playerYVelocity = 0;
+    let groundHeight = 0;
+    let gameSpeed = INITIAL_GAME_SPEED;
+    let lastFrameTime = 0;
+    let obstacleTimer = 0;
+    let speedIncreaseTimer = 0;
+    let playerIsJumping = false;
+    let activeTouch = false; // To prevent multi-touch primary action
+
+    // Achievements
+    const achievements = {
+        firstJump: { title: "First Steps", description: "Performed your first jump!", achieved: false },
+        firstCollect: { title: "Treasure Hunter", description: "Collected your first star!", achieved: false },
+        score100: { title: "Centurion", description: "Reached a score of 100!", achieved: false },
+        score500: { title: "High Roller", description: "Reached a score of 500!", achieved: false },
+        combo5x: { title: "Combo Master", description: "Achieved a 5x combo!", achieved: false },
+        combo10x: { title: "Streak Demon", description: "Achieved a 10x combo!", achieved: false },
+    };
+
+    // --- Initialization ---
+    function init() {
+        groundHeight = (GROUND_HEIGHT_PERCENT / 100) * gameContainer.offsetHeight;
+        document.documentElement.style.setProperty('--ground-height', `${groundHeight}px`);
+        player.style.setProperty('--player-size', `${PLAYER_SIZE}px`);
+        playerY = groundHeight; // Player starts on the ground
+        player.style.bottom = `${playerY}px`;
+        player.style.left = `${gameBoard.offsetWidth * 0.15}px`; // Fixed player X
+
+        showStartScreen();
+        setupEventListeners();
+        gameLoop(0); // Start the loop to render initial state
+    }
+
+    function setupEventListeners() {
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+
+        gameContainer.addEventListener('touchstart', handleTouchStart);
+        gameContainer.addEventListener('touchend', handleTouchEnd);
+        gameContainer.addEventListener('touchmove', handleTouchMove); // Prevent scrolling
+    }
+
+    function handleTouchStart(event) {
+        event.preventDefault(); // Prevent default browser actions (scrolling, zoom)
+        if (!gameRunning) return;
+
+        if (!activeTouch) {
+            activeTouch = true;
+            // Single tap for jump
+            jump();
+        }
+    }
+
+    function handleTouchEnd(event) {
+        if (!gameRunning) return;
+        activeTouch = false;
+    }
+
+    function handleTouchMove(event) {
+        event.preventDefault(); // Prevent scrolling
+    }
+
+    // --- Game States ---
+    function showStartScreen() {
+        startScreen.classList.add('active');
+        gameOverScreen.classList.remove('active');
+    }
+
+    function hideStartScreen() {
+        startScreen.classList.remove('active');
+    }
+
+    function showGameOverScreen() {
+        gameOverScreen.classList.add('active');
+        finalScoreText.textContent = `Score: ${score}`;
+        gameRunning = false;
+        ground.style.animationPlayState = 'paused';
+    }
+
+    function hideGameOverScreen() {
+        gameOverScreen.classList.remove('active');
+    }
+
+    function startGame() {
+        hideStartScreen();
+        hideGameOverScreen();
+        resetGame();
+        gameRunning = true;
+        ground.style.animationPlayState = 'running';
+        lastFrameTime = performance.now(); // Reset lastFrameTime for accurate delta
+        gameLoop(lastFrameTime); // Ensure game loop restarts with fresh time
+    }
+
+    function resetGame() {
+        score = 0;
+        combo = 0;
+        lastComboTime = 0;
+        playerY = groundHeight;
+        playerYVelocity = 0;
+        gameSpeed = INITIAL_GAME_SPEED;
+        obstacleTimer = 0;
+        speedIncreaseTimer = 0;
+        playerIsJumping = false;
+        activeTouch = false;
+
+        // Reset player visuals
+        player.style.transform = `translateY(0)`; // Reset player position for render
+        player.classList.remove('jumping');
+
+        // Clear existing obstacles and collectibles
+        obstacles.forEach(o => o.element.remove());
+        obstacles = [];
+        collectibles.forEach(c => c.element.remove());
+        collectibles = [];
+
+        // Reset UI
+        updateScoreDisplay();
+        updateComboDisplay(false); // Hide combo display
+        for (const key in achievements) {
+            achievements[key].achieved = false; // Reset achievements for new game
+        }
+    }
+
+    // --- Game Loop ---
+    function gameLoop(currentTime) {
+        if (!lastFrameTime) lastFrameTime = currentTime;
+        const deltaTime = currentTime - lastFrameTime; // Time in ms since last frame
+        lastFrameTime = currentTime;
+
+        if (gameRunning) {
+            update(deltaTime);
+            render();
+            requestAnimationFrame(gameLoop);
+        } else if (gameOverScreen.classList.contains('active') || startScreen.classList.contains('active')) {
+            // Only re-render if UI is active, not constantly when paused
+            render();
+            requestAnimationFrame(gameLoop); // Keep loop running for UI updates if any, or to allow restarting
+        }
+    }
+
+    function update(deltaTime) {
+        // Update Player
+        playerYVelocity -= GRAVITY * (deltaTime / 16.66); // Adjust gravity for deltaTime
+        playerY += playerYVelocity;
+
+        // Ground collision
+        if (playerY <= groundHeight + 1) { // Allow slight tolerance for floating point
+            playerY = groundHeight;
+            playerYVelocity = 0;
+            if (playerIsJumping) { // Landed after a jump
+                createParticleEffect(player.offsetLeft + PLAYER_SIZE / 2, gameBoard.offsetHeight - groundHeight, 'jump', 10);
+                player.classList.remove('jumping');
+                playerIsJumping = false;
+            }
+        }
+
+        // Update ground scroll speed based on gameSpeed (CSS animation)
+        const groundAnimationSpeed = 50 / gameSpeed; // Adjust for more responsive scroll
+        ground.style.animationDuration = `${groundAnimationSpeed}s`;
+
+        // Update Game Speed (Progressive Difficulty)
+        speedIncreaseTimer += deltaTime;
+        if (speedIncreaseTimer >= SPEED_INCREMENT_INTERVAL) {
+            if (gameSpeed < MAX_GAME_SPEED) {
+                gameSpeed += 0.5;
+                if (gameSpeed > MAX_GAME_SPEED) gameSpeed = MAX_GAME_SPEED;
+            }
+            speedIncreaseTimer = 0;
+        }
+
+        // Update Obstacles and Collectibles
+        obstacleTimer += deltaTime;
+        if (obstacleTimer >= OBSTACLE_SPAWN_INTERVAL / (gameSpeed / INITIAL_GAME_SPEED)) { // Spawn faster with higher speed
+            createRandomObstacle();
+            obstacleTimer = 0;
+        }
+
+        // Move obstacles and collectibles
+        obstacles.forEach(obstacle => {
+            obstacle.x -= gameSpeed * (deltaTime / 16.66);
+        });
+        collectibles.forEach(collectible => {
+            collectible.x -= gameSpeed * (deltaTime / 16.66);
+        });
+
+        // Filter out off-screen obstacles/collectibles
+        obstacles = obstacles.filter(o => {
+            if (o.x + o.width < 0) {
+                o.element.remove();
+                return false;
+            }
+            return true;
+        });
+        collectibles = collectibles.filter(c => {
+            if (c.x + c.width < 0) {
+                c.element.remove();
+                return false;
+            }
+            return true;
+        });
+
+        // Check Collisions
+        checkCollisions();
+
+        // Update Combo Timeout
+        if (combo > 0 && currentTime - lastComboTime > COMBO_DURATION) {
+            combo = 0;
+            updateComboDisplay(false);
+        }
+    }
+
+    function render() {
+        // Player position
+        player.style.transform = `translateY(${-playerY + groundHeight}px)`;
+
+        // Obstacles position
+        obstacles.forEach(o => {
+            o.element.style.transform = `translateX(${o.x}px)`;
+            o.element.style.bottom = `${o.y}px`; // Set bottom based on type
+        });
+
+        // Collectibles position
+        collectibles.forEach(c => {
+            c.element.style.transform = `translateX(${c.x}px)`;
+            c.element.style.bottom = `${c.y}px`; // Collectibles y position
+        });
+
+        updateScoreDisplay();
+        if (combo > 0) {
+            updateComboDisplay(true);
+        }
+    }
+
+    // --- Player Actions ---
+    function jump() {
+        if (!gameRunning) return;
+        if (playerY <= groundHeight + 1) { // Allow slight tolerance for floating point
+            playerYVelocity = JUMP_STRENGTH;
+            player.classList.add('jumping');
+            playerIsJumping = true;
+            createParticleEffect(player.offsetLeft + PLAYER_SIZE / 2, gameBoard.offsetHeight - groundHeight, 'jump', 10);
+
+            // Achievements
+            if (!achievements.firstJump.achieved) {
+                showAchievement(achievements.firstJump);
+                achievements.firstJump.achieved = true;
+            }
+        }
+    }
+
+    // --- Obstacle / Collectible Logic ---
+    function createRandomObstacle() {
+        const type = Math.random() < 0.5 ? 'spike' : 'block'; // 50% spike, 50% block
+        const width = PLAYER_SIZE;
+        let height = PLAYER_SIZE;
+        let yPos = groundHeight; // default for ground-based obstacles
+
+        if (type === 'block' && Math.random() < 0.3) { // 30% chance for a tall block
+            height = PLAYER_SIZE * 2;
+            type = 'tall-block'; // Distinguish for visual styling
+        }
+
+        const obstacleElement = document.createElement('div');
+        obstacleElement.classList.add('obstacle', type);
+        obstacleElement.style.width = `${width}px`;
+        obstacleElement.style.height = `${height}px`;
+        obstacleElement.style.setProperty('--ground-height', `${groundHeight}px`); // CSS var for bottom
+
+        gameBoard.appendChild(obstacleElement);
+
+        const newObstacle = {
+            element: obstacleElement,
+            x: gameBoard.offsetWidth, // Start off-screen right
+            y: yPos,
+            width: width,
+            height: height,
+            type: type
+        };
+        obstacles.push(newObstacle);
+
+        // Potentially spawn a collectible above the obstacle or nearby
+        if (Math.random() < COLLECTIBLE_SPAWN_CHANCE) {
+            createCollectible(newObstacle);
+        }
+    }
+
+    function createCollectible(obstacle) {
+        const collectibleElement = document.createElement('div');
+        collectibleElement.classList.add('collectible');
+        gameBoard.appendChild(collectibleElement);
+
+        const collectibleSize = PLAYER_SIZE * 0.6;
+        const collectibleX = obstacle.x + (obstacle.width / 2) - (collectibleSize / 2);
+        const collectibleY = obstacle.y + obstacle.height + 20 + Math.random() * 30; // Slightly varied height above obstacle
+
+        const newCollectible = {
+            element: collectibleElement,
+            x: collectibleX,
+            y: collectibleY,
+            width: collectibleSize,
+            height: collectibleSize,
+            collected: false // Flag to prevent multiple collections
+        };
+        collectibles.push(newCollectible);
+    }
+
+    // --- Collision Detection ---
+    function checkCollisions() {
+        const playerRect = player.getBoundingClientRect();
+        const playerGameX = player.offsetLeft; // Player's fixed X in game coordinates
+        const playerGameY = gameBoard.offsetHeight - playerY - PLAYER_SIZE; // Player's Y in canvas coordinates (top-left)
+
+        const pLeft = playerGameX;
+        const pRight = playerGameX + PLAYER_SIZE;
+        const pTop = playerGameY;
+        const pBottom = playerGameY + PLAYER_SIZE;
+
+        // Obstacle collisions
+        obstacles.forEach(obstacle => {
+            const oLeft = obstacle.x;
+            const oRight = obstacle.x + obstacle.width;
+            const oTop = gameBoard.offsetHeight - obstacle.y - obstacle.height; // Obstacle Y in canvas coords
+            const oBottom = gameBoard.offsetHeight - obstacle.y;
+
+            if (pRight > oLeft && pLeft < oRight && pBottom > oTop && pTop < oBottom) {
+                // Collision detected!
+                gameOver();
+            }
+        });
+
+        // Collectible collisions
+        collectibles.forEach(collectible => {
+            if (collectible.collected) return; // Skip if already collected
+
+            const cLeft = collectible.x;
+            const cRight = collectible.x + collectible.width;
+            const cTop = gameBoard.offsetHeight - collectible.y - collectible.height;
+            const cBottom = gameBoard.offsetHeight - collectible.y;
+
+            if (pRight > cLeft && pLeft < cRight && pBottom > cTop && pTop < cBottom) {
+                // Collectible collected!
+                collectible.collected = true;
+                collectible.element.classList.add('collected'); // Trigger CSS animation
+                score += 10;
+                combo++;
+                lastComboTime = performance.now();
+                updateScoreDisplay();
+                updateComboDisplay(true);
+                createParticleEffect(collectible.x + collectible.width / 2, gameBoard.offsetHeight - collectible.y - collectible.height / 2, 'collect', 5);
+
+                // Achievements
+                if (!achievements.firstCollect.achieved) {
+                    showAchievement(achievements.firstCollect);
+                    achievements.firstCollect.achieved = true;
+                }
+                if (combo >= 5 && !achievements.combo5x.achieved) {
+                    showAchievement(achievements.combo5x);
+                    achievements.combo5x.achieved = true;
+                    comboDisplay.classList.add('large'); // Visual cue for high combo
+                }
+                if (combo >= 10 && !achievements.combo10x.achieved) {
+                    showAchievement(achievements.combo10x);
+                    achievements.combo10x.achieved = true;
+                    comboDisplay.classList.add('large'); // Visual cue for high combo
+                }
+            }
+        });
+    }
+
+    function gameOver() {
+        if (!gameRunning) return; // Prevent multiple game over calls
+        gameRunning = false;
+        showGameOverScreen();
+        triggerScreenShake();
+        createParticleEffect(player.offsetLeft + PLAYER_SIZE / 2, gameBoard.offsetHeight - playerY - PLAYER_SIZE / 2, 'collision', 20);
+    }
+
+    // --- UI Updates ---
+    function updateScoreDisplay() {
+        scoreDisplay.textContent = `Score: ${score}`;
+
+        // Achievements based on score
+        if (score >= 100 && !achievements.score100.achieved) {
+            showAchievement(achievements.score100);
+            achievements.score100.achieved = true;
+        }
+        if (score >= 500 && !achievements.score500.achieved) {
+            showAchievement(achievements.score500);
+            achievements.score500.achieved = true;
+        }
+    }
+
+    function updateComboDisplay(show) {
+        if (show && combo > 1) {
+            comboDisplay.textContent = `Combo: ${combo}x`;
+            comboDisplay.classList.add('active');
+            // Animate combo display slightly
+            comboDisplay.style.transform = `scale(${1 + Math.min(combo / 10, 0.5)})`; // Scale up to 1.5x
+            if (combo >=5) comboDisplay.classList.add('large'); else comboDisplay.classList.remove('large');
+        } else {
+            comboDisplay.classList.remove('active', 'large');
+            comboDisplay.style.transform = 'scale(1)';
+        }
+    }
+
+    // --- Modern Game Elements ---
+
+    // Particle Effects
+    function createParticleEffect(x, y, type, count) {
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle', type);
+            particle.style.left = `${x + (Math.random() * 10 - 5)}px`; // Spread particles
+            particle.style.top = `${y + (Math.random() * 10 - 5)}px`;
+            const size = Math.random() * 8 + 2; // 2px to 10px
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Randomize animation direction for burst effect
+            const dx = (Math.random() - 0.5) * 100;
+            const dy = (Math.random() - 0.5) * 100;
+            particle.style.setProperty('--dx', `${dx}px`);
+            particle.style.setProperty('--dy', `${dy}px`);
+
+            gameBoard.appendChild(particle);
+
+            particle.addEventListener('animationend', () => {
+                particle.remove();
+            }, { once: true });
+        }
+    }
+
+    // Screen Shake
+    function triggerScreenShake() {
+        gameBoard.classList.add('screen-shake-x');
+        setTimeout(() => {
+            gameBoard.classList.remove('screen-shake-x');
+        }, SHAKE_DURATION);
+    }
+
+    // Achievement Popups
+    let achievementTimeout;
+    function showAchievement(achievement) {
+        achievementTitle.textContent = achievement.title;
+        achievementDescription.textContent = achievement.description;
+        achievementPopup.classList.add('show');
+
+        clearTimeout(achievementTimeout);
+        achievementTimeout = setTimeout(() => {
+            achievementPopup.classList.remove('show');
+        }, 3000); // Popup visible for 3 seconds
+    }
+
+    // Initial call to set up the game
+    init();
+
+  </script>
+
+</body></html>"
