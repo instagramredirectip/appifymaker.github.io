@@ -1,0 +1,962 @@
+"<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Simple Pendulum</title>
+  <style>
+    :root {
+        /* Define game dimensions and element sizes dynamically */
+        --game-width: 800px;
+        --game-height: 600px;
+        --bob-size: 40px;
+        --target-size: 30px;
+        --particle-size: 8px;
+        --hud-height: 40px;
+    }
+
+    /* Base styles for the entire page */
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Press Start 2P', cursive, monospace; /* Retro pixel font, fallback to monospace */
+      background: #1a1a2e; /* Dark bluish background */
+      color: #e0e0e0; /* Light grey text */
+      overflow: hidden; /* Prevent scrolling */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      font-size: 16px;
+      touch-action: none; /* Prevent browser gestures like pull-to-refresh and pan/zoom */
+      -ms-touch-action: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Custom font import for pixel art aesthetic */
+    @font-face {
+        font-family: 'Press Start 2P';
+        src: url('https://fonts.gstatic.com/s/pressstart2p/v14/8Lg6KlNT-vpHxJTMK-NAu1vwg0255w.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    /* Game Container - Main playable area */
+    #game-container {
+      position: relative;
+      width: var(--game-width);
+      height: var(--game-height);
+      background: radial-gradient(circle at center, #2e004e, #0e001e); /* Deep space background */
+      border: 4px solid #6a05ad; /* Purple border */
+      box-shadow: 0 0 30px rgba(106, 5, 173, 0.7); /* Glowing border effect */
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      transform: translateZ(0); /* Promote hardware acceleration */
+    }
+
+    /* Screen Shake effect for impactful events */
+    .shake {
+        animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both;
+        transform: translate3d(0, 0, 0); /* Ensure smooth animation */
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+    @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+        50% { transform: translate3d(-4px, 0, 0); }
+    }
+
+    /* Pendulum Elements */
+    #pivot {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        width: 15px;
+        height: 15px;
+        background: #bb00ff; /* Bright purple */
+        border-radius: 50%;
+        transform: translate(-50%, -50%); /* Center the pivot */
+        box-shadow: 0 0 15px rgba(187, 0, 255, 0.8);
+        z-index: 2;
+    }
+
+    #string {
+        position: absolute;
+        width: 2px;
+        background: #aaa; /* Grey string */
+        transform-origin: top center; /* Rotate around the top */
+        z-index: 1;
+        top: 10%;
+        left: 50%;
+        height: 0; /* Height set by JS */
+    }
+
+    #bob {
+        position: absolute;
+        width: var(--bob-size);
+        height: var(--bob-size);
+        background: radial-gradient(circle at 30% 30%, #aaff00, #448800); /* Green gradient */
+        border-radius: 50%;
+        border: 2px solid #55ff00;
+        transform: translate(-50%, -50%); /* Center the bob */
+        box-shadow: 0 0 20px rgba(170, 255, 0, 0.7); /* Green glow */
+        z-index: 3;
+        transition: transform 0.05s ease-out, background 0.1s ease-out, border-color 0.1s ease-out, box-shadow 0.1s ease-out; /* Smooth transition for held state */
+    }
+    #bob.held {
+        background: radial-gradient(circle at 30% 30%, #ff00aa, #880044); /* Red-pink gradient when held */
+        border-color: #ff5500;
+        box-shadow: 0 0 20px rgba(255, 0, 170, 0.7);
+        transform: translate(-50%, -50%) scale(0.9); /* Shrink slightly as visual cue */
+    }
+
+    /* Targets - Objects to be hit by the pendulum bob */
+    #targets-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Do not block touch events for game container */
+        z-index: 0; /* Below bob */
+    }
+    .target {
+        position: absolute;
+        width: var(--target-size);
+        height: var(--target-size);
+        background: radial-gradient(circle at 30% 30%, #00eaff, #0077aa); /* Blue gradient */
+        border: 2px solid #00aaff;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 15px rgba(0, 234, 255, 0.6);
+        opacity: 0; /* Start hidden, fade in */
+        transition: opacity 0.3s ease-out, transform 0.15s ease-out; /* For hit feedback */
+        will-change: transform, opacity;
+    }
+    .target.hit {
+        background: radial-gradient(circle at 30% 30%, #ffdd00, #aa7700); /* Yellow gradient when hit */
+        border-color: #ffaa00;
+        box-shadow: 0 0 25px rgba(255, 221, 0, 0.9);
+        animation: targetHitFadeOut 0.3s forwards;
+    }
+    @keyframes targetHitFadeOut {
+        0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+    }
+
+    /* UI Elements - HUD, Messages, Overlays */
+    #hud {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.4);
+        border-bottom: 2px solid #6a05ad;
+        z-index: 10;
+        height: var(--hud-height);
+        box-sizing: content-box; /* Include padding in fixed height calculation */
+    }
+    .hud-item {
+        font-size: 1.1em;
+        padding: 5px 10px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid #6a05ad;
+        border-radius: 5px;
+        min-width: 100px;
+        text-align: center;
+        color: #e0e0e0;
+        box-shadow: 0 0 10px rgba(106, 5, 173, 0.4);
+    }
+    #score-display {
+        color: #00ffaa; /* Bright green for score */
+    }
+    #combo-display {
+        color: #ffaa00; /* Orange for combo */
+        font-weight: bold;
+        transition: transform 0.1s ease-out; /* For bounce on update */
+    }
+    #combo-display.active {
+        transform: scale(1.2); /* Visual feedback for combo increment */
+    }
+
+    #message-display {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.5em;
+        color: #ffffff;
+        text-shadow: 0 0 15px #e0e0e0, 0 0 25px #aaff00; /* Glow effect */
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100;
+        animation: messageFadeInUp 1s forwards ease-out; /* Defined below */
+    }
+    @keyframes messageFadeInUp {
+        0% { opacity: 0; transform: translate(-50%, -50%) translateY(20px); }
+        20% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+        80% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+        100% { opacity: 0; transform: translate(-50%, -50%) translateY(-20px); }
+    }
+
+    /* Start / Game Over Screens - Overlays */
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95); /* Semi-transparent dark overlay */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        color: #e0e0e0;
+        font-size: 2em;
+        text-align: center;
+        transition: opacity 0.5s ease-out; /* Smooth fade in/out */
+    }
+    .overlay h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        color: #aaff00; /* Bright green */
+        text-shadow: 0 0 10px #aaff00, 0 0 20px #00ffaa; /* Double glow */
+    }
+    .overlay p {
+        margin-bottom: 30px;
+        font-size: 0.7em;
+        color: #bbb;
+    }
+    .overlay button {
+        padding: 15px 30px;
+        background: linear-gradient(45deg, #6a05ad, #bb00ff); /* Purple button gradient */
+        border: 2px solid #e0e0e0;
+        color: #e0e0e0;
+        font-family: inherit;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(187, 0, 255, 0.5);
+        transition: all 0.2s ease-out; /* Smooth hover effects */
+        min-width: 150px;
+        touch-action: manipulation; /* Allow instant tapping */
+    }
+    .overlay button:hover {
+        background: linear-gradient(45deg, #bb00ff, #6a05ad);
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(187, 0, 255, 0.8);
+    }
+    .overlay button:active {
+        transform: scale(0.95);
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+    .hidden {
+        opacity: 0;
+        pointer-events: none; /* Make element untappable when hidden */
+    }
+
+    /* Particle Effects for visual flair */
+    #particles-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 5;
+    }
+    .particle {
+        position: absolute;
+        width: var(--particle-size);
+        height: var(--particle-size);
+        background: #aaff00; /* Green particles */
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0);
+        animation: particleBurst 0.6s forwards ease-out; /* Defined below */
+        will-change: transform, opacity;
+    }
+    @keyframes particleBurst {
+        0% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+    }
+
+    /* Tap Ripple Effect - Visual feedback for tap interactions */
+    .tap-ripple {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        pointer-events: none;
+        animation: tapRipple 0.5s forwards ease-out; /* Defined below */
+        z-index: 100;
+        will-change: transform, opacity;
+    }
+    @keyframes tapRipple {
+        0% { transform: scale(0); opacity: 1; }
+        100% { transform: scale(3); opacity: 0; }
+    }
+
+    /* Achievement Popup - Notifications for milestones */
+    #achievement-area {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 300px;
+        pointer-events: none;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .achievement-popup {
+        background: linear-gradient(90deg, #330055, #6a05ad); /* Purple gradient */
+        border: 2px solid #bb00ff;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-top: 10px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: achievementPop 0.8s forwards ease-out; /* Defined below */
+        box-shadow: 0 0 15px rgba(187, 0, 255, 0.7);
+        text-align: center;
+        color: #e0e0e0;
+        width: 100%;
+        font-size: 0.9em;
+    }
+    .achievement-popup h3 {
+        font-size: 1.2em;
+        margin-bottom: 5px;
+        color: #aaff00; /* Bright green */
+        text-shadow: 0 0 8px #aaff00;
+    }
+    @keyframes achievementPop {
+        0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+        20% { opacity: 1; transform: translateY(0) scale(1.1); }
+        80% { opacity: 1; transform: translateY(0) scale(1); }
+        100% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+    }
+
+    /* Responsive adjustments for various screen sizes */
+    @media (max-width: 820px) {
+        :root {
+            --game-width: 95vw;
+            --game-height: 80vh;
+            --bob-size: 35px;
+            --target-size: 25px;
+            --particle-size: 6px;
+        }
+        body { font-size: 14px; }
+        #hud { padding: 10px 15px; }
+        .hud-item { min-width: 80px; font-size: 0.9em; }
+        .overlay h1 { font-size: 2em; }
+        .overlay p { font-size: 0.6em; }
+        .overlay button { font-size: 1em; padding: 12px 25px; }
+        #message-display { font-size: 2em; }
+        .achievement-popup { padding: 10px 15px; font-size: 0.8em; }
+        .achievement-popup h3 { font-size: 1em; }
+    }
+
+    @media (max-width: 480px) {
+        :root {
+            --game-width: 98vw;
+            --game-height: 75vh;
+            --bob-size: 30px;
+            --target-size: 20px;
+            --particle-size: 5px;
+        }
+        body { font-size: 12px; }
+        #hud { padding: 8px 10px; }
+        .hud-item { min-width: 60px; font-size: 0.8em; }
+        .overlay h1 { font-size: 1.8em; }
+        .overlay p { font-size: 0.55em; }
+        .overlay button { font-size: 0.9em; padding: 10px 20px; }
+        #message-display { font-size: 1.5em; }
+        #achievement-area { bottom: 10px; width: 90%; }
+        .achievement-popup { padding: 8px 10px; font-size: 0.7em; }
+        .achievement-popup h3 { font-size: 0.9em; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Main game container -->
+  <div id="game-container">
+    <!-- Heads-Up Display (HUD) -->
+    <div id="hud">
+      <div id="score-display" class="hud-item">Score: 0</div>
+      <div id="combo-display" class="hud-item">Combo: 0</div>
+    </div>
+
+    <!-- Pendulum elements -->
+    <div id="pivot" style="left: 49px; top: 7.5px;"></div>
+    <div id="string" style="left: 49px; top: 7.5px; height: 200px; transform: translateX(-50%) rotate(90deg);"></div>
+    <div id="bob"></div>
+
+    <!-- Containers for dynamic elements -->
+    <div id="targets-container"></div>
+    <div id="particles-container"></div>
+    <div id="achievement-area"></div>
+
+    <!-- In-game messages (e.g., "Hit!", "Combo!") -->
+    <div id="message-display"></div>
+
+    <!-- Start Screen overlay -->
+    <div id="start-screen" class="overlay">
+      <h1>Simple Pendulum</h1>
+      <p>Control the pendulum to hit targets.<br>
+      Tap: Apply a push force.<br>
+      Long Press: Grab/Release the bob.<br>
+      Swipe (horizontal): Move the pivot.</p>
+      <button id="start-button">Start Game</button>
+    </div>
+
+    <!-- Game Over Screen overlay -->
+    <div id="game-over-screen" class="overlay hidden">
+      <h1>Game Over!</h1>
+      <p>Your Final Score: <span id="final-score">0</span></p>
+      <button id="restart-button">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    // Get references to DOM elements
+    const gameContainer = document.getElementById('game-container');
+    const pivot = document.getElementById('pivot');
+    const string = document.getElementById('string');
+    const bob = document.getElementById('bob');
+    const targetsContainer = document.getElementById('targets-container');
+    const particlesContainer = document.getElementById('particles-container');
+    const achievementArea = document.getElementById('achievement-area');
+    const scoreDisplay = document.getElementById('score-display');
+    const comboDisplay = document.getElementById('combo-display');
+    const messageDisplay = document.getElementById('message-display');
+    const startScreen = document.getElementById('start-screen');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('restart-button');
+    const finalScoreDisplay = document.getElementById('final-score');
+
+    // Game Constants - derived from CSS variables for responsive scaling
+    const GAME_WIDTH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--game-width'));
+    const GAME_HEIGHT = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--game-height'));
+    const BOB_SIZE = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bob-size'));
+    const TARGET_SIZE = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--target-size'));
+    const PARTICLE_SIZE = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--particle-size'));
+    const HUD_HEIGHT = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hud-height'));
+
+    // Physics constants
+    const GRAVITY = 0.0008; // px/ms^2
+    const DAMPING = 0.998; // Reduces angular velocity over time
+    const TAP_IMPULSE = 0.0008; // radians/ms, force applied on tap
+    const PIVOT_SWIPE_SENSITIVITY = 0.2; // How much pivot moves per swipe pixel
+
+    // Game logic constants
+    const COMBO_TIME_THRESHOLD = 1500; // ms, time to hit next target for combo
+    const ACHIEVEMENT_DURATION = 2000; // ms, how long achievement popups display
+    const MESSAGE_DURATION = 1000; // ms, how long general messages display
+
+    // Game State variables
+    let gameStarted = false;
+    let gameOver = false;
+    let score = 0;
+    let comboCount = 0;
+    let lastHitTime = 0; // Timestamp of the last target hit
+    let targets = []; // Array to store active targets
+    let achievements = { // Definitions and status of achievements
+        firstHit: { achieved: false, title: "First Blood!", description: "Hit your first target." },
+        combo5: { achieved: false, title: "Combo Master!", description: "Achieve a 5x combo." },
+        combo10: { achieved: false, title: "Unstoppable!", description: "Achieve a 10x combo." },
+        score500: { achieved: false, title: "Score Seeker!", description: "Reach a score of 500." },
+    };
+
+    // Pendulum physics state
+    let angle = Math.PI / 2; // Initial angle (90 degrees to the right, relative to vertical down)
+    let angularVelocity = 0;
+    let stringLength = 200; // px
+    let pivotX = GAME_WIDTH / 2; // Horizontal position of the pivot
+    let pivotY = GAME_HEIGHT * 0.1; // Vertical position of the pivot (10% from top)
+
+    let bobX, bobY; // Current calculated position of the pendulum bob
+    let bobHeld = false; // True if the bob is currently being held by a long press
+    let heldTouchId = null; // To track the specific touch holding the bob
+
+    // Touch control state
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let currentTouchX = 0;
+    let currentTouchY = 0;
+    let touchStartTime = 0; // Timestamp of touchstart
+    let isTouching = false; // True if a touch is currently active
+    let longPressTimeout = null; // Timer for long press detection
+    const LONG_PRESS_THRESHOLD = 500; // ms, how long to hold for a long press
+    const TAP_THRESHOLD = 200; // ms, max duration for a tap
+    const SWIPE_THRESHOLD = 20; // px, min movement for a swipe gesture
+
+    let lastFrameTime = 0; // For calculating deltaTime in game loop
+
+    // Game Difficulty & Spawning Timers
+    let targetSpawnTimer = 0; // Counts down to next target spawn
+    let targetSpawnIntervalBase = 2000; // Initial target spawn interval
+    let targetSpawnIntervalCurrent = targetSpawnIntervalBase; // Current dynamic spawn interval
+    let minTargetY = GAME_HEIGHT * 0.6; // Lowest Y coordinate targets can spawn
+    let maxTargetY = GAME_HEIGHT * 0.8; // Highest Y coordinate targets can spawn
+    let maxTargets = 5; // Max number of targets on screen
+
+    let difficultyLevel = 0;
+    const difficultyInterval = 10000; // ms, time between difficulty increases
+    let difficultyIntervalTimer = difficultyInterval; // Counts down to next difficulty increase
+    const maxDifficulty = 10; // Max difficulty level
+
+    // --- Game Initialization & Reset ---
+    function initializeGame() {
+        // Reset game state
+        score = 0;
+        comboCount = 0;
+        lastHitTime = 0;
+        targets = [];
+
+        // Clear existing elements from previous game
+        particlesContainer.innerHTML = '';
+        targetsContainer.innerHTML = '';
+
+        // Reset all achievements to not achieved
+        for (let ach in achievements) {
+            achievements[ach].achieved = false;
+        }
+
+        // Reset pendulum state
+        angle = Math.PI / 2; // Start from side swing
+        angularVelocity = 0;
+        stringLength = 200;
+        pivotX = GAME_WIDTH / 2;
+        pivotY = GAME_HEIGHT * 0.1;
+
+        // Reset touch state
+        bobHeld = false;
+        heldTouchId = null;
+        isTouching = false;
+
+        // Reset difficulty and spawning timers
+        difficultyLevel = 0;
+        targetSpawnIntervalCurrent = targetSpawnIntervalBase;
+        targetSpawnTimer = targetSpawnIntervalCurrent; // Set initial timer for first target
+        maxTargets = 5;
+        difficultyIntervalTimer = difficultyInterval;
+
+        // Update UI and hide overlays
+        updateHUD();
+        updatePendulumDOM();
+        messageDisplay.style.opacity = 0; // Ensure no messages are lingering
+
+        // Set game flags
+        gameOver = false;
+        gameStarted = true;
+        startScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+
+        // Spawn first target immediately
+        spawnTarget();
+    }
+
+    // --- Game Loop ---
+    function gameLoop(currentTime) {
+        // Only run game logic if game is started and not over
+        if (!gameStarted || gameOver) {
+            lastFrameTime = currentTime; // Reset lastFrameTime to prevent large deltaTime jumps
+            requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        const deltaTime = currentTime - lastFrameTime; // Time elapsed since last frame
+        lastFrameTime = currentTime;
+
+        // Update game state
+        updateDifficultyAndSpawning(deltaTime);
+        updatePendulum(deltaTime);
+        checkCollisions();
+        // cleanupParticles() is handled by individual particle timeouts
+
+        // Request next frame
+        requestAnimationFrame(gameLoop);
+    }
+
+    // --- Physics & Updates ---
+    function updatePendulum(deltaTime) {
+        if (bobHeld) {
+            // If bob is held, its position is directly controlled by the touch input
+            bobX = currentTouchX;
+            bobY = currentTouchY;
+
+            // Calculate angle and string length based on held position relative to pivot
+            let dx = bobX - pivotX;
+            let dy = bobY - pivotY;
+            stringLength = Math.sqrt(dx * dx + dy * dy);
+            // Clamp string length to a reasonable range
+            stringLength = Math.max(50, Math.min(GAME_HEIGHT * 0.7 - pivotY, stringLength));
+
+            angle = Math.atan2(dx, dy); // Angle relative to vertical
+        } else {
+            // Standard pendulum physics equations
+            const angularAcceleration = -GRAVITY / stringLength * Math.sin(angle); // Acceleration due to gravity
+            angularVelocity += angularAcceleration * deltaTime;
+            angularVelocity *= DAMPING; // Apply damping to simulate friction/air resistance
+            angle += angularVelocity * deltaTime; // Update angle based on velocity
+
+            // Calculate bob position (Cartesian coordinates) from angle
+            bobX = pivotX + stringLength * Math.sin(angle);
+            bobY = pivotY + stringLength * Math.cos(angle);
+        }
+        updatePendulumDOM(); // Update visual representation of pendulum
+    }
+
+    // Updates the CSS styles of pendulum elements based on game state
+    function updatePendulumDOM() {
+        pivot.style.left = `${pivotX}px`;
+        pivot.style.top = `${pivotY}px`;
+
+        string.style.left = `${pivotX}px`;
+        string.style.top = `${pivotY}px`;
+        string.style.height = `${stringLength}px`;
+        string.style.transform = `translateX(-50%) rotate(${angle * (180 / Math.PI)}deg)`;
+
+        bob.style.left = `${bobX}px`;
+        bob.style.top = `${bobY}px`;
+    }
+
+    // Manages target spawning and game difficulty progression
+    function updateDifficultyAndSpawning(deltaTime) {
+        // Target spawning logic
+        targetSpawnTimer -= deltaTime;
+        if (targetSpawnTimer <= 0) {
+            spawnTarget();
+            targetSpawnTimer = targetSpawnIntervalCurrent; // Reset timer for next target
+        }
+
+        // Difficulty progression logic
+        difficultyIntervalTimer -= deltaTime;
+        if (difficultyIntervalTimer <= 0 && difficultyLevel < maxDifficulty) {
+            difficultyLevel++;
+            // Increase difficulty: decrease spawn interval and allow more targets
+            targetSpawnIntervalCurrent = Math.max(800, targetSpawnIntervalCurrent - 100);
+            maxTargets = Math.min(10, maxTargets + 1);
+            message("Difficulty Up!", '#ff9900'); // Visual feedback for difficulty increase
+            difficultyIntervalTimer = difficultyInterval; // Reset difficulty timer
+            // Adjust the current targetSpawnTimer to reflect the new interval immediately
+            targetSpawnTimer = Math.min(targetSpawnTimer, targetSpawnIntervalCurrent);
+        }
+    }
+
+    // --- Target Management ---
+    function spawnTarget() {
+        if (targets.length >= maxTargets || gameOver || !gameStarted) return; // Don't spawn if too many or game is over
+
+        // Randomly determine target position
+        const x = Math.random() * (GAME_WIDTH - TARGET_SIZE * 2) + TARGET_SIZE;
+        const y = Math.random() * (maxTargetY - minTargetY) + minTargetY;
+
+        // Create target DOM element
+        const targetDiv = document.createElement('div');
+        targetDiv.classList.add('target');
+        targetDiv.style.left = `${x}px`;
+        targetDiv.style.top = `${y}px`;
+        targetDiv.dataset.id = Date.now() + Math.random(); // Unique ID for tracking
+        targetDiv.dataset.value = 10 * (1 + difficultyLevel * 0.5); // Value scales with difficulty
+
+        targetsContainer.appendChild(targetDiv); // Add to container
+        targets.push({ // Add to game state array
+            id: targetDiv.dataset.id,
+            x: x,
+            y: y,
+            element: targetDiv,
+            value: parseInt(targetDiv.dataset.value)
+        });
+
+        // Trigger fade-in animation
+        setTimeout(() => targetDiv.style.opacity = 1, 10);
+    }
+
+    // Removes a target from the game
+    function removeTarget(targetId) {
+        const index = targets.findIndex(t => t.id === targetId);
+        if (index !== -1) {
+            const [target] = targets.splice(index, 1); // Remove from array
+            target.element.classList.add('hit'); // Add hit class for animation
+            // Remove element from DOM after its animation finishes
+            target.element.addEventListener('animationend', () => target.element.remove());
+        }
+    }
+
+    // Checks for collisions between the pendulum bob and targets
+    function checkCollisions() {
+        const bobRadius = BOB_SIZE / 2;
+        for (let i = targets.length - 1; i >= 0; i--) {
+            const target = targets[i];
+            const targetRadius = TARGET_SIZE / 2;
+
+            // Calculate distance between bob and target centers
+            const dx = bobX - target.x;
+            const dy = bobY - target.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // If distance is less than sum of radii, a collision occurred
+            if (distance < bobRadius + targetRadius) {
+                handleTargetHit(target); // Process the hit
+                break; // Only hit one target per frame to avoid double counting
+            }
+        }
+    }
+
+    // Actions to take when a target is hit
+    function handleTargetHit(target) {
+        removeTarget(target.id);
+        createParticles(bobX, bobY, 15, '#aaff00'); // Burst of green particles
+        screenShake(); // Visual "thump" feedback
+
+        const currentTime = performance.now();
+        if (currentTime - lastHitTime < COMBO_TIME_THRESHOLD) {
+            comboCount++; // Increment combo if hit within threshold
+            message(`Combo x${comboCount}!`, '#ffaa00');
+        } else {
+            comboCount = 1; // Reset combo if too slow
+            message(`Hit!`, '#00eaff');
+        }
+        lastHitTime = currentTime; // Update last hit time
+
+        let points = target.value;
+        if (comboCount > 1) {
+            points *= comboCount; // Apply combo multiplier to score
+        }
+        score += Math.round(points);
+
+        updateHUD(); // Update score and combo display
+        checkAchievements(); // Check if any achievements are unlocked
+    }
+
+    // --- UI & Feedback ---
+    function updateHUD() {
+        scoreDisplay.textContent = `Score: ${score}`;
+        comboDisplay.textContent = `Combo: ${comboCount}`;
+
+        // Add 'active' class for a brief moment to trigger scale animation
+        if (comboCount > 0) {
+            comboDisplay.classList.add('active');
+            setTimeout(() => comboDisplay.classList.remove('active'), 100);
+        }
+    }
+
+    // Displays a temporary message in the center of the screen
+    function message(text, color = '#ffffff') {
+        messageDisplay.textContent = text;
+        messageDisplay.style.color = color;
+        // Reset and re-apply animation to ensure it plays every time
+        messageDisplay.style.animation = 'none';
+        void messageDisplay.offsetWidth; // Trigger reflow
+        messageDisplay.style.animation = `messageFadeInUp ${MESSAGE_DURATION / 1000}s forwards ease-out`;
+    }
+
+    // Triggers a screen shake effect
+    function screenShake() {
+        gameContainer.classList.remove('shake'); // Remove class to re-trigger animation
+        void gameContainer.offsetWidth; // Trigger reflow
+        gameContainer.classList.add('shake');
+        setTimeout(() => gameContainer.classList.remove('shake'), 200); // Remove after animation duration
+    }
+
+    // Creates a burst of particles at a given location
+    function createParticles(x, y, count, color) {
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.background = color;
+
+            // Position particles around the given (x,y)
+            const offsetX = (Math.random() - 0.5) * BOB_SIZE * 0.8;
+            const offsetY = (Math.random() - 0.5) * BOB_SIZE * 0.8;
+            particle.style.left = `${x + offsetX}px`;
+            particle.style.top = `${y + offsetY}px`;
+
+            // Apply animation with slight random delay for burst effect
+            particle.style.animationDelay = `${i * 0.02}s`;
+            particlesContainer.appendChild(particle);
+            // Remove particle after its animation is complete
+            setTimeout(() => particle.remove(), 700);
+        }
+    }
+
+    // Displays a ripple effect where the screen was tapped
+    function showTapRipple(x, y) {
+        const ripple = document.createElement('div');
+        ripple.classList.add('tap-ripple');
+        // Center the ripple around the tap coordinates
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.width = ripple.style.height = '44px'; // Minimum touch target size visualization
+        gameContainer.appendChild(ripple);
+        // Remove ripple after its animation finishes
+        ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    // --- Achievements ---
+    function checkAchievements() {
+        // Check conditions for each achievement and display if newly achieved
+        if (!achievements.firstHit.achieved && score > 0) {
+            achievements.firstHit.achieved = true;
+            showAchievement(achievements.firstHit.title, achievements.firstHit.description);
+        }
+        if (!achievements.combo5.achieved && comboCount >= 5) {
+            achievements.combo5.achieved = true;
+            showAchievement(achievements.combo5.title, achievements.combo5.description);
+        }
+        if (!achievements.combo10.achieved && comboCount >= 10) {
+            achievements.combo10.achieved = true;
+            showAchievement(achievements.combo10.title, achievements.combo10.description);
+        }
+        if (!achievements.score500.achieved && score >= 500) {
+            achievements.score500.achieved = true;
+            showAchievement(achievements.score500.title, achievements.score500.description);
+        }
+    }
+
+    // Displays an achievement popup
+    function showAchievement(title, description) {
+        const popup = document.createElement('div');
+        popup.classList.add('achievement-popup');
+        popup.innerHTML = `<h3>${title}</h3><p>${description}</p>`;
+        achievementArea.appendChild(popup);
+        screenShake(); // Satisfying visual cue for achievement
+        setTimeout(() => popup.remove(), ACHIEVEMENT_DURATION); // Remove after display duration
+    }
+
+    // --- Game States ---
+    function endGame() {
+        gameOver = true;
+        gameStarted = false;
+        finalScoreDisplay.textContent = score; // Update final score on game over screen
+        gameOverScreen.classList.remove('hidden'); // Show game over screen
+        message("Game Over!", '#ff0000'); // Final game over message
+    }
+
+    // --- Touch Controls ---
+    gameContainer.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevent default browser touch behavior (scrolling, zooming)
+
+        if (gameOver || !gameStarted) return; // Ignore touches if game not active
+        if (isTouching) return; // Prevent multi-touch interference for primary actions
+
+        isTouching = true;
+        touchStartTime = performance.now();
+        const touch = e.touches[0]; // Get the first touch
+        // Get touch coordinates relative to the game container
+        touchStartX = touch.clientX - gameContainer.getBoundingClientRect().left;
+        touchStartY = touch.clientY - gameContainer.getBoundingClientRect().top;
+        currentTouchX = touchStartX;
+        currentTouchY = touchStartY;
+        heldTouchId = touch.identifier; // Store identifier to track this specific touch
+
+        showTapRipple(touchStartX, touchStartY); // Visual feedback for tap initiation
+
+        // Set a timeout to detect a long press
+        longPressTimeout = setTimeout(() => {
+            bobHeld = !bobHeld; // Toggle held state
+            bob.classList.toggle('held', bobHeld); // Apply/remove visual 'held' class
+            if (bobHeld) {
+                angularVelocity = 0; // Stop pendulum swing when grabbed
+                message("Grabbed!", '#ffff00');
+            } else {
+                message("Released!", '#00aaff');
+            }
+            // After a long press, we consider the touch action complete,
+            // allowing subsequent touches/lifts to initiate new actions.
+            isTouching = false;
+        }, LONG_PRESS_THRESHOLD);
+    }, {passive: false}); // passive: false to allow preventDefault
+
+    gameContainer.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+
+        if (gameOver || !gameStarted || !isTouching) return;
+        // Ensure we only process the touch that initiated the action
+        if (heldTouchId !== null && e.touches[0] && e.touches[0].identifier !== heldTouchId) return;
+
+        const touch = e.touches[0];
+        const newTouchX = touch.clientX - gameContainer.getBoundingClientRect().left;
+        const newTouchY = touch.clientY - gameContainer.getBoundingClientRect().top;
+
+        if (bobHeld) {
+            // If bob is held, update its current touch position
+            currentTouchX = newTouchX;
+            currentTouchY = newTouchY;
+        } else {
+            // If bob is not held, check for a swipe gesture to move the pivot
+            const deltaX = newTouchX - currentTouchX;
+            if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+                pivotX += deltaX * PIVOT_SWIPE_SENSITIVITY;
+                // Clamp pivot X position within game bounds
+                pivotX = Math.max(0 + BOB_SIZE, Math.min(GAME_WIDTH - BOB_SIZE, pivotX));
+                currentTouchX = newTouchX; // Update current touch X for continuous swiping
+            }
+        }
+    }, {passive: false});
+
+    gameContainer.addEventListener('touchend', (e) => {
+        e.preventDefault();
+
+        if (!isTouching) return; // No active touch to end
+
+        clearTimeout(longPressTimeout); // Clear long press timeout if touch ends prematurely
+        
+        if (bobHeld) {
+            // If the bob was held when the finger lifted, it means the player released it.
+            // The `longPressTimeout` would have already toggled `bobHeld` to true.
+            // No additional action here as the `longPressTimeout` itself acts as the release point.
+            // If a `longPressTimeout` didn't fire, and `bobHeld` is false, it means it was a tap.
+        } else {
+            // It was a tap (touch ended before long press threshold and bob was not held)
+            const touchDuration = performance.now() - touchStartTime;
+            if (touchDuration < TAP_THRESHOLD) {
+                applyTapImpulse(); // Execute primary action
+                message("Push!", '#aaff00'); // Visual feedback for push
+            }
+        }
+
+        // Reset touch state
+        isTouching = false;
+        heldTouchId = null;
+    }, {passive: false});
+
+    // Applies a force to the pendulum bob on tap
+    function applyTapImpulse() {
+        if (bobHeld) return; // Cannot push if bob is held
+
+        // Apply impulse to angular velocity to amplify the swing.
+        // The direction of the impulse matches the current swing direction (or initial swing if motionless).
+        const impulseDirection = Math.sign(angularVelocity || Math.sin(angle));
+        angularVelocity += TAP_IMPULSE * impulseDirection;
+
+        createParticles(bobX, bobY, 10, '#e0e0e0'); // Particles to show force application
+    }
+
+    // --- Event Listeners for UI Buttons ---
+    startButton.addEventListener('click', initializeGame);
+    restartButton.addEventListener('click', initializeGame);
+
+    // Initial setup when the page loads
+    updatePendulumDOM(); // Position pendulum elements at their starting points
+    requestAnimationFrame(gameLoop); // Start the main game loop
+  </script>
+
+</body></html>"
