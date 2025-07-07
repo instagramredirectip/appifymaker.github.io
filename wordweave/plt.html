@@ -1,0 +1,725 @@
+"<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Neon Runner</title>
+  <style>
+    /* CSS HERE */
+    :root {
+        --neon-blue: #00ffff;
+        --neon-pink: #ff00ff;
+        --neon-green: #00ff00;
+        --neon-yellow: #ffff00;
+        --bg-dark: #0a0a0a;
+        --player-color: var(--neon-blue);
+        --platform-color: var(--neon-green);
+        --text-color: var(--neon-pink);
+        --ui-glow: 0 0 15px var(--text-color);
+        --player-glow: 0 0 20px var(--player-color);
+        --platform-glow: 0 0 10px var(--platform-color);
+        --achievement-glow: 0 0 20px var(--neon-yellow);
+    }
+
+    body {
+        margin: 0;
+        overflow: hidden;
+        font-family: 'Press Start 2P', cursive; /* A pixel font, common for retro games */
+        background-color: var(--bg-dark);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: var(--text-color);
+        -webkit-user-select: none; /* Disable text selection for touch devices */
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        touch-action: none; /* Prevents default touch actions like scrolling */
+    }
+
+    /* Fallback for Press Start 2P font */
+    @font-face {
+        font-family: 'Press Start 2P';
+        src: url('https://fonts.gstatic.com/s/pressstart2p/v14/8Lg6LX-ClJtmgo0v1pw_lGZ-p4KzI6g.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #game-container {
+        position: relative;
+        width: 100vw;
+        max-width: 800px; /* Limit width for larger screens */
+        height: 100vh;
+        max-height: 600px; /* Limit height for larger screens */
+        background-color: var(--bg-dark);
+        overflow: hidden;
+        border: 2px solid var(--neon-blue);
+        box-shadow: 0 0 25px var(--neon-blue), inset 0 0 25px var(--neon-blue);
+        display: flex; /* For centering start/game over screens */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transform-origin: center center;
+        transition: transform 0.05s ease-out; /* For screen shake */
+    }
+
+    /* Screen Shake Animation */
+    .screen-shake {
+        animation: shake 0.1s ease-in-out;
+    }
+
+    @keyframes shake {
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        25% { transform: translate(-1px, -2px) rotate(-0.5deg); }
+        50% { transform: translate(-3px, 0px) rotate(0.5deg); }
+        75% { transform: translate(1px, 2px) rotate(0deg); }
+        100% { transform: translate(1px, 1px) rotate(0deg); }
+    }
+
+    #player {
+        position: absolute;
+        bottom: 100px; /* Initial position above ground */
+        left: 50px; /* Player's fixed horizontal position */
+        width: 40px;
+        height: 60px;
+        background-color: var(--player-color);
+        border-radius: 5px;
+        box-shadow: var(--player-glow);
+        z-index: 10;
+        transition: bottom 0.05s linear, transform 0.1s ease-out; /* For jumping/dashing visual */
+    }
+    
+    #player.dashing {
+        transform: skewX(-15deg) scaleX(1.2);
+        box-shadow: 0 0 25px var(--neon-yellow); /* Dash specific glow */
+    }
+
+    #platforms-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+    }
+
+    .platform {
+        position: absolute;
+        height: 30px; /* All platforms have same height */
+        background-color: var(--platform-color);
+        border-radius: 5px;
+        box-shadow: var(--platform-glow);
+    }
+
+    #game-ui {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        z-index: 20;
+    }
+
+    .ui-text {
+        font-size: 1.2em;
+        text-shadow: var(--ui-glow);
+        padding: 5px 10px;
+        background-color: rgba(0,0,0,0.5);
+        border-radius: 5px;
+        border: 1px solid var(--text-color);
+    }
+
+    #combo-display {
+        text-align: right;
+        transition: font-size 0.1s ease-out, transform 0.1s ease-out;
+    }
+
+    #combo-display.active {
+        font-size: 1.5em;
+        transform: scale(1.1);
+        color: var(--neon-yellow);
+        text-shadow: 0 0 20px var(--neon-yellow);
+    }
+
+    .game-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 30;
+        text-align: center;
+        opacity: 1;
+        transition: opacity 0.3s ease-out;
+    }
+
+    .game-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .game-screen h1 {
+        color: var(--neon-blue);
+        text-shadow: 0 0 25px var(--neon-blue);
+        margin-bottom: 20px;
+        font-size: 2em;
+    }
+
+    .game-screen p {
+        color: var(--neon-pink);
+        text-shadow: 0 0 15px var(--neon-pink);
+        font-size: 1.1em;
+        margin-bottom: 30px;
+    }
+
+    .game-screen button {
+        background-color: var(--neon-green);
+        color: var(--bg-dark);
+        border: 2px solid var(--neon-green);
+        padding: 15px 30px;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 0 0 20px var(--neon-green);
+        transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+        min-width: 150px; /* Ensure sufficient touch target */
+        min-height: 44px; /* Ensure sufficient touch target */
+    }
+
+    .game-screen button:hover, .game-screen button:active {
+        background-color: var(--bg-dark);
+        color: var(--neon-green);
+        box-shadow: 0 0 30px var(--neon-green);
+    }
+    
+    /* Particles */
+    .particle-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 15;
+    }
+
+    .particle {
+        position: absolute;
+        background-color: var(--neon-yellow); /* Default particle color */
+        border-radius: 50%;
+        opacity: 0;
+        transform: translateZ(0); /* For hardware acceleration */
+    }
+
+    /* Achievement Popups */
+    #achievement-popup-container {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 400px;
+        z-index: 50;
+        pointer-events: none; /* Don't block game interaction */
+    }
+
+    .achievement-popup {
+        background-color: rgba(0, 0, 0, 0.8);
+        border: 2px solid var(--neon-yellow);
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(-20px);
+        box-shadow: var(--achievement-glow);
+        animation: popup-in 0.5s ease-out forwards,
+                   popup-out 0.5s ease-in forwards 3s; /* Show for 3s, then fade out */
+    }
+
+    @keyframes popup-in {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popup-out {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    .achievement-popup h3 {
+        margin: 0 0 5px 0;
+        color: var(--neon-yellow);
+        text-shadow: 0 0 10px var(--neon-yellow);
+        font-size: 1.1em;
+    }
+
+    .achievement-popup p {
+        margin: 0;
+        color: var(--neon-pink);
+        font-size: 0.9em;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- GAME HTML HERE -->
+  <div id="game-container">
+    <div id="player" style="bottom: 100px; left: 50px;"></div>
+    <div id="platforms-container"><div class="platform" style="width: 736px; height: 30px; left: 0px; bottom: 45.7346px;"></div><div class="platform" style="width: 249.793px; height: 30px; left: 866.021px; bottom: 12.0934px;"></div><div class="platform" style="width: 168.059px; height: 30px; left: 1362.11px; bottom: 37.4503px;"></div></div>
+    <div id="particle-container"></div>
+
+    <div id="game-ui">
+      <div id="score-display" class="ui-text">SCORE: 0</div>
+      <div id="combo-display" class="ui-text">COMBO: 0</div>
+    </div>
+
+    <div id="start-screen" class="game-screen">
+      <h1>NEON RUNNER</h1>
+      <p>Tap to jump. Long press to dash.</p>
+      <p>Collect combos for higher scores!</p>
+      <button id="start-button">START GAME</button>
+    </div>
+
+    <div id="game-over-screen" class="game-screen hidden">
+      <h1>GAME OVER!</h1>
+      <p id="final-score">SCORE: 0</p>
+      <p id="max-combo">MAX COMBO: 0</p>
+      <button id="restart-button">PLAY AGAIN</button>
+    </div>
+
+    <div id="achievement-popup-container"></div>
+  </div>
+
+  <script>
+    // JAVASCRIPT HERE
+    const gameContainer = document.getElementById('game-container');
+    const player = document.getElementById('player');
+    const platformsContainer = document.getElementById('platforms-container');
+    const particleContainer = document.getElementById('particle-container');
+    const scoreDisplay = document.getElementById('score-display');
+    const comboDisplay = document.getElementById('combo-display');
+    const startScreen = document.getElementById('start-screen');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('restart-button');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const maxComboDisplay = document.getElementById('max-combo');
+    const achievementPopupContainer = document.getElementById('achievement-popup-container');
+
+    // Game Constants
+    const PLAYER_START_X = 50;
+    const PLAYER_WIDTH = 40;
+    const PLAYER_HEIGHT = 60;
+    const PLATFORM_HEIGHT = 30;
+    const INITIAL_PLAYER_BOTTOM = 100;
+    const GRAVITY = 0.8;
+    const JUMP_FORCE = 15;
+    const DASH_FORCE_MULTIPLIER = 1.8; // Multiplier for game speed during dash
+    const DASH_DURATION = 200; // ms
+    const LONG_PRESS_THRESHOLD = 200; // ms for long press detection
+    const MIN_PLATFORM_WIDTH = 80;
+    const MAX_PLATFORM_WIDTH = 250;
+    const MIN_GAP_WIDTH = 100;
+    const MAX_GAP_WIDTH = 300;
+    const MAX_PARTICLES_PER_EVENT = 5;
+
+    // Game State Variables
+    let gameRunning = false;
+    let playerY = INITIAL_PLAYER_BOTTOM;
+    let playerVelY = 0;
+    let gameSpeed = 5; // Initial scroll speed
+    let platforms = [];
+    let score = 0;
+    let combo = 0;
+    let maxCombo = 0;
+    let lastFrameTime = 0;
+    let touchStartTime = 0;
+    let isJumping = false;
+    let isDashing = false;
+    let dashTimer = null;
+    let achievements = {
+        'first_jump': { achieved: false, title: 'First Steps', desc: 'Perform your first jump!' },
+        'combo_3': { achieved: false, title: 'Combo Novice', desc: 'Achieve a 3x combo!' },
+        'combo_5': { achieved: false, title: 'Combo Master', desc: 'Achieve a 5x combo!' },
+        'score_1000': { achieved: false, title: 'Early Bird', desc: 'Score 1000 points!' },
+        'score_5000': { achieved: false, title: 'Seasoned Runner', desc: 'Score 5000 points!' },
+        'combo_10': { achieved: false, title: 'Combo King!', desc: 'Achieve a 10x combo!' },
+        'score_10000': { achieved: false, title: 'Endless Legend', desc: 'Score 10000 points!' },
+    };
+    let achievementCSSRules = {}; // To store dynamic keyframes for particles
+
+    // --- Game Initialization & Start ---
+    function initGame() {
+        score = 0;
+        combo = 0;
+        maxCombo = 0;
+        gameSpeed = 5;
+        playerY = INITIAL_PLAYER_BOTTOM;
+        playerVelY = 0;
+        isJumping = false;
+        isDashing = false;
+        clearTimeout(dashTimer);
+        dashTimer = null;
+        
+        platforms.forEach(p => p.element.remove());
+        platforms = [];
+        
+        // Reset achievement state for new game
+        for (const key in achievements) {
+            achievements[key].achieved = false;
+        }
+
+        player.style.bottom = `${playerY}px`;
+        player.style.left = `${PLAYER_START_X}px`;
+        player.classList.remove('dashing');
+
+        scoreDisplay.textContent = `SCORE: ${score}`;
+        comboDisplay.textContent = `COMBO: ${combo}`;
+        comboDisplay.classList.remove('active');
+
+        startScreen.classList.remove('hidden');
+        gameOverScreen.classList.add('hidden');
+        gameContainer.classList.remove('screen-shake'); // Clear any lingering shake
+        
+        // Initial platforms
+        generatePlatform(0, gameContainer.offsetWidth * 2); // Ground platform
+        generatePlatform();
+        generatePlatform();
+    }
+
+    function startGame() {
+        gameRunning = true;
+        startScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        lastFrameTime = performance.now();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+        gameRunning = false;
+        finalScoreDisplay.textContent = `SCORE: ${score}`;
+        maxComboDisplay.textContent = `MAX COMBO: ${maxCombo}`;
+        gameOverScreen.classList.remove('hidden');
+        applyScreenShake(); // Satisfying visual cue for game over
+        createParticles(player.offsetLeft + PLAYER_WIDTH / 2, gameContainer.offsetHeight - playerY + PLAYER_HEIGHT / 2, 'var(--neon-pink)', 15);
+    }
+
+    // --- Game Loop ---
+    function gameLoop(currentTime) {
+        if (!gameRunning) return;
+
+        const deltaTime = (currentTime - lastFrameTime) / 1000; // in seconds
+        lastFrameTime = currentTime;
+
+        update(deltaTime);
+        render();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // --- Game Logic Update ---
+    function update(deltaTime) {
+        // Player physics
+        playerY += playerVelY;
+        playerVelY -= GRAVITY; // Apply gravity
+
+        // Progressive difficulty: increase speed over time
+        gameSpeed = 5 + Math.floor(score / 1000) * 0.5;
+        gameSpeed = Math.min(gameSpeed, 15); // Cap max speed to avoid insane speeds
+
+        // Move platforms
+        platforms.forEach(p => {
+            p.x -= gameSpeed;
+            p.element.style.left = `${p.x}px`;
+        });
+
+        // Remove off-screen platforms
+        if (platforms.length > 0 && platforms[0].x + platforms[0].width < -100) { // Keep a buffer for removal
+            platforms[0].element.remove();
+            platforms.shift();
+        }
+
+        // Generate new platforms
+        const lastPlatform = platforms[platforms.length - 1];
+        if (lastPlatform.x + lastPlatform.width < gameContainer.offsetWidth) {
+            generatePlatform();
+        }
+
+        // Collision detection and landing
+        let onGround = false;
+        for (let i = 0; i < platforms.length; i++) {
+            const p = platforms[i];
+            
+            // Player's horizontal bounds
+            const playerRight = PLAYER_START_X + PLAYER_WIDTH;
+            const platformLeft = p.x;
+            const platformRight = p.x + p.width;
+
+            // Check if player is horizontally aligned with the platform
+            if (playerRight > platformLeft && PLAYER_START_X < platformRight) {
+                // Check if player is landing on the platform from above
+                if (playerY <= p.y + PLATFORM_HEIGHT && playerY > p.y && playerVelY < 0) {
+                    playerY = p.y + PLATFORM_HEIGHT; // Snap player to top of platform
+                    playerVelY = 0;
+                    onGround = true;
+                    isJumping = false;
+                    
+                    if (combo === 0) { // Start a new combo
+                        combo = 1;
+                    } else {
+                        combo++; // Continue combo
+                    }
+                    comboDisplay.classList.add('active'); // Visual feedback for combo
+                    applyScreenShake(); // Shake on landing
+                    createParticles(PLAYER_START_X + PLAYER_WIDTH / 2, gameContainer.offsetHeight - playerY + PLAYER_HEIGHT / 2, 'var(--platform-color)');
+                    break;
+                }
+            }
+        }
+
+        if (onGround) {
+            if (isDashing && dashTimer) { // Player landed while dashing, reset dash state
+                clearTimeout(dashTimer);
+                isDashing = false;
+                player.classList.remove('dashing');
+                gameSpeed /= DASH_FORCE_MULTIPLIER; // Revert speed
+                if (gameSpeed < 5) gameSpeed = 5; // Ensure speed doesn't drop too low
+                dashTimer = null;
+            }
+        } else {
+            // If player is in air and not dashing, combo breaks
+            // Combo breaks only if falling/missing a jump, not just mid-air from a jump
+            if (playerVelY < -2 && combo > 0) { // If falling significantly and had a combo
+                combo = 0;
+                comboDisplay.classList.remove('active');
+            }
+        }
+
+        maxCombo = Math.max(maxCombo, combo);
+        checkAchievements();
+
+        // Game Over condition: player falls below screen
+        if (playerY < -PLAYER_HEIGHT) { // Player is fully off screen
+            endGame();
+        }
+
+        // Update score
+        score += gameSpeed * deltaTime * 10; // Score based on distance/speed
+        score = Math.floor(score);
+    }
+
+    // --- Rendering ---
+    function render() {
+        player.style.bottom = `${playerY}px`;
+        scoreDisplay.textContent = `SCORE: ${score}`;
+        comboDisplay.textContent = `COMBO: ${combo}`;
+    }
+
+    // --- Platform Generation ---
+    function generatePlatform(startX = null, width = null) {
+        const lastP = platforms[platforms.length - 1];
+        const platformWidth = width !== null ? width : Math.random() * (MAX_PLATFORM_WIDTH - MIN_PLATFORM_WIDTH) + MIN_PLATFORM_WIDTH;
+        const gapWidth = Math.random() * (MAX_GAP_WIDTH - MIN_GAP_WIDTH) + MIN_GAP_WIDTH;
+        
+        let platformX;
+        if (startX !== null) { // For initial ground platform
+            platformX = startX;
+        } else if (lastP) {
+            platformX = lastP.x + lastP.width + gapWidth;
+        } else {
+            platformX = 0; // Should not happen with initial ground platform
+        }
+
+        // Platforms can vary slightly in height
+        const platformY = Math.random() * 50; 
+
+        const newPlatformEl = document.createElement('div');
+        newPlatformEl.classList.add('platform');
+        newPlatformEl.style.width = `${platformWidth}px`;
+        newPlatformEl.style.height = `${PLATFORM_HEIGHT}px`;
+        newPlatformEl.style.left = `${platformX}px`;
+        newPlatformEl.style.bottom = `${platformY}px`;
+        platformsContainer.appendChild(newPlatformEl);
+
+        platforms.push({
+            element: newPlatformEl,
+            x: platformX,
+            y: platformY, // Bottom offset
+            width: platformWidth,
+            height: PLATFORM_HEIGHT
+        });
+    }
+
+    // --- Player Actions ---
+    function playerJump() {
+        // Allow jump only if on ground or just after a small grace period for double jump (not explicitly double jump here)
+        // For endless runner, it's usually jump if not already jumping or falling too fast.
+        if (playerVelY <= 0) { // If falling or on ground
+            playerVelY = JUMP_FORCE;
+            isJumping = true; // Player is now in air because of jump
+            createParticles(PLAYER_START_X + PLAYER_WIDTH / 2, gameContainer.offsetHeight - playerY + PLAYER_HEIGHT/2, 'var(--neon-blue)');
+            showAchievement('first_jump');
+        }
+    }
+
+    function playerDash() {
+        if (gameRunning && !isDashing) {
+            isDashing = true;
+            player.classList.add('dashing');
+            gameSpeed *= DASH_FORCE_MULTIPLIER; // Temporary speed boost
+            createParticles(PLAYER_START_X + PLAYER_WIDTH, gameContainer.offsetHeight - playerY + PLAYER_HEIGHT / 2, 'var(--neon-yellow)', 10); // Dash particles
+            
+            // Set a timer to end the dash
+            dashTimer = setTimeout(() => {
+                isDashing = false;
+                player.classList.remove('dashing');
+                gameSpeed /= DASH_FORCE_MULTIPLIER; // Revert speed
+                if (gameSpeed < 5) gameSpeed = 5; // Ensure speed doesn't drop too low
+                dashTimer = null;
+            }, DASH_DURATION);
+        }
+    }
+
+    // --- Input Handling ---
+    let activeTouch = null; // To prevent multi-touch interference
+
+    gameContainer.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevent default browser actions (scrolling, zooming)
+        if (e.touches.length > 1) { // Multi-touch prevention
+            activeTouch = null;
+            return;
+        }
+        if (gameRunning && activeTouch === null) {
+            activeTouch = e.touches[0].identifier;
+            touchStartTime = performance.now();
+            playerJump(); // Tap for primary action (jump)
+        }
+    }, { passive: false });
+
+    gameContainer.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        if (activeTouch !== null && e.changedTouches[0].identifier === activeTouch) {
+            const touchDuration = performance.now() - touchStartTime;
+            if (gameRunning && touchDuration >= LONG_PRESS_THRESHOLD) {
+                playerDash(); // Long press for secondary action (dash)
+            }
+            activeTouch = null;
+        }
+    }, { passive: false });
+
+    gameContainer.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        if (activeTouch !== null && e.changedTouches[0].identifier === activeTouch) {
+            activeTouch = null;
+        }
+    }, { passive: false });
+
+
+    // --- Visual Feedback & Effects ---
+    function createParticles(x, y, color, count = MAX_PARTICLES_PER_EVENT) {
+        const styleSheet = document.styleSheets[0];
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.backgroundColor = color;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.width = `${Math.random() * 5 + 5}px`;
+            particle.style.height = particle.style.width;
+            
+            // Randomize animation duration and direction slightly
+            const animDuration = (Math.random() * 0.4 + 0.4).toFixed(2); // 0.4s to 0.8s
+            const initialYOffset = Math.random() * 20 - 10; // -10 to 10
+            const finalYOffset = - (Math.random() * 60 + 30); // -30 to -90
+            const initialXOffset = Math.random() * 20 - 10; // -10 to 10
+            const finalXOffset = Math.random() * 60 - 30; // -30 to 30
+
+            // Create a unique animation name for each particle
+            const animName = `particle-fade-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+            const keyframes = `
+                @keyframes ${animName} {
+                    0% { opacity: 1; transform: translate(${initialXOffset}px, ${initialYOffset}px) scale(1); }
+                    100% { opacity: 0; transform: translate(${finalXOffset}px, ${finalYOffset}px) scale(0); }
+                }
+            `;
+            styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+            achievementCSSRules[animName] = styleSheet.cssRules.length - 1; // Store index to remove later
+            
+            particle.style.animation = `${animName} ${animDuration}s forwards`;
+            
+            particleContainer.appendChild(particle);
+
+            // Clean up particle element and its specific keyframe rule after animation
+            particle.addEventListener('animationend', () => {
+                particle.remove();
+                if (achievementCSSRules[animName] !== undefined) {
+                    try {
+                        styleSheet.deleteRule(achievementCSSRules[animName]);
+                    } catch (e) {
+                        // Rule might already be deleted or index shifted if many particles
+                    }
+                    delete achievementCSSRules[animName];
+                }
+            });
+        }
+    }
+
+    function applyScreenShake() {
+        gameContainer.classList.add('screen-shake');
+        setTimeout(() => {
+            gameContainer.classList.remove('screen-shake');
+        }, 100); // Duration of shake animation matches CSS
+    }
+
+    function showAchievement(key) {
+        if (!achievements[key] || achievements[key].achieved) return;
+
+        achievements[key].achieved = true;
+        const popup = document.createElement('div');
+        popup.classList.add('achievement-popup');
+        popup.innerHTML = `<h3>ACHIEVEMENT UNLOCKED!</h3><p>${achievements[key].title}: ${achievements[key].desc}</p>`;
+        
+        achievementPopupContainer.appendChild(popup);
+
+        // Remove the popup after its animation finishes (3s + 0.5s fade out)
+        setTimeout(() => {
+            popup.remove();
+        }, 3500);
+    }
+
+    function checkAchievements() {
+        if (combo >= 3) showAchievement('combo_3');
+        if (combo >= 5) showAchievement('combo_5');
+        if (combo >= 10) showAchievement('combo_10');
+        if (score >= 1000) showAchievement('score_1000');
+        if (score >= 5000) showAchievement('score_5000');
+        if (score >= 10000) showAchievement('score_10000');
+    }
+
+    // --- Event Listeners for Buttons ---
+    startButton.addEventListener('click', () => {
+        initGame();
+        startGame();
+    });
+
+    restartButton.addEventListener('click', () => {
+        initGame();
+        startGame();
+    });
+
+    // Initial setup
+    initGame();
+  </script>
+
+
+```</body></html>"
