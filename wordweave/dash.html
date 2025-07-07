@@ -1,0 +1,926 @@
+"<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+  <title>Neon Runner</title>
+  <style>
+    /* CSS HERE */
+    :root {
+      --neon-cyan: #00ffff;
+      --neon-pink: #ff00ff;
+      --neon-yellow: #ffff00;
+      --neon-green: #00ff00;
+      --neon-purple: #ae00ff;
+      --neon-white: #ffffff;
+      --bg-dark: #0a0a0a;
+      --glow: 0 0 20px;
+      --player-size: 50px;
+      --ground-height: 50px;
+      --animation-speed: 0.2s; /* General transition speed */
+      --shake-duration: 0.1s;
+    }
+
+    /* Base */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: monospace;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: manipulation; /* Prevent default browser behaviors like double-tap zoom */
+      background: radial-gradient(circle, var(--bg-dark) 0%, #000 100%);
+    }
+
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    .screen-shake {
+      animation: shake var(--shake-duration) linear infinite;
+      animation-iteration-count: 1; /* One shake per hit */
+    }
+
+    #game-container {
+      width: 100%;
+      max-width: 800px;
+      height: 100%;
+      max-height: 450px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+      border-radius: 10px;
+      box-shadow: var(--glow) var(--neon-cyan);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #game-area {
+        position: relative;
+        flex-grow: 1;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+    }
+
+    #ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--ground-height);
+      background: #000;
+      border-top: 3px solid var(--neon-cyan);
+      box-shadow: inset 0 5px 15px rgba(0,255,255,0.3);
+      z-index: 10;
+    }
+
+    /* Player */
+    #player {
+      position: absolute;
+      width: var(--player-size);
+      height: var(--player-size);
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      bottom: var(--ground-height);
+      left: 15%;
+      transform: translateZ(0); /* Force hardware acceleration */
+      transition: transform var(--animation-speed) ease-out, background var(--animation-speed) ease-out, box-shadow var(--animation-speed) ease-out;
+      box-shadow: var(--glow) var(--neon-cyan);
+      z-index: 20;
+    }
+
+    #player.jumping {
+      background: var(--neon-yellow);
+      box-shadow: var(--glow) var(--neon-yellow);
+    }
+
+    #player.dashing {
+      background: var(--neon-pink);
+      box-shadow: var(--glow) var(--neon-pink);
+      transform: scaleX(1.5) !important; /* Elongate for dash, Y transform managed by physics */
+    }
+
+    /* Game Objects */
+    .obstacle {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: var(--neon-pink);
+      bottom: var(--ground-height);
+      box-shadow: var(--glow) var(--neon-pink);
+      transform: translateZ(0);
+      transition: opacity 0.1s; /* For destruction fade */
+      z-index: 15;
+    }
+
+    .obstacle.type-square {
+      border-radius: 5px;
+    }
+    .obstacle.type-triangle {
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      width: 50px;
+      height: 40px;
+    }
+    .obstacle.type-tall {
+      width: 30px;
+      height: 80px;
+      bottom: var(--ground-height);
+    }
+
+    .collectible {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: var(--neon-yellow);
+      border-radius: 50%;
+      box-shadow: var(--glow) var(--neon-yellow);
+      animation: float 2s infinite alternate ease-in-out;
+      transform: translateZ(0);
+      z-index: 16;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    /* UI */
+    #score-display, #combo-display, #high-score-display {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      color: var(--neon-white);
+      font-size: 1.2em;
+      text-shadow: var(--glow) currentColor;
+      z-index: 100;
+      transition: transform 0.1s ease-out;
+    }
+
+    #score-display { left: 15px; }
+    #combo-display {
+      left: 15px;
+      top: 45px;
+      color: var(--neon-green);
+      font-size: 1.5em;
+      opacity: 0;
+      transform: scale(0.5);
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    #combo-display.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    #high-score-display { top: 15px; right: 15px; left: auto; }
+
+    .game-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--neon-white);
+      text-align: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .game-screen.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .game-screen h1 {
+      font-size: 2.5em;
+      color: var(--neon-cyan);
+      text-shadow: var(--glow) var(--neon-cyan);
+      margin-bottom: 20px;
+    }
+
+    .game-screen p {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .game-screen .btn {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      border: 3px solid var(--neon-green);
+      color: var(--neon-green);
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: var(--glow) var(--neon-green);
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      min-width: 180px; /* Ensure sufficient touch target */
+      min-height: 60px; /* Ensure sufficient touch target */
+    }
+
+    .game-screen .btn:active {
+      background: var(--neon-green);
+      color: var(--bg-dark);
+      box-shadow: 0 0 10px var(--neon-green);
+      transform: scale(0.95);
+    }
+    
+    #tutorial-text {
+        position: absolute;
+        bottom: calc(var(--ground-height) + var(--player-size) + 20px);
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--neon-yellow);
+        text-shadow: var(--glow) var(--neon-yellow);
+        font-size: 1em;
+        animation: pulse-glow 2s infinite alternate;
+        z-index: 100;
+        text-align: center;
+        width: 80%;
+        display: none; /* Hidden by default, shown on start screen */
+    }
+
+    @keyframes pulse-glow {
+        0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+        100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+    }
+
+
+    /* Achievement Popup */
+    #achievement-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid var(--neon-purple);
+      color: var(--neon-white);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: var(--glow) var(--neon-purple);
+      text-align: center;
+      font-size: 1.1em;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      z-index: 300;
+      width: 70%;
+      max-width: 300px;
+    }
+
+    #achievement-popup.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #achievement-popup h3 {
+      color: var(--neon-yellow);
+      text-shadow: var(--glow) var(--neon-yellow);
+      margin-bottom: 10px;
+    }
+
+    /* Particle Effects */
+    .particle {
+      position: absolute;
+      background: var(--neon-white);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      animation-fill-mode: forwards;
+      z-index: 25;
+    }
+
+    .particle.jump {
+      background: var(--neon-cyan);
+      animation: jump-burst 0.5s ease-out forwards;
+    }
+
+    @keyframes jump-burst {
+      0% { transform: scale(0) translateY(0); opacity: 1; }
+      50% { transform: scale(1) translateY(-20px); opacity: 0.8; }
+      100% { transform: scale(0) translateY(-40px); opacity: 0; }
+    }
+
+    .particle.collision {
+      background: var(--neon-pink);
+      animation: explode-particle 0.5s ease-out forwards;
+    }
+
+    @keyframes explode-particle {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(1.5) translate(var(--p-dx), var(--p-dy)); opacity: 0; }
+    }
+
+    .particle.collect {
+      background: var(--neon-yellow);
+      animation: collect-absorb 0.5s ease-out forwards;
+    }
+
+    @keyframes collect-absorb {
+      0% { transform: scale(1) translate(0,0); opacity: 1; }
+      100% { transform: scale(0) translate(var(--p-dx), var(--p-dy)); opacity: 0; }
+    }
+
+    /* Visual Cues */
+    .score-feedback {
+      position: absolute;
+      color: var(--neon-green);
+      font-size: 1.5em;
+      text-shadow: var(--glow) var(--neon-green);
+      opacity: 0;
+      animation: score-pop 0.6s ease-out forwards;
+      pointer-events: none;
+      z-index: 101;
+    }
+
+    @keyframes score-pop {
+      0% { transform: translateY(0) scale(0.5); opacity: 0; }
+      20% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+      100% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+    }
+
+    .combo-text-effect {
+        animation: combo-pulse 0.3s ease-out;
+    }
+
+    @keyframes combo-pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <!-- GAME HTML HERE -->
+  <div id="game-container">
+    <div id="game-area">
+        <div id="ground"></div>
+        <div id="player" style="bottom: 53px; left: 0px; transform: scale(1);"></div>
+
+        <div id="score-display">SCORE: 0</div>
+        <div id="combo-display">COMBO x1</div>
+        <div id="high-score-display">HIGH SCORE: 0</div>
+
+        <div id="tutorial-text" style="display: block;">Tap to jump! Long press for a dash.</div>
+    </div>
+
+    <div id="start-screen" class="game-screen">
+      <h1>NEON RUNNER</h1>
+      <p>Escape the neon void!</p>
+      <button id="start-button" class="btn">START GAME</button>
+    </div>
+
+    <div id="game-over-screen" class="game-screen">
+      <h1>GAME OVER!</h1>
+      <p>Your Score: <span id="final-score">0</span></p>
+      <p>High Score: <span id="final-high-score">0</span></p>
+      <button id="restart-button" class="btn">RESTART</button>
+    </div>
+
+    <div id="achievement-popup">
+      <h3>Achievement Unlocked!</h3>
+      <p id="achievement-text"></p>
+    </div>
+  </div>
+
+  <script>
+    // JAVASCRIPT HERE
+    const gameArea = document.getElementById('game-area');
+    const player = document.getElementById('player');
+    const ground = document.getElementById('ground');
+    const scoreDisplay = document.getElementById('score-display');
+    const comboDisplay = document.getElementById('combo-display');
+    const highScoreDisplay = document.getElementById('high-score-display');
+    const tutorialText = document.getElementById('tutorial-text');
+
+    const startScreen = document.getElementById('start-screen');
+    const startButton = document.getElementById('start-button');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const finalHighScoreDisplay = document.getElementById('final-high-score');
+    const restartButton = document.getElementById('restart-button');
+    const achievementPopup = document.getElementById('achievement-popup');
+    const achievementText = document.getElementById('achievement-text');
+
+    // Game State Variables
+    let gameState = 'START'; // 'START', 'PLAYING', 'GAME_OVER'
+    let score = 0;
+    let highScore = localStorage.getItem('neonRunnerHighScore') || 0;
+    let combo = 0;
+    let playerY = 0; // Player's Y position relative to ground (0 is on ground)
+    let playerVelocityY = 0;
+    let gravity = 0.8;
+    let jumpForce = -16;
+    let dashForce = 150; // Visual dash distance
+    let dashDuration = 300; // ms
+    let isDashing = false;
+    let dashCooldown = 1500; // ms
+    let lastDashTime = 0;
+    let isJumping = false;
+    const playerX = 0.15 * gameArea.offsetWidth; // Fixed X position for runner (15% from left)
+    const groundHeight = ground.offsetHeight;
+    const playerSize = player.offsetWidth;
+
+    let obstacleSpeed = 5;
+    let obstacleMinSpeed = 5;
+    let obstacleMaxSpeed = 15;
+    let speedIncreaseRate = 0.0005; // How fast speed increases per frame
+    let obstacleSpawnInterval = 1500; // ms
+    let minSpawnInterval = 800; // ms
+    let lastObstacleSpawnTime = 0;
+    let lastCollectibleSpawnTime = 0;
+    let collectibleSpawnChance = 0.5; // Probability to spawn a collectible after an obstacle
+    let collectibleFrequency = 3000; // ms
+
+    let animationFrameId;
+    let touchStartTime = 0;
+    const LONG_PRESS_THRESHOLD = 300; // ms
+
+    const achievements = {
+        firstGame: { name: "First Steps", description: "Start your first game!", unlocked: false },
+        score100: { name: "Neon Novice", description: "Reach 100 points!", unlocked: false },
+        score500: { name: "Light Speed", description: "Reach 500 points!", unlocked: false },
+        combo5x: { name: "Combo Master", description: "Achieve a 5x combo!", unlocked: false },
+        combo10x: { name: "Unstoppable Force", description: "Achieve a 10x combo!", unlocked: false },
+    };
+
+    // --- Game Initialization & Reset ---
+    function initializeGame() {
+        score = 0;
+        combo = 0;
+        playerY = 0;
+        playerVelocityY = 0;
+        isJumping = false;
+        isDashing = false;
+        lastDashTime = 0;
+        obstacleSpeed = obstacleMinSpeed;
+        obstacleSpawnInterval = 1500;
+        lastObstacleSpawnTime = 0;
+        lastCollectibleSpawnTime = 0;
+
+        scoreDisplay.textContent = `SCORE: ${score}`;
+        highScoreDisplay.textContent = `HIGH SCORE: ${highScore}`;
+        updateComboDisplay();
+
+        // Set player initial position correctly
+        player.style.bottom = `${groundHeight}px`;
+        player.style.left = `${playerX}px`;
+        player.style.transform = `scale(1)`; // Reset dash scale
+        player.classList.remove('jumping', 'dashing');
+
+        // Remove all existing obstacles/collectibles/particles/feedback
+        document.querySelectorAll('.obstacle, .collectible, .particle, .score-feedback').forEach(el => el.remove());
+
+        gameOverScreen.classList.remove('active');
+        startScreen.classList.remove('active');
+        tutorialText.style.display = 'block'; // Show tutorial on start
+    }
+
+    // --- Game Loop ---
+    function gameLoop(currentTime) {
+        if (gameState !== 'PLAYING') {
+            cancelAnimationFrame(animationFrameId);
+            return;
+        }
+
+        updatePlayer();
+        updateObstacles(currentTime);
+        updateCollectibles(currentTime);
+        checkCollisions();
+        updateDifficulty();
+
+        animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    // --- Player Logic ---
+    function updatePlayer() {
+        playerVelocityY += gravity;
+        playerY += playerVelocityY;
+
+        // Prevent player from going below ground
+        if (playerY >= 0) {
+            if (isJumping) { // Only trigger landing effect if player was actually jumping
+                createParticles(player.offsetLeft + playerSize / 2, gameArea.offsetHeight - groundHeight, 'jump', 5, 'cyan');
+            }
+            playerY = 0;
+            playerVelocityY = 0;
+            isJumping = false;
+            player.classList.remove('jumping');
+        }
+
+        player.style.bottom = `${groundHeight - playerY}px`;
+    }
+
+    function jump() {
+        if (!isJumping && !isDashing) {
+            playerVelocityY = jumpForce;
+            isJumping = true;
+            player.classList.add('jumping');
+            createParticles(player.offsetLeft + playerSize / 2, player.offsetTop + playerSize / 2, 'jump', 10); // Particles for jump
+        }
+    }
+
+    function dash() {
+        if (!isDashing && (Date.now() - lastDashTime > dashCooldown)) {
+            isDashing = true;
+            player.classList.add('dashing');
+            createDashParticles(player.offsetLeft + playerSize / 2, player.offsetTop + playerSize / 2);
+
+            setTimeout(() => {
+                isDashing = false;
+                player.classList.remove('dashing');
+                lastDashTime = Date.now();
+            }, dashDuration);
+        }
+    }
+
+    function createDashParticles(x, y) {
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.background = `var(--neon-pink)`;
+            p.style.width = p.style.height = `${Math.random() * 5 + 2}px`;
+            p.style.left = `${x + Math.random() * 20 - 10}px`;
+            p.style.top = `${y + Math.random() * 20 - 10}px`;
+            gameArea.appendChild(p);
+
+            const dx = (Math.random() - 0.5) * 100 - 50; // Tend to go backwards
+            const dy = (Math.random() - 0.5) * 100;
+
+            p.style.setProperty('--p-dx', `${dx}px`);
+            p.style.setProperty('--p-dy', `${dy}px`);
+            p.style.animation = `explode-particle 0.4s ease-out forwards`;
+
+            p.onanimationend = () => p.remove();
+        }
+    }
+
+    // --- Obstacle & Collectible Logic ---
+    function createObstacle() {
+        const obstacle = document.createElement('div');
+        obstacle.classList.add('obstacle');
+        const type = Math.random();
+        if (type < 0.4) {
+            obstacle.classList.add('type-square');
+            obstacle.style.width = obstacle.style.height = `${Math.random() * 20 + 30}px`;
+        } else if (type < 0.7) {
+            obstacle.classList.add('type-triangle');
+            obstacle.style.width = `${Math.random() * 20 + 40}px`;
+            obstacle.style.height = `${Math.random() * 20 + 30}px`;
+        } else {
+            obstacle.classList.add('type-tall');
+            obstacle.style.width = `${Math.random() * 10 + 20}px`;
+            obstacle.style.height = `${Math.random() * 40 + 70}px`;
+        }
+        obstacle.style.right = '-50px'; // Start off-screen
+        gameArea.appendChild(obstacle);
+    }
+
+    function createCollectible() {
+        const collectible = document.createElement('div');
+        collectible.classList.add('collectible');
+        collectible.style.right = '-50px';
+        collectible.style.bottom = `${groundHeight + Math.random() * (gameArea.offsetHeight - groundHeight - 100) + 50}px`;
+        gameArea.appendChild(collectible);
+    }
+
+    function updateObstacles(currentTime) {
+        if (currentTime - lastObstacleSpawnTime > obstacleSpawnInterval) {
+            createObstacle();
+            lastObstacleSpawnTime = currentTime;
+        }
+
+        document.querySelectorAll('.obstacle').forEach(obstacle => {
+            let currentRight = parseFloat(obstacle.style.right);
+            obstacle.style.right = `${currentRight + obstacleSpeed}px`;
+
+            if (currentRight > gameArea.offsetWidth + 50) {
+                const points = Math.floor(1 + combo * 0.2); // Base points + combo bonus
+                score += points; // Reward for clearing obstacle
+                combo++; // Increase combo for successfully clearing
+                updateScoreDisplay(); // Update score and combo display after removal
+                obstacle.remove();
+            }
+        });
+    }
+
+    function updateCollectibles(currentTime) {
+        if (currentTime - lastCollectibleSpawnTime > collectibleFrequency) {
+            if (Math.random() < collectibleSpawnChance) {
+                createCollectible();
+            }
+            lastCollectibleSpawnTime = currentTime;
+        }
+
+        document.querySelectorAll('.collectible').forEach(collectible => {
+            let currentRight = parseFloat(collectible.style.right);
+            collectible.style.right = `${currentRight + obstacleSpeed}px`;
+
+            if (currentRight > gameArea.offsetWidth + 50) {
+                collectible.remove();
+            }
+        });
+    }
+
+    // --- Collision Detection ---
+    function checkCollisions() {
+        const playerRect = player.getBoundingClientRect();
+
+        // Adjust playerRect for ground relative position, as playerY is from ground up
+        const playerBottomRelativeToGameArea = gameArea.offsetHeight - (groundHeight - playerY);
+        const playerTopRelativeToGameArea = playerBottomRelativeToGameArea - playerSize;
+        
+        const adjustedPlayerRect = {
+            left: player.offsetLeft,
+            right: player.offsetLeft + playerSize,
+            top: playerTopRelativeToGameArea,
+            bottom: playerBottomRelativeToGameArea
+        };
+
+        document.querySelectorAll('.obstacle').forEach(obstacle => {
+            const obstacleRect = obstacle.getBoundingClientRect();
+            // Calculate obstacle position relative to gameArea left edge
+            const obstacleLeftInGameArea = gameArea.offsetWidth - (parseFloat(obstacle.style.right) || 0) - obstacle.offsetWidth;
+            const obstacleRightInGameArea = obstacleLeftInGameArea + obstacle.offsetWidth;
+            const obstacleTopInGameArea = gameArea.offsetHeight - (parseFloat(obstacle.style.bottom) || 0) - obstacle.offsetHeight;
+            const obstacleBottomInGameArea = obstacleTopInGameArea + obstacle.offsetHeight;
+
+
+            if (
+                adjustedPlayerRect.right > obstacleLeftInGameArea &&
+                adjustedPlayerRect.left < obstacleRightInGameArea &&
+                adjustedPlayerRect.bottom > obstacleTopInGameArea &&
+                adjustedPlayerRect.top < obstacleBottomInGameArea
+            ) {
+                if (isDashing) {
+                    createParticles(obstacleLeftInGameArea + obstacle.offsetWidth / 2, obstacleTopInGameArea + obstacle.offsetHeight / 2, 'collision', 20);
+                    const dashPoints = Math.floor(5 + combo * 0.5);
+                    score += dashPoints; // Bonus for dashing through
+                    showScoreFeedback(obstacleLeftInGameArea, obstacleTopInGameArea, dashPoints);
+                    updateScoreDisplay();
+                    obstacle.remove();
+                } else {
+                    createParticles(adjustedPlayerRect.left + playerSize / 2, adjustedPlayerRect.top + playerSize / 2, 'collision', 30);
+                    screenShake();
+                    gameOver();
+                }
+            }
+        });
+
+        document.querySelectorAll('.collectible').forEach(collectible => {
+            const collectibleRect = collectible.getBoundingClientRect();
+            // Calculate collectible position relative to gameArea left edge
+            const collectibleLeftInGameArea = gameArea.offsetWidth - (parseFloat(collectible.style.right) || 0) - collectible.offsetWidth;
+            const collectibleRightInGameArea = collectibleLeftInGameArea + collectible.offsetWidth;
+            const collectibleTopInGameArea = gameArea.offsetHeight - (parseFloat(collectible.style.bottom) || 0) - collectible.offsetHeight;
+            const collectibleBottomInGameArea = collectibleTopInGameArea + collectible.offsetHeight;
+
+            if (
+                adjustedPlayerRect.right > collectibleLeftInGameArea &&
+                adjustedPlayerRect.left < collectibleRightInGameArea &&
+                adjustedPlayerRect.bottom > collectibleTopInGameArea &&
+                adjustedPlayerRect.top < collectibleBottomInGameArea
+            ) {
+                createParticles(collectibleLeftInGameArea + collectible.offsetWidth / 2, collectibleTopInGameArea + collectible.offsetHeight / 2, 'collect', 15);
+                const collectPoints = Math.floor(10 + combo * 0.5);
+                score += collectPoints;
+                combo++; // Combo for collecting
+                showScoreFeedback(collectibleLeftInGameArea, collectibleTopInGameArea, collectPoints);
+                updateScoreDisplay();
+                collectible.remove();
+            }
+        });
+    }
+
+    // --- Scoring & UI Updates ---
+    function updateScoreDisplay() {
+        scoreDisplay.textContent = `SCORE: ${Math.floor(score)}`;
+        updateComboDisplay();
+
+        scoreDisplay.style.transform = 'scale(1.1)';
+        setTimeout(() => scoreDisplay.style.transform = 'scale(1)', 100);
+    }
+
+    function updateComboDisplay() {
+        if (combo > 1) {
+            comboDisplay.textContent = `COMBO x${combo}`;
+            comboDisplay.classList.add('active');
+            comboDisplay.classList.add('combo-text-effect'); // Trigger animation
+            comboDisplay.onanimationend = () => {
+                comboDisplay.classList.remove('combo-text-effect');
+            };
+        } else {
+            comboDisplay.classList.remove('active');
+            comboDisplay.textContent = `COMBO x1`; // Reset text even if hidden
+        }
+        checkAchievement('combo5x');
+        checkAchievement('combo10x');
+    }
+
+    function showScoreFeedback(x, y, value) {
+        const feedback = document.createElement('div');
+        feedback.classList.add('score-feedback');
+        feedback.textContent = `+${value}`;
+        feedback.style.left = `${x}px`;
+        feedback.style.top = `${y}px`;
+        gameArea.appendChild(feedback);
+
+        feedback.onanimationend = () => feedback.remove();
+    }
+
+    function updateDifficulty() {
+        obstacleSpeed = Math.min(obstacleMaxSpeed, obstacleSpeed + speedIncreaseRate);
+        obstacleSpawnInterval = Math.max(minSpawnInterval, obstacleSpawnInterval - (speedIncreaseRate * 500));
+        collectibleFrequency = Math.max(2000, collectibleFrequency - (speedIncreaseRate * 200));
+    }
+
+
+    // --- Game States ---
+    function startGame() {
+        if (gameState !== 'PLAYING') {
+            initializeGame();
+            gameState = 'PLAYING';
+            animationFrameId = requestAnimationFrame(gameLoop);
+            startScreen.classList.remove('active');
+            tutorialText.style.display = 'none'; // Hide tutorial once game starts
+            checkAchievement('firstGame');
+        }
+    }
+
+    function gameOver() {
+        gameState = 'GAME_OVER';
+        cancelAnimationFrame(animationFrameId);
+
+        combo = 0; // Reset combo on game over
+        updateComboDisplay(); // Visually reset combo display
+
+        if (score > highScore) {
+            highScore = Math.floor(score);
+            localStorage.setItem('neonRunnerHighScore', highScore);
+        }
+
+        finalScoreDisplay.textContent = Math.floor(score);
+        finalHighScoreDisplay.textContent = highScore;
+        gameOverScreen.classList.add('active');
+
+        checkAchievement('score100');
+        checkAchievement('score500');
+    }
+
+    // --- Effects ---
+    function createParticles(x, y, type, count, color = 'white') {
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle', type);
+            p.style.width = p.style.height = `${Math.random() * 5 + 3}px`;
+            p.style.left = `${x + (Math.random() - 0.5) * 10}px`;
+            p.style.top = `${y + (Math.random() - 0.5) * 10}px`;
+            p.style.background = `var(--neon-${color})`;
+
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 50 + 20;
+            const dx = Math.cos(angle) * distance;
+            const dy = Math.sin(angle) * distance;
+            p.style.setProperty('--p-dx', `${dx}px`);
+            p.style.setProperty('--p-dy', `${dy}px`);
+
+            gameArea.appendChild(p);
+            p.onanimationend = () => p.remove();
+        }
+    }
+
+    function screenShake() {
+        gameArea.classList.add('screen-shake');
+        gameArea.onanimationend = () => {
+            gameArea.classList.remove('screen-shake');
+            gameArea.onanimationend = null;
+        };
+    }
+
+    // --- Achievements ---
+    function checkAchievement(id) {
+        if (!achievements[id] || achievements[id].unlocked) return;
+
+        let unlocked = false;
+        switch (id) {
+            case 'firstGame':
+                unlocked = true;
+                break;
+            case 'score100':
+                if (score >= 100) unlocked = true;
+                break;
+            case 'score500':
+                if (score >= 500) unlocked = true;
+                break;
+            case 'combo5x':
+                if (combo >= 5) unlocked = true;
+                break;
+            case 'combo10x':
+                if (combo >= 10) unlocked = true;
+                break;
+        }
+
+        if (unlocked) {
+            achievements[id].unlocked = true;
+            localStorage.setItem(`achievement_${id}`, 'true');
+            showAchievementPopup(achievements[id].name, achievements[id].description);
+        }
+    }
+
+    function loadAchievements() {
+        for (const id in achievements) {
+            if (localStorage.getItem(`achievement_${id}`) === 'true') {
+                achievements[id].unlocked = true;
+            }
+        }
+    }
+
+    function showAchievementPopup(title, description) {
+        achievementText.innerHTML = `<h3>${title}</h3><p>${description}</p>`;
+        achievementPopup.classList.add('active');
+        setTimeout(() => {
+            achievementPopup.classList.remove('active');
+        }, 3000);
+    }
+
+
+    // --- Event Listeners ---
+    let activeTouch = null; // To prevent multi-touch interference
+
+    // Universal touch listener for game actions (jump/dash)
+    gameArea.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevent scrolling, zoom etc.
+
+        if (gameState !== 'PLAYING') return;
+
+        if (e.touches.length > 1) {
+            activeTouch = null; // Discard if multi-touch detected immediately
+            return;
+        }
+
+        activeTouch = e.touches[0].identifier;
+        touchStartTime = Date.now();
+    }, { passive: false }); // passive: false to allow preventDefault
+
+    gameArea.addEventListener('touchend', (e) => {
+        if (gameState !== 'PLAYING') return;
+
+        // Check if the touch that ended is the active one
+        let endedTouch = Array.from(e.changedTouches).find(t => t.identifier === activeTouch);
+        if (!endedTouch) return;
+
+        const touchDuration = Date.now() - touchStartTime;
+
+        if (touchDuration < LONG_PRESS_THRESHOLD) {
+            // Single tap
+            jump();
+        } else {
+            // Long press
+            dash();
+        }
+        activeTouch = null; // Reset active touch
+    });
+
+    // Prevent multi-touch causing issues on game logic
+    gameArea.addEventListener('touchmove', (e) => {
+        if (gameState !== 'PLAYING') return;
+        if (e.touches.length > 1) {
+             e.preventDefault(); // Prevent scrolling if multi-touch is detected during a move
+        }
+    }, { passive: false });
+
+
+    // Start and Restart Button listeners (larger touch targets)
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', startGame);
+
+    // Initial setup
+    loadAchievements();
+    initializeGame(); // Display initial score, high score, and start screen
+
+  </script>
+
+
+```</body></html>"
