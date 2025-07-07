@@ -1,0 +1,663 @@
+"<html><head>
+    <title>Glow Paint Arena</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ccc;
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column; /* Stack canvas area and UI vertically */
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        #canvas-wrapper { /* New wrapper to hold and stack canvases */
+            position: relative;
+            flex-grow: 1; /* Allows the canvas area to fill available space */
+        }
+
+        #paintCanvas, #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; /* Take full width of the wrapper */
+            height: 100%; /* Take full height of the wrapper */
+            display: block;
+            touch-action: none; /* Prevent default touch actions like scrolling/zooming */
+        }
+
+        #paintCanvas {
+            background-color: #000; /* Main drawing surface background */
+            z-index: 1; /* Lines layer */
+        }
+
+        #particleCanvas {
+            background-color: transparent; /* Particles overlay, must be transparent */
+            z-index: 2; /* Particles on top of lines */
+            pointer-events: none; /* Crucial: allows mouse/touch events to pass through to paintCanvas below */
+        }
+
+        #ui-container {
+            background-color: rgba(10, 10, 10, 0.8);
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+            min-height: 80px; /* Ensure enough space for UI elements */
+            z-index: 3; /* UI on top of canvases */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 120px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0ff; /* Cyan glow */
+            cursor: pointer;
+            box-shadow: 0 0 8px #0ff;
+        }
+
+        button {
+            background-color: rgba(50, 50, 50, 0.8);
+            color: #0ff;
+            border: 1px solid #0ff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            font-size: 0.9em;
+        }
+
+        button:hover {
+            background-color: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 15px #0ff;
+            color: white;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        button.active-mode {
+            background-color: #0ff;
+            color: #000;
+            box-shadow: 0 0 20px #0ff;
+            border-color: #0ff;
+        }
+
+        #color-palette {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        .color-swatch.active {
+            border: 2px solid white;
+            box-shadow: 0 0 15px var(--swatch-color);
+            transform: scale(1.1);
+        }
+
+        #mode-selection {
+            flex-direction: row;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="canvas-wrapper"> <!-- New wrapper for stacking canvases -->
+            <canvas id="paintCanvas" width="1000" height="813"></canvas>
+            <canvas id="particleCanvas" width="1000" height="813"></canvas> <!-- New canvas for transient particles -->
+        </div>
+        <div id="ui-container">
+            <div id="controls">
+                <div class="control-group">
+                    <label for="brushSize">Brush Size:</label>
+                    <input type="range" id="brushSize" min="5" max="100" value="30">
+                </div>
+                <div class="control-group">
+                    <label for="glowIntensity">Glow Intensity:</label>
+                    <input type="range" id="glowIntensity" min="0.1" max="1.5" step="0.1" value="0.8">
+                </div>
+            </div>
+            <div id="color-palette"><div class="color-swatch" data-color="#00FFFF" style="background-color: rgb(0, 255, 255); --swatch-color: #00FFFF;"></div><div class="color-swatch" data-color="#FF00FF" style="background-color: rgb(255, 0, 255); --swatch-color: #FF00FF;"></div><div class="color-swatch" data-color="#FFFF00" style="background-color: rgb(255, 255, 0); --swatch-color: #FFFF00;"></div><div class="color-swatch" data-color="#00BFFF" style="background-color: rgb(0, 191, 255); --swatch-color: #00BFFF;"></div><div class="color-swatch active" data-color="#00FF00" style="background-color: rgb(0, 255, 0); --swatch-color: #00FF00;"></div></div>
+            <div class="control-group">
+                <button id="undoBtn">Undo</button>
+                <button id="redoBtn" disabled="">Redo</button>
+                <button id="saveBtn">Save Art</button>
+                <button id="clearBtn">Clear All</button>
+            </div>
+            <div id="mode-selection" class="control-group">
+                <button id="freeDrawBtn" class="active-mode">Free Draw</button>
+                <button id="challengeBtn">Challenge</button>
+                <button id="zenBtn">Zen Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        const particleCanvas = document.getElementById('particleCanvas'); // New particle canvas
+        const p_ctx = particleCanvas.getContext('2d'); // New particle context
+
+        const brushSizeSlider = document.getElementById('brushSize');
+        const glowIntensitySlider = document.getElementById('glowIntensity');
+        const colorPalette = document.getElementById('color-palette');
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const freeDrawBtn = document.getElementById('freeDrawBtn');
+        const challengeBtn = document.getElementById('challengeBtn');
+        const zenBtn = document.getElementById('zenBtn');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let currentColor = '#00FFFF'; // Cyan
+        let currentBrushSize = parseInt(brushSizeSlider.value);
+        let currentGlowIntensity = parseFloat(glowIntensitySlider.value);
+        let history = [];
+        let historyPointer = -1;
+        const maxHistory = 20;
+
+        let particles = [];
+        let audioContext;
+        let backgroundMusicSource;
+        let brushSoundBuffer;
+        let brushSoundSource;
+        let currentMode = 'freeDraw';
+
+        const neonColors = {
+            'cyan': '#00FFFF',
+            'pink': '#FF00FF',
+            'yellow': '#FFFF00',
+            'blue': '#00BFFF',
+            'green': '#00FF00'
+        };
+
+        // --- Canvas Setup and Responsiveness ---
+        function resizeCanvas() {
+            const container = canvas.parentElement; // Points to #canvas-wrapper
+            const dpr = window.devicePixelRatio || 1;
+
+            // Set main canvas dimensions and scale context
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+
+            // Set particle canvas dimensions and scale context
+            particleCanvas.width = container.clientWidth * dpr;
+            particleCanvas.height = container.clientHeight * dpr;
+            p_ctx.scale(dpr, dpr);
+
+            // Restore main canvas state or clear it
+            if (history.length > 0 && historyPointer >= 0) {
+                restoreCanvas(history[historyPointer], false); // Restore without saving new state
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (currentMode === 'challenge') {
+                    drawChallengePattern();
+                }
+            }
+            // Particle canvas is always cleared on resize
+            p_ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- Drawing History ---
+        function saveCanvasState() {
+            if (historyPointer < history.length - 1) {
+                history = history.slice(0, historyPointer + 1);
+            }
+            const imageData = canvas.toDataURL('image/png'); // Capture main canvas state
+            history.push(imageData);
+            historyPointer++;
+            if (history.length > maxHistory) {
+                history.shift();
+                historyPointer--;
+            }
+            updateUndoRedoButtons();
+        }
+
+        function restoreCanvas(imageData, saveNewState = true) {
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear main canvas before restoring
+                // Draw image onto the main canvas, scaled to logical size for dpr context
+                ctx.drawImage(img, 0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+                if (currentMode === 'challenge') {
+                    drawChallengePattern(); // Redraw challenge pattern on top of restored image
+                }
+                if (saveNewState) {
+                    updateUndoRedoButtons();
+                }
+            };
+            img.src = imageData;
+        }
+
+        function updateUndoRedoButtons() {
+            undoBtn.disabled = historyPointer <= 0;
+            redoBtn.disabled = historyPointer >= history.length - 1;
+        }
+
+        // --- Drawing Functions ---
+        function drawLine(x1, y1, x2, y2) {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = currentBrushSize;
+
+            ctx.globalCompositeOperation = 'lighter'; // For main canvas glow lines
+
+            for (let i = 0; i < 3; i++) {
+                ctx.strokeStyle = currentColor;
+                ctx.shadowColor = currentColor;
+                ctx.shadowBlur = currentGlowIntensity * (20 + i * 10);
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            ctx.shadowBlur = 0;
+            ctx.globalCompositeOperation = 'source-over'; // Reset for other draws
+        }
+
+        function createParticle(x, y) {
+            particles.push({
+                x: x,
+                y: y,
+                radius: Math.random() * 5 + 2,
+                color: currentColor,
+                opacity: 1,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                life: 60
+            });
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.opacity -= 1 / p.life;
+                p.radius *= 0.98;
+                if (p.opacity <= 0.05 || p.radius < 0.5) { // Particle fully faded/disappeared
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawParticles() { // Draws on particleCanvas
+            p_ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); // Clear particle canvas each frame
+
+            for (let p of particles) {
+                p_ctx.globalCompositeOperation = 'lighter'; // Particles add light
+                p_ctx.fillStyle = p.color;
+                p_ctx.globalAlpha = p.opacity;
+                p_ctx.shadowColor = p.color;
+                p_ctx.shadowBlur = 15;
+
+                p_ctx.beginPath();
+                p_ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                p_ctx.fill();
+            }
+            p_ctx.globalAlpha = 1; // Reset alpha
+            p_ctx.shadowBlur = 0; // Reset shadow
+            p_ctx.globalCompositeOperation = 'source-over'; // Reset composite
+        }
+
+        // --- Event Handlers ---
+        // getEventCoords uses 'canvas' for getBoundingClientRect because events occur on paintCanvas
+        function getEventCoords(e) {
+            const rect = canvas.getBoundingClientRect(); // Using paintCanvas for event coordinates
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            // Adjust for DPI scaling to get actual canvas pixels
+            const dpr = window.devicePixelRatio || 1;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width) / dpr,
+                y: (clientY - rect.top) * (canvas.height / rect.height) / dpr
+            };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault(); // Prevent scrolling/zooming on touch devices
+            isDrawing = true;
+            const coords = getEventCoords(e);
+            [lastX, lastY] = [coords.x, coords.y];
+            playBrushSound(true);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault(); // Prevent scrolling/zooming on touch devices
+            const coords = getEventCoords(e);
+            drawLine(lastX, lastY, coords.x, coords.y);
+            // Create particles along the line
+            const distance = Math.sqrt(Math.pow(coords.x - lastX, 2) + Math.pow(coords.y - lastY, 2));
+            const density = 0.5; // Particles per pixel
+            for (let i = 0; i < distance; i += 1 / density) {
+                const ratio = i / distance;
+                const pX = lastX + (coords.x - lastX) * ratio;
+                const pY = lastY + (coords.y - lastY) * ratio;
+                createParticle(pX, pY);
+            }
+            [lastX, lastY] = [coords.x, coords.y];
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveCanvasState();
+                playBrushSound(false);
+            }
+        }
+
+        // Event listeners are on 'canvas' (paintCanvas)
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+
+        // --- UI Interactions ---
+        brushSizeSlider.addEventListener('input', (e) => {
+            currentBrushSize = parseInt(e.target.value);
+        });
+
+        glowIntensitySlider.addEventListener('input', (e) => {
+            currentGlowIntensity = parseFloat(e.target.value);
+        });
+
+        undoBtn.addEventListener('click', () => {
+            if (historyPointer > 0) {
+                historyPointer--;
+                restoreCanvas(history[historyPointer]);
+            }
+        });
+
+        redoBtn.addEventListener('click', () => {
+            if (historyPointer < history.length - 1) {
+                historyPointer++;
+                restoreCanvas(history[historyPointer]);
+            }
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'glow-paint-arena.png';
+            // Scale down the captured image for saving if DPR is high
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            tempCanvas.width = canvas.width / dpr;
+            tempCanvas.height = canvas.height / dpr;
+            tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+            link.href = tempCanvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear main canvas
+            history = [];
+            historyPointer = -1;
+            particles = []; // Also clear particles list
+            p_ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); // Clear particle canvas
+            if (currentMode === 'challenge') {
+                drawChallengePattern();
+            }
+            saveCanvasState();
+        });
+
+        // Color palette setup
+        for (const colorName in neonColors) {
+            const swatch = document.createElement('div');
+            swatch.className = 'color-swatch';
+            swatch.style.backgroundColor = neonColors[colorName];
+            swatch.style.setProperty('--swatch-color', neonColors[colorName]);
+            swatch.dataset.color = neonColors[colorName];
+            if (neonColors[colorName] === currentColor) {
+                swatch.classList.add('active');
+            }
+            swatch.addEventListener('click', () => {
+                currentColor = swatch.dataset.color;
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+            });
+            colorPalette.appendChild(swatch);
+        }
+
+        // --- Modes ---
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('#mode-selection button').forEach(btn => btn.classList.remove('active-mode'));
+            document.getElementById(mode + 'Btn').classList.add('active-mode');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear main canvas
+            history = [];
+            historyPointer = -1;
+            particles = []; // Clear particles
+            p_ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); // Clear particle canvas
+            if (currentMode === 'challenge') {
+                drawChallengePattern();
+            }
+            saveCanvasState();
+        }
+
+        freeDrawBtn.addEventListener('click', () => setMode('freeDraw'));
+        challengeBtn.addEventListener('click', () => setMode('challenge'));
+        zenBtn.addEventListener('click', () => setMode('zen'));
+
+        function drawChallengePattern() {
+            ctx.globalAlpha = 0.1;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 0;
+
+            // Coordinates need to be logical (unscaled) for drawing on scaled context
+            const dpr = window.devicePixelRatio || 1;
+            const centerX = (canvas.width / dpr) / 2;
+            const centerY = (canvas.height / dpr) / 2;
+            const maxRadius = Math.min(centerX, centerY) * 0.7;
+
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, maxRadius * (i / 5), 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            const numLines = 12;
+            for (let i = 0; i < numLines; i++) {
+                const angle = (Math.PI * 2 / numLines) * i;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + maxRadius * Math.cos(angle), centerY + maxRadius * Math.sin(angle));
+                ctx.stroke();
+            }
+
+            for (let i = 0; i < numLines; i++) {
+                const angle1 = (Math.PI * 2 / numLines) * i;
+                const angle2 = (Math.PI * 2 / numLines) * (i + 0.5);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, maxRadius * 0.5, angle1, angle2);
+                ctx.stroke();
+            }
+
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = neonColors['cyan'];
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            // Only update and draw particles. Main canvas content is persistent.
+            updateParticles();
+            drawParticles();
+
+            requestAnimationFrame(animate);
+        }
+
+        // --- Audio Setup (Web Audio API) ---
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+                const unlockAudio = () => {
+                    audioContext.resume().then(() => {
+                        document.body.removeEventListener('touchstart', unlockAudio);
+                        document.body.removeEventListener('click', unlockAudio);
+                        playBackgroundMusic();
+                        loadBrushSound();
+                    });
+                };
+                document.body.addEventListener('touchstart', unlockAudio, { once: true });
+                document.body.addEventListener('click', unlockAudio, { once: true });
+            } else {
+                playBackgroundMusic();
+                loadBrushSound();
+            }
+        }
+
+        function playBackgroundMusic() {
+            if (!audioContext || backgroundMusicSource) return; // Prevent multiple plays
+
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.05;
+            gainNode.connect(audioContext.destination);
+
+            const bufferDuration = 5;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * bufferDuration, sampleRate);
+            for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+                const nowBuffering = buffer.getChannelData(channel);
+                for (let i = 0; i < sampleRate * bufferDuration; i++) {
+                    const t = i / sampleRate;
+                    nowBuffering[i] = (Math.sin(t * 2 * Math.PI * 55) * 0.1) +
+                                      (Math.sin(t * 2 * Math.PI * 82.5) * 0.1);
+                }
+            }
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.loop = true;
+            source.connect(gainNode);
+            source.start(0);
+            backgroundMusicSource = source;
+        }
+
+        function loadBrushSound() {
+            if (!audioContext) return;
+            const sampleRate = audioContext.sampleRate;
+            const duration = 0.1;
+            const numSamples = sampleRate * duration;
+            const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                data[i] = (Math.random() * 2 - 1) * (1 - t / duration) * 0.1;
+            }
+            brushSoundBuffer = buffer;
+        }
+
+        function playBrushSound(start) {
+            if (!audioContext || !brushSoundBuffer) return;
+
+            if (start) {
+                if (brushSoundSource) {
+                    try { brushSoundSource.stop(); brushSoundSource.disconnect(); } catch (e) { /* ignore */ }
+                    brushSoundSource = null;
+                }
+                brushSoundSource = audioContext.createBufferSource();
+                brushSoundSource.buffer = brushSoundBuffer;
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.08;
+                brushSoundSource.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                brushSoundSource.start(0);
+            } else {
+                if (brushSoundSource) {
+                    try { brushSoundSource.stop(); brushSoundSource.disconnect(); } catch (e) { /* ignore */ }
+                    brushSoundSource = null;
+                }
+            }
+        }
+
+        // --- Initialization ---
+        function init() {
+            // Initial resize after a short delay to ensure CSS is applied
+            setTimeout(resizeCanvas, 100);
+            updateUndoRedoButtons();
+            initAudio();
+            animate();
+            saveCanvasState(); // Save initial blank state
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+
+```</body></html>"
