@@ -1,0 +1,450 @@
+"<html><head>
+    <title>Dinosaur Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;family=Nunito:wght@400;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a8c5e; /* Green-ish */
+            --secondary-color: #a3c480; /* Lighter green */
+            --accent-color: #d17a4b; /* Orange-brown for accents */
+            --bg-light: #f0f0f0;
+            --bg-dark: #e0e0e0;
+            --text-dark: #333;
+            --text-light: #fff;
+            --quiz-bg: #ffffff;
+            --correct-color: #5cb85c; /* Bootstrap success green */
+            --incorrect-color: #d9534f; /* Bootstrap danger red */
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-dark);
+            overflow: hidden;
+            position: relative;
+        }
+
+        #quiz-container {
+            background-color: var(--quiz-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-family: 'Nunito', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 2.2em;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            margin: 10px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: #b86a3d;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #options-container button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 12px auto;
+            padding: 18px;
+            font-size: 1.2em;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        #options-container button:hover:not(:disabled) {
+            background-color: #d0d0d0;
+            border-color: #a0a0a0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        #options-container button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Answer feedback styles */
+        #options-container button.correct {
+            background-color: var(--correct-color);
+            color: var(--text-light);
+            border-color: var(--correct-color);
+            box-shadow: 0 0 15px var(--correct-color);
+            animation: pulse-correct 0.5s forwards;
+        }
+
+        #options-container button.incorrect {
+            background-color: var(--incorrect-color);
+            color: var(--text-light);
+            border-color: var(--incorrect-color);
+            box-shadow: 0 0 15px var(--incorrect-color);
+            animation: shake 0.3s forwards;
+        }
+
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        #timer, #score {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-top: 20px;
+            color: var(--primary-color);
+        }
+
+        #timer {
+            color: var(--incorrect-color);
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #canvas-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        @media (max-width: 768px) {
+            #quiz-container {
+                padding: 30px;
+            }
+            h1 {
+                font-size: 2.5em;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+            .btn {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+            #options-container button {
+                padding: 15px;
+                font-size: 1.1em;
+            }
+            #timer, #score {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #quiz-container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            p {
+                font-size: 1em;
+            }
+            .btn {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+            #options-container button {
+                font-size: 1em;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas-bg" width="980" height="1318"></canvas>
+    <div id="quiz-container">
+        <div id="start-screen" class="hidden">
+            <h1>Dinosaur Quiz</h1>
+            <p>A funny and engaging dinosaur quiz with a time limit!</p>
+            <p>Test your knowledge about the giants of the past!</p>
+            <button id="start-btn" class="btn">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="">
+            <h2 id="question-text">Which dinosaur had a long neck and ate plants?</h2>
+            <div id="options-container"><button>Tyrannosaurus Rex</button><button>Triceratops</button><button>Brachiosaurus</button><button>Velociraptor</button></div>
+            <div id="timer">Time Left: <span id="time-left">50</span>s</div>
+            <div id="score">Score: <span id="current-score">0</span></div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h2>Quiz Over!</h2>
+            <p>You scored <span id="final-score"></span> out of <span id="total-questions"></span>!</p>
+            <button id="restart-btn" class="btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Which dinosaur had a long neck and ate plants?",
+                options: ["Tyrannosaurus Rex", "Triceratops", "Brachiosaurus", "Velociraptor"],
+                answer: "Brachiosaurus"
+            },
+            {
+                question: "What does 'Tyrannosaurus Rex' mean?",
+                options: ["King of Lizards", "Giant Lizard", "Tyrant Lizard King", "Fast Hunter"],
+                answer: "Tyrant Lizard King"
+            },
+            {
+                question: "Which dinosaur is famous for its three horns?",
+                options: ["Stegosaurus", "Triceratops", "Ankylosaurus", "Pterodactyl"],
+                answer: "Triceratops"
+            },
+            {
+                question: "Which of these was a flying reptile, not technically a dinosaur?",
+                options: ["Pterodactyl", "Spinosaurus", "Allosaurus", "Iguanodon"],
+                answer: "Pterodactyl"
+            },
+            {
+                question: "What period did most dinosaurs live in?",
+                options: ["Ice Age", "Cenozoic", "Mesozoic", "Paleozoic"],
+                answer: "Mesozoic"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let quizInterval;
+        let questionTimeout;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startButton = document.getElementById('start-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const timeLeftSpan = document.getElementById('time-left');
+        const currentScoreSpan = document.getElementById('current-score');
+        const finalScoreSpan = document.getElementById('final-score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        let shapes = [];
+        const numShapes = 5;
+
+        function initShapes() {
+            shapes = [];
+            for (let i = 0; i < numShapes; i++) {
+                shapes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: 50 + Math.random() * 150,
+                    color: `rgba(${Math.floor(Math.random() * 50) + 100}, ${Math.floor(Math.random() * 50) + 100}, ${Math.floor(Math.random() * 50) + 100}, 0.2)`,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    angle: Math.random() * Math.PI * 2,
+                    angularSpeed: (Math.random() - 0.5) * 0.001
+                });
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initShapes();
+            drawBackground();
+        }
+
+        function drawBackground() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            shapes.forEach(shape => {
+                ctx.save();
+                ctx.translate(shape.x, shape.y);
+                ctx.rotate(shape.angle);
+
+                ctx.beginPath();
+                ctx.moveTo(shape.radius, 0);
+                for (let i = 0; i < Math.PI * 2; i += 0.1) {
+                    let r = shape.radius + Math.sin(i * 5) * (shape.radius * 0.1);
+                    ctx.lineTo(r * Math.cos(i), r * Math.sin(i));
+                }
+                ctx.closePath();
+                ctx.fillStyle = shape.color;
+                ctx.fill();
+                ctx.restore();
+            });
+        }
+
+        function animateCanvas() {
+            shapes.forEach(shape => {
+                shape.x += shape.speedX;
+                shape.y += shape.speedY;
+                shape.angle += shape.angularSpeed;
+
+                if (shape.x > canvas.width + shape.radius) shape.x = -shape.radius;
+                if (shape.x < -shape.radius) shape.x = canvas.width + shape.radius;
+                if (shape.y > canvas.height + shape.radius) shape.y = -shape.radius;
+                if (shape.y < -shape.radius) shape.y = canvas.height + shape.radius;
+            });
+            drawBackground();
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        animateCanvas();
+
+        function loadQuestion() {
+            optionsContainer.querySelectorAll('button').forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+                button.disabled = false;
+            });
+
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
+                questionText.textContent = q.question;
+                optionsContainer.innerHTML = '';
+                q.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.onclick = () => checkAnswer(button, option);
+                    optionsContainer.appendChild(button);
+                });
+                currentScoreSpan.textContent = score;
+            } else {
+                endQuiz();
+            }
+        }
+
+        function checkAnswer(clickedButton, selectedOption) {
+            clearTimeout(questionTimeout);
+            const currentQ = questions[currentQuestionIndex];
+            const correctAnswer = currentQ.answer;
+
+            optionsContainer.querySelectorAll('button').forEach(button => {
+                button.disabled = true;
+            });
+
+            if (selectedOption === correctAnswer) {
+                clickedButton.classList.add('correct');
+                score++;
+            } else {
+                clickedButton.classList.add('incorrect');
+                optionsContainer.querySelectorAll('button').forEach(button => {
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+
+            questionTimeout = setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1000);
+        }
+
+        function startTimer() {
+            timeLeftSpan.textContent = timeLeft;
+            clearInterval(quizInterval);
+            quizInterval = setInterval(() => {
+                timeLeft--;
+                timeLeftSpan.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(quizInterval);
+                    clearTimeout(questionTimeout);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 60;
+            loadQuestion();
+            startTimer();
+        }
+
+        function endQuiz() {
+            clearInterval(quizInterval);
+            clearTimeout(questionTimeout);
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScoreSpan.textContent = score;
+            totalQuestionsSpan.textContent = questions.length;
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', restartQuiz);
+    </script>
+
+
+```</body></html>"
