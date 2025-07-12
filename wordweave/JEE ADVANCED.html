@@ -1,0 +1,523 @@
+"<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE ADVANCED Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Old+Standard+TT:wght@400;700&display=swap');
+
+        :root {
+            --parchment-light: #fdf5e6;
+            --parchment-medium: #fff8e1;
+            --parchment-dark: #f0e6d6;
+            --border-brown: #8b4513;
+            --text-dark: #3e2723;
+            --button-bg: #a0522d;
+            --button-hover: #cd853f;
+            --correct-green: #4CAF50;
+            --incorrect-red: #f44336;
+            --timer-start: #4CAF50;
+            --timer-end: #f44336;
+        }
+
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: var(--parchment-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-dark);
+            line-height: 1.6;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: var(--parchment-medium);
+            border: 2px solid var(--border-brown);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 700px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Old Standard TT', serif;
+            color: var(--border-brown);
+            margin-bottom: 10px;
+            font-size: 2.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-family: 'Old Standard TT', serif;
+            color: var(--text-dark);
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .button {
+            background-color: var(--button-bg);
+            color: white;
+            border: 1px solid var(--border-brown);
+            padding: 12px 25px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .option {
+            background-color: var(--parchment-light);
+            border: 1px solid var(--border-brown);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.1em;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .option:hover:not(.selected):not(.correct):not(.incorrect) {
+            background-color: #fcefdc;
+            border-color: var(--button-bg);
+        }
+
+        .option.selected {
+            transform: scale(0.98);
+        }
+
+        .option.correct {
+            background-color: var(--correct-green);
+            color: white;
+            border-color: var(--correct-green);
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-red);
+            color: white;
+            border-color: var(--incorrect-red);
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--border-brown);
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #timerCanvas {
+            width: 100%;
+            height: 20px;
+            background-color: rgba(139, 69, 19, 0.2);
+            border: 1px solid var(--border-brown);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        #timer-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-dark);
+            min-width: 60px;
+        }
+
+        .controls {
+            margin-top: 30px;
+        }
+
+        #next-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            border-color: #999;
+            transform: none;
+        }
+
+        #result-screen h2 {
+            font-size: 2.5em;
+            color: var(--button-bg);
+        }
+
+        #score-text {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                margin: 10px;
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            .button {
+                padding: 10px 20px;
+                font-size: 1.1em;
+            }
+
+            .option {
+                padding: 12px;
+                font-size: 1em;
+            }
+
+            .question-text {
+                font-size: 1.2em;
+            }
+
+            #timer-text {
+                font-size: 1.3em;
+            }
+
+            #result-screen h2 {
+                font-size: 2em;
+            }
+
+            #score-text {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.3em;
+            }
+
+            .button {
+                font-size: 1em;
+                padding: 8px 15px;
+            }
+
+            .option {
+                font-size: 0.95em;
+                padding: 10px;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            #timerCanvas {
+                height: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <header>
+            <h1>JEE ADVANCED</h1>
+            <p>JEE ADVANCED exam quiz 10 sec for each question, 10 questions</p>
+        </header>
+
+        <div id="start-screen" class="screen">
+            <h2>Instructions</h2>
+            <p>Answer 10 multiple-choice questions related to JEE ADVANCED syllabus.</p>
+            <p>You have <strong>10 seconds</strong> for each question.</p>
+            <p>Choose the best option to proceed. Good luck!</p>
+            <button id="start-button" class="button">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="screen active">
+            <div class="timer-container">
+                <span id="timer-text">0</span>
+                <canvas id="timerCanvas" width="600" height="20"></canvas>
+            </div>
+            <div class="question-area">
+                <p id="question-text">Which of the following is an aromatic compound?</p>
+            </div>
+            <div id="options-container" class="options-container"><div class="option">Cyclohexane</div><div class="option correct">Benzene</div><div class="option">Cyclohexene</div><div class="option">Cyclobutadiene</div></div>
+            <div class="controls">
+                <button id="next-button" class="button">Next Question</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2>Quiz Complete!</h2>
+            <p id="score-text"></p>
+            <button id="retry-button" class="button">Retry Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "If f(x) = sin(x²), then f'(x) is:",
+                options: ["cos(x²)", "2x cos(x²)", "-cos(x²)", "2x sin(x²)"],
+                answer: "2x cos(x²)"
+            },
+            {
+                question: "A ball is thrown vertically upwards. At its highest point, its acceleration is:",
+                options: ["Zero", "g downwards", "g upwards", "2g downwards"],
+                answer: "g downwards"
+            },
+            {
+                question: "Which of the following is an aromatic compound?",
+                options: ["Cyclohexane", "Benzene", "Cyclohexene", "Cyclobutadiene"],
+                answer: "Benzene"
+            },
+            {
+                question: "The value of log₂ 32 is:",
+                options: ["2", "4", "5", "16"],
+                answer: "5"
+            },
+            {
+                question: "The SI unit of electric resistance is:",
+                options: ["Ampere", "Volt", "Ohm", "Watt"],
+                answer: "Ohm"
+            },
+            {
+                question: "How many moles of H₂O are produced when 1 mole of CH₄ reacts completely with oxygen?",
+                options: ["1", "2", "3", "4"],
+                answer: "2"
+            },
+            {
+                question: "The equation of a circle with center (0,0) and radius 5 is:",
+                options: ["x² + y² = 5", "x² - y² = 25", "x² + y² = 25", "x + y = 5"],
+                answer: "x² + y² = 25"
+            },
+            {
+                question: "Which phenomenon explains why a spoon appears bent in a glass of water?",
+                options: ["Reflection", "Diffraction", "Refraction", "Dispersion"],
+                answer: "Refraction"
+            },
+            {
+                question: "Which element has the largest atomic radius in the second period?",
+                options: ["Nitrogen", "Carbon", "Lithium", "Fluorine"],
+                answer: "Lithium"
+            },
+            {
+                question: "If 5 distinct items are to be arranged in a line, the number of possible arrangements is:",
+                options: ["5", "10", "25", "120"],
+                answer: "120"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 10;
+        let timerInterval = null;
+        let allowSelection = true;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const startButton = document.getElementById('start-button');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('next-button');
+        const timerText = document.getElementById('timer-text');
+        const scoreText = document.getElementById('score-text');
+        const retryButton = document.getElementById('retry-button');
+
+        const timerCanvas = document.getElementById('timerCanvas');
+        const ctx = timerCanvas.getContext('2d');
+        const canvasWidth = timerCanvas.width;
+        const canvasHeight = timerCanvas.height;
+
+        function showScreen(screenToShow) {
+            startScreen.classList.remove('active');
+            quizScreen.classList.remove('active');
+            resultScreen.classList.remove('active');
+            screenToShow.classList.add('active');
+        }
+
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showScreen(quizScreen);
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeLeft = 10;
+            allowSelection = true;
+            nextButton.disabled = true;
+            optionsContainer.innerHTML = '';
+
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
+                questionText.textContent = q.question;
+
+                q.options.forEach(option => {
+                    const optionElement = document.createElement('div');
+                    optionElement.classList.add('option');
+                    optionElement.textContent = option;
+                    optionElement.addEventListener('click', () => selectAnswer(optionElement, option));
+                    optionsContainer.appendChild(optionElement);
+                });
+                startTimer();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            timerText.textContent = timeLeft;
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            ctx.fillStyle = 'rgba(139, 69, 19, 0.1)';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            const progressWidth = (timeLeft / 10) * canvasWidth;
+            const r = 255 - (timeLeft / 10) * 255;
+            const g = (timeLeft / 10) * 255;
+            const color = `rgb(${r}, ${g}, 0)`;
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, progressWidth, canvasHeight);
+
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border-brown');
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0.5, 0.5, canvasWidth - 1, canvasHeight - 1);
+        }
+
+        function selectAnswer(optionElement, selectedAnswer) {
+            if (!allowSelection) return;
+
+            allowSelection = false;
+            clearInterval(timerInterval);
+
+            const currentQuestion = questions[currentQuestionIndex];
+            const isCorrect = (selectedAnswer === currentQuestion.answer);
+
+            if (isCorrect) {
+                score++;
+                optionElement.classList.add('correct');
+            } else {
+                optionElement.classList.add('incorrect');
+                Array.from(optionsContainer.children).forEach(opt => {
+                    if (opt.textContent === currentQuestion.answer) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+
+            nextButton.disabled = false;
+        }
+
+        function handleTimeUp() {
+            allowSelection = false;
+            const currentQuestion = questions[currentQuestionIndex];
+
+            Array.from(optionsContainer.children).forEach(opt => {
+                if (opt.textContent === currentQuestion.answer) {
+                    opt.classList.add('correct');
+                }
+            });
+
+            nextButton.disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            showScreen(resultScreen);
+            scoreText.textContent = `You scored ${score} out of ${questions.length} questions!`;
+        }
+
+        function retryQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 10;
+            clearInterval(timerInterval);
+            showScreen(startScreen);
+        }
+
+        startButton.addEventListener('click', startGame);
+        nextButton.addEventListener('click', nextQuestion);
+        retryButton.addEventListener('click', retryQuiz);
+
+        showScreen(startScreen);
+
+        window.addEventListener('resize', () => {
+             updateTimerDisplay();
+        });
+    </script>
+
+</body></html>"
