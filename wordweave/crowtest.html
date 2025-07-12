@@ -1,0 +1,485 @@
+"<html><head>
+    <title>crowtest</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        :root {
+            --neon-blue: #00ffff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff00;
+            --dark-bg: #0d0d1a;
+            --darker-bg: #080812;
+            --text-color: #e0e0e0;
+            --border-glow: 0 0 8px var(--neon-blue), 0 0 16px var(--neon-blue);
+            --text-glow: 0 0 4px var(--neon-pink);
+            --correct-glow: 0 0 8px var(--neon-green), 0 0 16px var(--neon-green);
+            --wrong-glow: 0 0 8px var(--neon-pink), 0 0 16px var(--neon-pink);
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-color);
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #quiz-container {
+            background-color: rgba(10, 10, 20, 0.8);
+            border: 2px solid var(--neon-blue);
+            box-shadow: var(--border-glow);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 1s ease-in-out;
+            transition: all 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            color: var(--neon-pink);
+            text-shadow: var(--text-glow);
+            margin-bottom: 15px;
+        }
+
+        #description {
+            font-size: 1.1em;
+            color: var(--neon-green);
+            margin-bottom: 25px;
+        }
+
+        #timer-bar {
+            width: 100%;
+            height: 25px;
+            background-color: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        #timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+            transition: width 0.1s linear;
+            border-radius: 5px;
+        }
+
+        #timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-color);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+
+        #question-text {
+            font-size: 1.6em;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            color: var(--neon-pink);
+            text-shadow: var(--text-glow);
+        }
+
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option-button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-green);
+            color: var(--text-color);
+            padding: 15px 20px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 5px var(--neon-green);
+            text-shadow: 0 0 2px var(--neon-green);
+        }
+
+        .option-button:hover:not(.disabled) {
+            background-color: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+            transform: translateY(-3px);
+        }
+
+        .option-button.correct {
+            background-color: rgba(0, 255, 0, 0.2);
+            border-color: var(--neon-green);
+            box-shadow: var(--correct-glow);
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        .option-button.wrong {
+            background-color: rgba(255, 0, 0, 0.2);
+            border-color: var(--neon-pink);
+            box-shadow: var(--wrong-glow);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+
+        .option-button.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            color: var(--text-color);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.3em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--neon-blue);
+            text-shadow: 0 0 5px var(--text-color);
+            margin-top: 20px;
+        }
+
+        button:hover {
+            box-shadow: 0 0 15px var(--neon-blue), 0 0 25px var(--neon-pink);
+            transform: scale(1.05);
+        }
+
+        #score-area {
+            font-size: 1.4em;
+            color: var(--neon-green);
+            text-shadow: 0 0 3px var(--neon-green);
+            margin-top: 20px;
+        }
+
+        #final-score {
+            display: none;
+            font-size: 1.5em;
+            color: var(--neon-pink);
+            text-shadow: var(--text-glow);
+        }
+
+        #final-score h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        #final-score p {
+            margin-bottom: 20px;
+        }
+
+        #restart-button {
+            margin-top: 20px;
+            background: linear-gradient(45deg, var(--neon-pink), var(--neon-green));
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+        #restart-button:hover {
+            box-shadow: 0 0 15px var(--neon-pink), 0 0 25px var(--neon-green);
+        }
+
+        #neonCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            filter: blur(10px) brightness(0.7);
+            background: radial-gradient(circle at top left, var(--neon-blue) 0%, transparent 20%),
+                        radial-gradient(circle at bottom right, var(--neon-pink) 0%, transparent 20%);
+            opacity: 0.2;
+            animation: backgroundPulse 10s infinite alternate;
+        }
+
+        @keyframes backgroundPulse {
+            0% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.02); }
+            100% { opacity: 0.2; transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            #quiz-container {
+                padding: 20px;
+                border-radius: 10px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            #question-text {
+                font-size: 1.3em;
+                min-height: 60px;
+            }
+            .option-button {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+            button {
+                font-size: 1.1em;
+                padding: 12px 25px;
+            }
+            #score-area, #final-score {
+                font-size: 1.2em;
+            }
+            #final-score h2 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>crowtest</h1>
+        <div id="description">Quiz about crows with 10 sec timer for each question (10 questions)</div>
+
+        <div id="quiz-content" style="display: block;">
+            <div id="timer-bar">
+                <div id="timer-fill" style="width: 50%; background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));"></div>
+                <div id="timer-text">5</div>
+            </div>
+            <div id="question-area">
+                <h2 id="question-text">Crows belong to which family of birds?</h2>
+                <div id="options-container"><button class="option-button">Paridae</button><button class="option-button">Fringillidae</button><button class="option-button">Corvidae</button><button class="option-button">Picidae</button></div>
+            </div>
+            <div id="controls">
+                <button id="next-button" style="display: none;">Next Question</button>
+            </div>
+            <div id="score-area">
+                Score: <span id="score-display">0</span>
+            </div>
+        </div>
+        
+        <div id="final-score" style="display: none;">
+            <h2>Quiz Over!</h2>
+            <p>You scored <span id="final-score-display"></span> out of <span id="total-questions-display">10</span>.</p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+    <canvas id="neonCanvas"></canvas>
+
+    <script>
+        const questions = [
+            {
+                question: "What is a group of crows called?",
+                options: ["Flock", "Coven", "Murder", "Parliament"],
+                correctAnswer: "Murder"
+            },
+            {
+                question: "What color are most crows?",
+                options: ["Brown", "Black", "Grey", "Blue"],
+                correctAnswer: "Black"
+            },
+            {
+                question: "Crows are known for their intelligence. What specific ability do they exhibit related to problem-solving?",
+                options: ["Mimicry", "Tool Use", "Echo-location", "Camouflage"],
+                correctAnswer: "Tool Use"
+            },
+            {
+                question: "Do crows remember human faces?",
+                options: ["Yes", "No", "Only if fed", "Only if threatened"],
+                correctAnswer: "Yes"
+            },
+            {
+                question: "What is the primary diet of crows?",
+                options: ["Carnivorous", "Herbivorous", "Frugivorous", "Omnivorous"],
+                correctAnswer: "Omnivorous"
+            },
+            {
+                question: "How long can crows live in captivity?",
+                options: ["5-10 years", "10-15 years", "20-30 years", "30-40 years"],
+                correctAnswer: "20-30 years"
+            },
+            {
+                question: "What sound do crows typically make?",
+                options: ["Chirp", "Caw", "Hoot", "Quack"],
+                correctAnswer: "Caw"
+            },
+            {
+                question: "Which continent is NOT home to typical crow species?",
+                options: ["Asia", "Europe", "Africa", "Antarctica"],
+                correctAnswer: "Antarctica"
+            },
+            {
+                question: "Crows belong to which family of birds?",
+                options: ["Paridae", "Fringillidae", "Corvidae", "Picidae"],
+                correctAnswer: "Corvidae"
+            },
+            {
+                question: "What unique behavior do crows sometimes engage in after a fellow crow dies?",
+                options: ["Building a new nest", "Holding a 'funeral'", "Leaving the area", "Singing loudly"],
+                correctAnswer: "Holding a 'funeral'"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 10;
+        let quizActive = false;
+        let shuffledQuestions = [];
+
+        const quizContentEl = document.getElementById('quiz-content');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const timerFillEl = document.getElementById('timer-fill');
+        const timerTextEl = document.getElementById('timer-text');
+        const scoreDisplayEl = document.getElementById('score-display');
+        const nextButton = document.getElementById('next-button');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalScoreDisplayEl = document.getElementById('final-score-display');
+        const totalQuestionsDisplayEl = document.getElementById('total-questions-display');
+        const restartButton = document.getElementById('restart-button');
+
+        totalQuestionsDisplayEl.textContent = questions.length;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            quizActive = true;
+            score = 0;
+            currentQuestionIndex = 0;
+            scoreDisplayEl.textContent = score;
+            shuffledQuestions = shuffleArray([...questions]);
+            
+            quizContentEl.style.display = 'block';
+            finalScoreEl.style.display = 'none';
+            nextButton.textContent = 'Next Question';
+            nextButton.style.display = 'none';
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeLeft = 10;
+            timerTextEl.textContent = timeLeft;
+            timerFillEl.style.width = '100%';
+            timerFillEl.style.background = 'linear-gradient(90deg, var(--neon-green), var(--neon-blue))';
+            optionsContainerEl.innerHTML = '';
+            
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                const currentQuestion = shuffledQuestions[currentQuestionIndex];
+                questionTextEl.textContent = currentQuestion.question;
+
+                currentQuestion.options.forEach((option) => {
+                    const button = document.createElement('button');
+                    button.classList.add('option-button');
+                    button.textContent = option;
+                    button.onclick = () => checkAnswer(option, button);
+                    optionsContainerEl.appendChild(button);
+                });
+                startTimer();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerTextEl.textContent = timeLeft;
+                timerFillEl.style.width = (timeLeft / 10) * 100 + '%';
+                
+                if (timeLeft <= 3) {
+                    timerFillEl.style.background = 'linear-gradient(90deg, #ff4d4d, #ff0000)'; 
+                } else {
+                    timerFillEl.style.background = 'linear-gradient(90deg, var(--neon-green), var(--neon-blue))';
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    disableOptions();
+                    setTimeout(() => nextQuestion(), 1000);
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selectedOption, clickedButton) {
+            clearInterval(timerInterval);
+            disableOptions();
+            
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            
+            if (selectedOption === currentQuestion.correctAnswer) {
+                score++;
+                scoreDisplayEl.textContent = score;
+                clickedButton.classList.add('correct');
+            } else {
+                clickedButton.classList.add('wrong');
+                Array.from(optionsContainerEl.children).forEach(button => {
+                    if (button.textContent === currentQuestion.correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+            nextButton.style.display = 'block';
+            nextButton.textContent = (currentQuestionIndex === shuffledQuestions.length - 1) ? 'Show Results' : 'Next Question';
+        }
+
+        function disableOptions() {
+            Array.from(optionsContainerEl.children).forEach(button => {
+                button.classList.add('disabled');
+                button.onclick = null;
+            });
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            nextButton.style.display = 'none';
+            loadQuestion();
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            quizActive = false;
+            quizContentEl.style.display = 'none';
+            finalScoreEl.style.display = 'block';
+            finalScoreDisplayEl.textContent = score;
+        }
+
+        nextButton.addEventListener('click', () => {
+            if (!quizActive) {
+                startQuiz();
+            } else {
+                nextQuestion();
+            }
+        });
+        restartButton.addEventListener('click', startQuiz);
+
+        questionTextEl.textContent = "Click 'Start Quiz' to begin!";
+        optionsContainerEl.innerHTML = '';
+        timerFillEl.style.width = '0%';
+        timerTextEl.textContent = '';
+        scoreDisplayEl.textContent = '0';
+        quizContentEl.style.display = 'block';
+        finalScoreEl.style.display = 'none';
+    </script>
+
+</body></html>"
