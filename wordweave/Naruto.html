@@ -1,0 +1,470 @@
+"<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naruto Retro Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #000;
+            --secondary-color: #0ff;
+            --accent-color: #f0f;
+            --text-color: #fff;
+            --correct-color: #0f0;
+            --incorrect-color: #f00;
+            --glow-color: rgba(0, 255, 255, 0.75);
+            --accent-glow-color: rgba(255, 0, 255, 0.75);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-shadow: 0 0 5px var(--text-color), 0 0 10px var(--text-color), 0 0 15px var(--glow-color);
+        }
+
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.4), rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        canvas#retro-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 3px solid var(--secondary-color);
+            padding: 2rem;
+            box-shadow: 0 0 20px var(--glow-color), inset 0 0 20px var(--glow-color);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+            margin-bottom: 1rem;
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        .description {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            font-family: 'Press Start 2P', cursive;
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 15px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px var(--accent-glow-color);
+            text-shadow: 0 0 5px var(--accent-glow-color);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 20px var(--accent-glow-color), 0 0 30px var(--accent-glow-color);
+            text-shadow: none;
+        }
+
+        #start-btn, #restart-btn {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-color: var(--secondary-color);
+            padding: 20px;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+            box-shadow: 0 0 10px var(--glow-color);
+            text-shadow: none;
+        }
+
+        #start-btn:hover, #restart-btn:hover {
+            background-color: transparent;
+            color: var(--secondary-color);
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+
+        #question-container {
+            text-align: left;
+        }
+
+        #question {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .btn.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: var(--primary-color);
+            text-shadow: none;
+            box-shadow: 0 0 20px var(--correct-color);
+            animation: correct-pulse 0.5s ease;
+        }
+
+        .btn.wrong {
+            background-color: var(--incorrect-color);
+            border-color: var(--incorrect-color);
+            color: var(--primary-color);
+            text-shadow: none;
+            box-shadow: 0 0 20px var(--incorrect-color);
+            animation: shake 0.5s ease;
+        }
+
+        #timer-container {
+            width: 100%;
+            height: 15px;
+            border: 2px solid var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        #timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.1s linear;
+        }
+
+        #score-display {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        #result-text {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                0 0 4px var(--glow-color),
+                0 0 11px var(--glow-color),
+                0 0 19px var(--glow-color),
+                0 0 40px var(--secondary-color),
+                0 0 80px var(--secondary-color),
+                0 0 90px var(--secondary-color),
+                0 0 100px var(--secondary-color),
+                0 0 150px var(--secondary-color);
+            }
+            20%, 24%, 55% {       
+                text-shadow: none;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes correct-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .title { font-size: 1.8rem; }
+            .description { font-size: 0.9rem; }
+            #question { font-size: 1rem; }
+            .btn { font-size: 0.8rem; padding: 10px; }
+            .btn-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="retro-bg" width="367" height="494"></canvas>
+
+    <div id="start-screen" class="container hide">
+        <h1 class="title">NARUTO QUIZ</h1>
+        <p class="description">Test your Shinobi knowledge! You have 10 seconds for each question. Believe it!</p>
+        <button id="start-btn">Start Quiz</button>
+    </div>
+
+    <div id="quiz-container" class="container">
+        <div id="timer-container">
+            <div id="timer-bar" style="width: 100%; background-color: var(--secondary-color);"></div>
+        </div>
+        <div id="question-container">
+            <div id="question">What is Rock Lee's primary fighting style?</div>
+            <div id="answer-buttons" class="btn-grid"><button class="btn">Ninjutsu</button><button class="btn">Genjutsu</button><button class="btn">Gentle Fist</button><button class="btn" data-correct="true">Strong Fist</button></div>
+        </div>
+    </div>
+
+    <div id="end-screen" class="container hide">
+        <h2 id="score-display">Your Score: 0 / 15</h2>
+        <p id="result-text">You've completed the Chunin Exams!</p>
+        <button id="restart-btn">Play Again</button>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const quizContainer = document.getElementById('quiz-container');
+        const endScreen = document.getElementById('end-screen');
+        
+        const startButton = document.getElementById('start-btn');
+        const restartButton = document.getElementById('restart-btn');
+        
+        const questionElement = document.getElementById('question');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        
+        const timerBar = document.getElementById('timer-bar');
+        const scoreDisplay = document.getElementById('score-display');
+        const resultText = document.getElementById('result-text');
+
+        let shuffledQuestions, currentQuestionIndex;
+        let score = 0;
+        let timer;
+        let timeLeft;
+        const TIME_LIMIT = 10;
+
+        const questions = [
+            { question: "What is the name of the tailed beast sealed inside Naruto?", answers: [{ text: "Shukaku", correct: false }, { text: "Kurama", correct: true }, { text: "Matatabi", correct: false }, { text: "Gyuki", correct: false }] },
+            { question: "Who is Naruto's father?", answers: [{ text: "Jiraiya", correct: false }, { text: "Hiruzen Sarutobi", correct: false }, { text: "Minato Namikaze", correct: true }, { text: "Fugaku Uchiha", correct: false }] },
+            { question: "What is Kakashi's signature jutsu that he created?", answers: [{ text: "Rasengan", correct: false }, { text: "Chidori", correct: true }, { text: "Flying Raijin", correct: false }, { text: "Shadow Clone Jutsu", correct: false }] },
+            { question: "Which village is Gaara the Kazekage of?", answers: [{ text: "Konohagakure", correct: false }, { text: "Kirigakure", correct: false }, { text: "Kumogakure", correct: false }, { text: "Sunagakure", correct: true }] },
+            { question: "Who are the three legendary Sannin?", answers: [{ text: "Naruto, Sasuke, Sakura", correct: false }, { text: "Minato, Kushina, Jiraiya", correct: false }, { text: "Jiraiya, Tsunade, Orochimaru", correct: true }, { text: "Hashirama, Tobirama, Hiruzen", correct: false }] },
+            { question: "What is the Kekkei Genkai of the Uchiha clan?", answers: [{ text: "Byakugan", correct: false }, { text: "Sharingan", correct: true }, { text: "Rinnegan", correct: false }, { text: "Tenseigan", correct: false }] },
+            { question: "What does 'Akatsuki' mean in Japanese?", answers: [{ text: "Red Cloud", correct: false }, { text: "New Era", correct: false }, { text: "Dawn / Daybreak", correct: true }, { text: "Shadow Warrior", correct: false }] },
+            { question: "What is Rock Lee's primary fighting style?", answers: [{ text: "Ninjutsu", correct: false }, { text: "Genjutsu", correct: false }, { text: "Gentle Fist", correct: false }, { text: "Strong Fist", correct: true }] },
+            { question: "Who is known as the 'God of Shinobi'?", answers: [{ text: "Madara Uchiha", correct: false }, { text: "Hashirama Senju", correct: true }, { text: "Naruto Uzumaki", correct: false }, { text: "Tobirama Senju", correct: false }] },
+            { question: "What is the name of the summoning toad chief that Jiraiya and Naruto summon?", answers: [{ text: "Gamakichi", correct: false }, { text: "Gamatatsu", correct: false }, { text: "Gamabunta", correct: true }, { text: "Shima", correct: false }] },
+            { question: "What food is Naruto's absolute favorite?", answers: [{ text: "Dango", correct: false }, { text: "Onigiri", correct: false }, { text: "BBQ", correct: false }, { text: "Ichiraku Ramen", correct: true }] },
+            { question: "Who was the first person to truly acknowledge Naruto?", answers: [{ text: "Kakashi Hatake", correct: false }, { text: "Iruka Umino", correct: true }, { text: "Sasuke Uchiha", correct: false }, { text: "Tsunade", correct: false }] },
+            { question: "Which Akatsuki member was Sasori's partner before Deidara?", answers: [{ text: "Kisame", correct: false }, { text: "Kakuzu", correct: false }, { text: "Itachi", correct: false }, { text: "Orochimaru", correct: true }] },
+            { question: "How many gates can Might Guy open?", answers: [{ text: "7", correct: false }, { text: "8", correct: true }, { text: "9", correct: false }, { text: "10", correct: false }] },
+            { question: "Who was the final antagonist of the Fourth Great Ninja War?", answers: [{ text: "Madara Uchiha", correct: false }, { text: "Obito Uchiha", correct: false }, { text: "Kaguya Ōtsutsuki", correct: true }, { text: "Black Zetsu", correct: false }] }
+        ];
+
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', startQuiz);
+
+        function startQuiz() {
+            startScreen.classList.add('hide');
+            endScreen.classList.add('hide');
+            quizContainer.classList.remove('hide');
+            
+            shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            setNextQuestion();
+        }
+
+        function setNextQuestion() {
+            resetState();
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(shuffledQuestions[currentQuestionIndex]);
+                startTimer();
+            } else {
+                showResults();
+            }
+        }
+
+        function showQuestion(question) {
+            questionElement.innerText = question.question;
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            clearStatusClass(document.body);
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerBar.style.width = '100%';
+            timerBar.style.backgroundColor = 'var(--secondary-color)';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                const widthPercentage = (timeLeft / TIME_LIMIT) * 100;
+                timerBar.style.width = widthPercentage + '%';
+                if (widthPercentage < 50) timerBar.style.backgroundColor = 'var(--accent-color)';
+                if (widthPercentage < 25) timerBar.style.backgroundColor = 'var(--incorrect-color)';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            Array.from(answerButtonsElement.children).forEach(button => {
+                button.disabled = true;
+                if (button.dataset.correct) {
+                     setStatusClass(button, true);
+                }
+            });
+            setTimeout(goToNextQuestion, 2000);
+        }
+
+        function selectAnswer(e) {
+            clearInterval(timer);
+            const selectedButton = e.target;
+            const correct = selectedButton.dataset.correct === "true";
+            
+            if (correct) {
+                score++;
+            }
+            
+            setStatusClass(selectedButton, correct);
+            Array.from(answerButtonsElement.children).forEach(button => {
+                button.disabled = true;
+                if(button !== selectedButton) {
+                    if (button.dataset.correct) {
+                        setStatusClass(button, true);
+                    }
+                }
+            });
+
+            setTimeout(goToNextQuestion, 2000);
+        }
+
+        function goToNextQuestion() {
+             currentQuestionIndex++;
+             setNextQuestion();
+        }
+
+        function setStatusClass(element, correct) {
+            clearStatusClass(element);
+            if (correct) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+
+        function clearStatusClass(element) {
+            element.classList.remove('correct');
+            element.classList.remove('wrong');
+        }
+        
+        function showResults() {
+            quizContainer.classList.add('hide');
+            endScreen.classList.remove('hide');
+            scoreDisplay.innerText = `Your Score: ${score} / ${questions.length}`;
+            let rank = "Genin";
+            if (score > 5) rank = "Chunin";
+            if (score > 10) rank = "Jonin";
+            if (score === 15) rank = "Hokage";
+            resultText.innerText = `You have achieved the rank of ${rank}!`;
+        }
+        
+        // Canvas Background Effect
+        const canvas = document.getElementById('retro-bg');
+        const ctx = canvas.getContext('2d');
+
+        let stars = [];
+        let numStars = 200;
+
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createStars() {
+            stars = [];
+            for(let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.8)';
+            
+            for(let i = 0; i < numStars; i++) {
+                let star = stars[i];
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                star.y += star.speed;
+                if(star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        function animate() {
+            drawStars();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            setCanvasSize();
+            createStars();
+        });
+
+        setCanvasSize();
+        createStars();
+        animate();
+
+    </script>
+
+</body></html>"
