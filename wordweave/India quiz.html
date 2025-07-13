@@ -1,0 +1,666 @@
+"<html><head>
+    <title>India quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Press Start 2P', monospace;
+            background: #0d0d0d;
+            color: #00ff00; /* Neon green */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 1px,
+                rgba(0, 255, 0, 0.05) 1px,
+                rgba(0, 255, 0, 0.05) 2px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #retroCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: blur(0.5px);
+        }
+
+        #quizContainer {
+            background: rgba(10, 10, 10, 0.9);
+            border: 5px solid #00ff00;
+            box-shadow: 0 0 20px #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+            z-index: 2;
+            box-sizing: border-box;
+            transform: scale(1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #quizContainer.shake {
+            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        h1 {
+            color: #ff00ff; /* Neon magenta */
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+            margin-bottom: 20px;
+            font-size: clamp(1.5em, 5vw, 3em);
+            line-height: 1.2;
+            animation: neonTitle 2s infinite alternate;
+        }
+
+        @keyframes neonTitle {
+            0% { text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff; }
+            100% { text-shadow: 0 0 7px #ff00ff, 0 0 15px #ff00ff; }
+        }
+
+        h2 {
+            color: #00ffff; /* Neon cyan */
+            text-shadow: 0 0 3px #00ffff;
+            margin-bottom: 25px;
+            font-size: clamp(1em, 3vw, 2em);
+            min-height: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: glitch 3s linear infinite;
+        }
+
+        @keyframes glitch {
+            2%,6% {
+              transform: translate(-2px,0);
+            }
+            4%,8% {
+              transform: translate(2px,0);
+            }
+            10% {
+              transform: translate(0,0);
+            }
+        }
+
+        p {
+            font-size: clamp(0.8em, 2vw, 1.2em);
+            margin-bottom: 15px;
+        }
+
+        button {
+            font-family: 'Press Start 2P', monospace;
+            background-color: #008800; /* Darker green for buttons */
+            color: #00ff00;
+            border: 3px solid #00ff00;
+            padding: 12px 25px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: clamp(0.8em, 2vw, 1.2em);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            transition: background-color 0.1s, color 0.1s, box-shadow 0.1s, transform 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: #00ff00;
+            color: #0d0d0d;
+            box-shadow: 0 0 15px #00ff00;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 0 5px #00ff00;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.3s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        #optionsContainer {
+            display: grid;
+            grid-template-columns: 1fr; /* Default to single column */
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        @media (min-width: 600px) {
+            #optionsContainer {
+                grid-template-columns: 1fr 1fr; /* Two columns for larger screens */
+            }
+        }
+
+        .option-btn {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: clamp(0.7em, 1.8vw, 1.1em);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: transform 0.1s ease;
+        }
+
+        .option-btn:hover {
+          transform: scale(1.05);
+        }
+
+        .option-btn.correct {
+            background-color: #00ff00;
+            color: #0d0d0d;
+            border-color: #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .option-btn.incorrect {
+            background-color: #ff0000;
+            color: #0d0d0d;
+            border-color: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            animation: shake 0.3s;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #timerDisplay {
+            font-size: clamp(1em, 2.5vw, 1.5em);
+            color: #ffff00; /* Neon yellow */
+            text-shadow: 0 0 5px #ffff00;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-right: 10px;
+        }
+
+        #time {
+            font-weight: bold;
+            display: inline-block;
+            min-width: 2em;
+            text-align: right;
+        }
+
+        #questionNumber {
+            font-size: clamp(0.9em, 2vw, 1.3em);
+            color: #00ffff;
+            text-align: left;
+            margin-bottom: 15px;
+            padding-left: 10px;
+        }
+
+        #nextButton, #startButton, #restartButton {
+            margin-top: 25px;
+            width: auto;
+            min-width: 200px;
+            font-size: clamp(1em, 2.5vw, 1.5em);
+            padding: 15px 30px;
+        }
+
+        #endScreen h1 {
+            color: #00ff00;
+            animation: flicker 1.5s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+              opacity: 1;
+            }
+            40% {
+              opacity: 0.4;
+            }
+        }
+
+        #finalScore {
+            font-size: clamp(1.2em, 3vw, 2em);
+            color: #ff00ff;
+            margin-bottom: 20px;
+            animation: pulsate 2s ease-in-out infinite;
+        }
+
+        @keyframes pulsate {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        #congratulationsMessage {
+            font-size: clamp(1em, 2.5vw, 1.5em);
+            color: #ffff00;
+        }
+
+        #fxOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.3);
+            opacity: 0;
+            z-index: 10;
+            pointer-events: none;
+            transition: opacity 0.1s ease-out;
+        }
+
+        #fxOverlay.flash {
+            animation: flashRed 0.3s ease-out forwards;
+        }
+
+        @keyframes flashRed {
+            0% { opacity: 0; }
+            50% { opacity: 1; background-color: rgba(255, 0, 0, 0.3); }
+            100% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="retroCanvas" width="367" height="494"></canvas>
+    <div id="quizContainer">
+        <div id="startScreen" style="display: none;">
+            <h1>India Quiz</h1>
+            <p>20 questions | 10 seconds per question</p>
+            <p>Answer correctly to score points!</p>
+            <button id="startButton">Start Quiz</button>
+        </div>
+
+        <div id="quizScreen" style="display: block;">
+            <div id="timerDisplay">Time: <span id="time">10</span>s</div>
+            <div id="questionNumber">Question 1/20</div>
+            <h2 id="questionText">What is the capital of India?</h2>
+            <div id="optionsContainer">
+                <button class="option-btn" disabled="">Mumbai</button>
+                <button class="option-btn" disabled="">Kolkata</button>
+                <button class="option-btn correct" disabled="">New Delhi</button>
+                <button class="option-btn" disabled="">Chennai</button>
+            </div>
+            <button id="nextButton" style="display: block;">Next Question</button>
+        </div>
+
+        <div id="endScreen" style="display: none;">
+            <h1>Quiz Complete!</h1>
+            <p id="finalScore"></p>
+            <p id="congratulationsMessage"></p>
+            <button id="restartButton">Play Again</button>
+        </div>
+
+        <div id="fxOverlay" style="display: none;"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What is the capital of India?",
+                options: ["Mumbai", "Kolkata", "New Delhi", "Chennai"],
+                answer: "New Delhi"
+            },
+            {
+                question: "What is the national animal of India?",
+                options: ["Lion", "Tiger", "Elephant", "Leopard"],
+                answer: "Tiger"
+            },
+            {
+                question: "Which river is considered the longest in India?",
+                options: ["Yamuna", "Brahmaputra", "Godavari", "Ganga"],
+                answer: "Ganga"
+            },
+            {
+                question: "When does India celebrate its Independence Day?",
+                options: ["January 26", "August 15", "October 2", "November 14"],
+                answer: "August 15"
+            },
+            {
+                question: "Who is known as the 'Father of the Nation' in India?",
+                options: ["Jawaharlal Nehru", "Sardar Patel", "Subhas Chandra Bose", "Mahatma Gandhi"],
+                answer: "Mahatma Gandhi"
+            },
+            {
+                question: "Which monument is one of the Seven Wonders of the World and located in Agra, India?",
+                options: ["Red Fort", "India Gate", "Taj Mahal", "Qutub Minar"],
+                answer: "Taj Mahal"
+            },
+            {
+                question: "What is the currency of India?",
+                options: ["Yen", "Dollar", "Rupee", "Euro"],
+                answer: "Rupee"
+            },
+            {
+                question: "Which is the highest mountain peak in India?",
+                options: ["Mount Everest", "K2", "Kangchenjunga", "Nanda Devi"],
+                answer: "Kangchenjunga"
+            },
+            {
+                question: "What is the national bird of India?",
+                options: ["Eagle", "Sparrow", "Peacock", "Pigeon"],
+                answer: "Peacock"
+            },
+            {
+                question: "Which Indian state has the largest area?",
+                options: ["Madhya Pradesh", "Maharashtra", "Rajasthan", "Uttar Pradesh"],
+                answer: "Rajasthan"
+            },
+            {
+                question: "How many states are there in India (as of current official data)?",
+                options: ["27", "28", "29", "30"],
+                answer: "28"
+            },
+            {
+                question: "Which desert is located in India?",
+                options: ["Sahara Desert", "Gobi Desert", "Thar Desert", "Kalahari Desert"],
+                answer: "Thar Desert"
+            },
+            {
+                question: "Who was the first Prime Minister of India?",
+                options: ["Sardar Vallabhbhai Patel", "Jawaharlal Nehru", "Indira Gandhi", "Rajendra Prasad"],
+                answer: "Jawaharlal Nehru"
+            },
+            {
+                question: "Which city is known as the 'Financial Capital of India'?",
+                options: ["Bengaluru", "Kolkata", "Chennai", "Mumbai"],
+                answer: "Mumbai"
+            },
+            {
+                question: "What is the national sport of India (commonly referred to)?",
+                options: ["Cricket", "Football", "Hockey", "Badminton"],
+                answer: "Hockey"
+            },
+            {
+                question: "Which of these is not an official language of India?",
+                options: ["Hindi", "English", "Tamil", "Chinese"],
+                answer: "Chinese"
+            },
+            {
+                question: "On which date is India's Republic Day celebrated?",
+                options: ["August 15", "October 2", "January 26", "December 25"],
+                answer: "January 26"
+            },
+            {
+                question: "What is the southernmost tip of the Indian mainland?",
+                options: ["Kanyakumari", "Indira Point", "Rameswaram", "Chennai"],
+                answer: "Kanyakumari"
+            },
+            {
+                question: "Which is the smallest state in India by area?",
+                options: ["Sikkim", "Tripura", "Goa", "Nagaland"],
+                answer: "Goa"
+            },
+            {
+                question: "Which Indian city is famous for its IT industry and is known as the 'Silicon Valley of India'?",
+                options: ["Hyderabad", "Pune", "Chennai", "Bengaluru"],
+                answer: "Bengaluru"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 10;
+        let timerInterval;
+        let questionAnswered = false;
+
+        const startScreen = document.getElementById('startScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const endScreen = document.getElementById('endScreen');
+        const startButton = document.getElementById('startButton');
+        const restartButton = document.getElementById('restartButton');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const timeDisplay = document.getElementById('time');
+        const questionNumberDisplay = document.getElementById('questionNumber');
+        const nextButton = document.getElementById('nextButton');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const congratulationsMessage = document.getElementById('congratulationsMessage');
+        const fxOverlay = document.getElementById('fxOverlay');
+        const quizContainer = document.getElementById('quizContainer');
+
+        const optionButtons = Array.from(optionsContainer.children);
+
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', restartGame);
+        nextButton.addEventListener('click', nextQuestion);
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            questionAnswered = false;
+            nextButton.style.display = 'none';
+            resetOptionStyles();
+            enableOptions();
+
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
+                questionNumberDisplay.textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+                questionText.textContent = q.question;
+
+                q.options.forEach((option, index) => {
+                    optionButtons[index].textContent = option;
+                    optionButtons[index].onclick = () => checkAnswer(option, q.answer, optionButtons[index]);
+                });
+
+                timeLeft = 10;
+                timeDisplay.textContent = timeLeft;
+                startTimer();
+            } else {
+                endGame();
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (!questionAnswered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            questionAnswered = true;
+            disableOptions();
+            fxOverlay.style.display = 'block';
+            fxOverlay.classList.add('flash');
+            quizContainer.classList.add('shake');
+            setTimeout(() => {
+                fxOverlay.classList.remove('flash');
+                fxOverlay.style.display = 'none';
+                quizContainer.classList.remove('shake');
+            }, 300);
+
+            const correctAnswer = questions[currentQuestionIndex].answer;
+            optionButtons.forEach(button => {
+                if (button.textContent === correctAnswer) {
+                    button.classList.add('correct');
+                }
+            });
+            nextButton.style.display = 'block';
+        }
+
+        function checkAnswer(selectedOption, correctAnswer, clickedButton) {
+            if (questionAnswered) return;
+
+            clearInterval(timerInterval);
+            questionAnswered = true;
+            disableOptions();
+
+            if (selectedOption === correctAnswer) {
+                score++;
+                clickedButton.classList.add('correct');
+            } else {
+                clickedButton.classList.add('incorrect');
+                fxOverlay.style.display = 'block';
+                fxOverlay.classList.add('flash');
+                quizContainer.classList.add('shake');
+                setTimeout(() => {
+                    fxOverlay.classList.remove('flash');
+                    fxOverlay.style.display = 'none';
+                    quizContainer.classList.remove('shake');
+                }, 300);
+                
+                optionButtons.forEach(button => {
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+            nextButton.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function endGame() {
+            quizScreen.style.display = 'none';
+            endScreen.style.display = 'block';
+            finalScoreDisplay.textContent = `You scored ${score} out of ${questions.length} questions!`;
+            if (score === questions.length) {
+                congratulationsMessage.textContent = "Amazing! You are a true India expert!";
+            } else if (score >= questions.length / 2) {
+                congratulationsMessage.textContent = "Good job! You know a lot about India!";
+            } else {
+                congratulationsMessage.textContent = "Keep practicing! You'll get there!";
+            }
+        }
+
+        function restartGame() {
+            endScreen.style.display = 'none';
+            startGame();
+        }
+
+        function resetOptionStyles() {
+            optionButtons.forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+            });
+        }
+
+        function enableOptions() {
+            optionButtons.forEach(button => {
+                button.disabled = false;
+            });
+        }
+
+        function disableOptions() {
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        // Canvas background animation
+        const canvas = document.getElementById('retroCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const numParticles = 100;
+        const particleSize = 2;
+        const colors = ['#00ff00', '#ff00ff', '#00ffff', '#ffff00'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(createParticle());
+            }
+        }
+
+        function createParticle() {
+            return {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: particleSize + Math.random() * 2,
+                speed: 0.5 + Math.random() * 1.5,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            };
+        }
+
+        function updateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.y += p.speed;
+                if (p.y > canvas.height) {
+                    particles[i] = createParticle();
+                    particles[i].y = -p.size;
+                }
+                ctx.fillStyle = p.color;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            }
+            requestAnimationFrame(updateParticles);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        updateParticles();
+    </script>
+
+</body></html>"
