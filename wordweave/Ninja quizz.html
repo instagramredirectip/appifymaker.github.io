@@ -1,0 +1,606 @@
+"<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Quizz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap');
+
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2c2c2c;
+            --card-bg: #f4f1e9;
+            --text-color: #1a1a1a;
+            --accent-color: #c0392b;
+            --correct-color: #27ae60;
+            --incorrect-color: #e74c3c;
+            --font-family: 'Noto Serif JP', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--primary-bg);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .quiz-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 5px rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 700px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 450px;
+        }
+
+        .screen {
+            padding: 40px;
+            text-align: center;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        #start-screen p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-family: var(--font-family);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background-color: #a52f23;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #quiz-screen {
+            justify-content: space-between;
+        }
+
+        .quiz-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        #progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        #timer-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+        }
+        
+        #timer-svg {
+            transform: rotate(-90deg);
+        }
+        
+        #timer-path {
+            stroke: var(--accent-color);
+            stroke-width: 8;
+            stroke-linecap: round;
+            fill: none;
+            transition: stroke-dashoffset 1s linear;
+        }
+        
+        #timer-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+
+        #question-text {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            animation: slideIn 0.5s forwards;
+            min-height: 70px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .option-btn {
+            background-color: var(--secondary-bg);
+            color: #fff;
+            border: 2px solid transparent;
+            padding: 15px;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:not([disabled]):hover {
+            border-color: var(--accent-color);
+            background-color: #3e3e3e;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: #fff;
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: #fff;
+            animation: shake 0.5s;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #result-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        #score-text {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+        
+        #score-message {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 600px) {
+            .quiz-container {
+                min-height: 90vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .screen {
+                padding: 20px;
+            }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.5rem; }
+            #question-text { font-size: 1.2rem; }
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+            .option-btn {
+                font-size: 0.9rem;
+            }
+            #score-text {
+                font-size: 3rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas" width="395" height="606"></canvas>
+
+    <div class="quiz-container">
+        
+        <div id="start-screen" class="screen hidden">
+            <h1>Ninja Quizz</h1>
+            <p>Test your knowledge with 10 questions. You have 10 seconds for each!</p>
+            <button id="start-btn" class="btn">Begin the trial</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div id="progress-bar-container">
+                    <div id="progress-bar" style="width: 20%;"></div>
+                </div>
+                 <div id="timer-container">
+                    <svg id="timer-svg" width="60" height="60" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="26" stroke="#ddd" stroke-width="8" fill="none"></circle>
+                        <circle id="timer-path" cx="30" cy="30" r="26" style="stroke-dasharray: 163.363; stroke-dashoffset: 16.3363;"></circle>
+                    </svg>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <span id="timer-text">9</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 id="question-text" style="animation: 0.5s ease 0s 1 normal forwards running slideIn;">In Japanese history, what was the term for a female ninja?</h2>
+            
+            <div id="options-container" class="options-container">
+                <button class="option-btn">Samurai-onna</button>
+                <button class="option-btn">Geisha</button>
+                <button class="option-btn">Kunoichi</button>
+                <button class="option-btn">Onna-bugeisha</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen hidden">
+            <h2>Trial Complete</h2>
+            <span id="score-text"></span>
+            <p id="score-message"></p>
+            <button id="restart-btn" class="btn">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const optionBtns = optionsContainer.querySelectorAll('.option-btn');
+        
+        const progressBar = document.getElementById('progress-bar');
+        const timerText = document.getElementById('timer-text');
+        const timerPath = document.getElementById('timer-path');
+        const scoreText = document.getElementById('score-text');
+        const scoreMessage = document.getElementById('score-message');
+
+        // --- Quiz Data ---
+        const questions = [
+            {
+                question: "What does the term 'Shinobi' mean?",
+                options: ["Silent Blade", "Night Walker", "To Steal Away / To Conceal", "Shadow Warrior"],
+                answer: "To Steal Away / To Conceal"
+            },
+            {
+                question: "What are the small, star-shaped throwing weapons used by ninjas called?",
+                options: ["Kunai", "Katana", "Shuriken", "Tanto"],
+                answer: "Shuriken"
+            },
+            {
+                question: "In Japanese history, what was the term for a female ninja?",
+                options: ["Onna-bugeisha", "Kunoichi", "Geisha", "Samurai-onna"],
+                answer: "Kunoichi"
+            },
+            {
+                question: "Which clan was the famous rival of the Iga-ryū clan in feudal Japan?",
+                options: ["Hattori clan", "Fuma clan", "Kōga-ryū", "Oda clan"],
+                answer: "Kōga-ryū"
+            },
+            {
+                question: "What is the primary sword of a ninja, typically shorter and straighter than a katana?",
+                options: ["Ninjatō", "Wakizashi", "Tachi", "Tsurugi"],
+                answer: "Ninjatō"
+            },
+            {
+                question: "What tool would a ninja use for climbing walls, consisting of a rope and hook?",
+                options: ["Kusarigama", "Manriki", "Tessen", "Kaginawa"],
+                answer: "Kaginawa"
+            },
+            {
+                question: "Which element is NOT one of the five traditional elements (Godai) of ninjutsu strategy?",
+                options: ["Earth (Chi)", "Water (Sui)", "Metal (Kin)", "Fire (Ka)"],
+                answer: "Metal (Kin)"
+            },
+            {
+                question: "What is the art of disguise and impersonation practiced by ninjas called?",
+                options: ["Taijutsu", "Bojutsu", "Hensōjutsu", "Genjutsu"],
+                answer: "Hensōjutsu"
+            },
+            {
+                question: "Who is the most famous fictional ninja from the village of Konohagakure?",
+                options: ["Sasuke Uchiha", "Naruto Uzumaki", "Kakashi Hatake", "Itachi Uchiha"],
+                answer: "Naruto Uzumaki"
+            },
+            {
+                question: "What are makibishi?",
+                options: ["Smoke bombs", "Caltrops to slow pursuers", "A type of poison", "Hidden hand claws"],
+                answer: "Caltrops to slow pursuers"
+            }
+        ];
+
+        // --- Quiz State ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 10;
+        const TIME_LIMIT = 10;
+        const TIMER_PATH_LENGTH = 2 * Math.PI * 26; // 2 * pi * r
+
+        // --- Functions ---
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            updateProgressBar();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const currentQuestion = questions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            
+            const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+            optionBtns.forEach((btn, index) => {
+                btn.textContent = shuffledOptions[index];
+                btn.onclick = (e) => selectAnswer(e.target, currentQuestion.answer);
+            });
+            startTimer();
+        }
+
+        function resetState() {
+            clearTimeout(timer);
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            timerPath.style.strokeDasharray = TIMER_PATH_LENGTH;
+            timerPath.style.strokeDashoffset = 0;
+
+            optionBtns.forEach(btn => {
+                btn.className = 'option-btn';
+                btn.disabled = false;
+            });
+            questionText.style.animation = 'none';
+            void questionText.offsetWidth; // Trigger reflow
+            questionText.style.animation = 'slideIn 0.5s forwards';
+        }
+
+        function startTimer() {
+            timerText.textContent = timeLeft;
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                
+                const offset = TIMER_PATH_LENGTH * (1 - (timeLeft / TIME_LIMIT));
+                timerPath.style.strokeDashoffset = offset;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            optionBtns.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === questions[currentQuestionIndex].answer) {
+                    btn.classList.add('correct');
+                }
+            });
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function selectAnswer(selectedBtn, correctAnswer) {
+            clearInterval(timer);
+            optionBtns.forEach(btn => btn.disabled = true);
+
+            if (selectedBtn.textContent === correctAnswer) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                optionBtns.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            updateProgressBar();
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function endQuiz() {
+            progressBar.style.width = '100%';
+            setTimeout(() => {
+                quizScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+                scoreText.textContent = `${score} / ${questions.length}`;
+                
+                let message = "";
+                const percentage = (score / questions.length) * 100;
+                if(percentage === 100) message = "Perfect! You are a true Shinobi Master!";
+                else if(percentage >= 80) message = "Excellent! You have the wisdom of a Jonin.";
+                else if(percentage >= 50) message = "Good work, Chunin. Your skills are developing.";
+                else if(percentage >= 20) message = "You are still a Genin. More training is needed.";
+                else message = "You have not yet left the Academy. Study more!";
+
+                scoreMessage.textContent = message;
+            }, 500);
+        }
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', startQuiz);
+        
+        // --- Background Canvas Animation ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = `rgba(200, 57, 43, ${Math.random() * 0.5 + 0.2})`; // Reddish embers
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.size > 0.1) this.size -= 0.01;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].size <= 0.1) {
+                    particles.splice(i, 1);
+                    particles.push(new Particle());
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+
+        initParticles();
+        animateParticles();
+    </script>
+
+
+```</body></html>"
