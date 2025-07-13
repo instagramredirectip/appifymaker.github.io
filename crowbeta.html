@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crow v1.5 Beta - Download Now</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.4; }
+        }
+
+        /* Main container */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Download card */
+        .download-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: cardGlow 4s ease-in-out infinite alternate;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes cardGlow {
+            0% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); }
+            100% { box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4); }
+        }
+
+        /* Animated border */
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* App icon */
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #fff;
+            animation: iconPulse 2s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .app-icon::before {
+            content: '🐦';
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: iconShine 3s linear infinite;
+        }
+
+        @keyframes iconShine {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* Typography */
+        .app-name {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+            100% { text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3); }
+        }
+
+        .version {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .beta-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Download button */
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            animation: buttonFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes buttonFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Download icon */
+        .download-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            animation: downloadBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes downloadBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* Features list */
+        .features {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .feature-item {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideIn 1s ease-out;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(-20px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .download-card {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .app-name {
+                font-size: 2.5rem;
+            }
+            
+            .download-btn {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Warning message */
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            animation: warningGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes warningGlow {
+            0% { border-color: rgba(255, 193, 7, 0.3); }
+            100% { border-color: rgba(255, 193, 7, 0.6); }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="download-card">
+            <div class="app-icon"></div>
+            
+            <h1 class="app-name">Crow</h1>
+            <p class="version">Version 1.5</p>
+            <div class="beta-badge">Beta Release</div>
+            
+            <p class="description">
+                Experience the next generation of mobile innovation with Crow v1.5 Beta. 
+                Join our exclusive beta testing program and be among the first to explore cutting-edge features.
+            </p>
+            
+            <a href="https://www.dropbox.com/scl/fi/ru923uebvtruneufwdr81/crow-v1.5.apk?rlkey=mzv403agxnqshcqi07g562b7o&st=6yyijm3c&dl=1" 
+               class="download-btn" 
+               onclick="trackDownload()">
+                <span class="download-icon">⬇</span>
+                Download Beta
+            </a>
+            
+            <div class="features">
+                <div class="feature-item">✨ Latest experimental features</div>
+                <div class="feature-item">🚀 Enhanced performance</div>
+                <div class="feature-item">🔧 Bug fixes and improvements</div>
+                <div class="feature-item">💡 Early access to new tools</div>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Beta Version Notice:</strong> This is a pre-release version intended for testing purposes. 
+                Some features may be unstable or incomplete. Please report any issues you encounter.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Track download button click
+        function trackDownload() {
+            console.log('Download initiated for Crow v1.5 Beta');
+            
+            // Add download animation
+            const btn = document.querySelector('.download-btn');
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 150);
+        }
+
+        // Add entrance animation to card
+        window.addEventListener('load', () => {
+            const card = document.querySelector('.download-card');
+            card.style.animation = 'cardGlow 4s ease-in-out infinite alternate, fadeInUp 1s ease-out';
+        });
+
+        // Initialize particles
+        createParticles();
+
+        // Add mouse move effect
+        document.addEventListener('mousemove', (e) => {
+            const card = document.querySelector('.download-card');
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        // Reset card rotation when mouse leaves
+        document.addEventListener('mouseleave', () => {
+            const card = document.querySelector('.download-card');
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        });
+    </script>
+</body>
+</html>
