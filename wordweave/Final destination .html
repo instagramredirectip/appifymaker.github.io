@@ -1,0 +1,654 @@
+"<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Destination</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #00ffff; /* Neon Cyan */
+            --secondary-color: #ff00ff; /* Neon Magenta */
+            --danger-color: #ff1100; /* Neon Red */
+            --success-color: #00ff00; /* Neon Green */
+            --bg-color: #000;
+            --text-color: #f0f0f0;
+            --glow-blur: 15px;
+            --glow-blur-strong: 25px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .container {
+            background: rgba(10, 10, 10, 0.7);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 0 var(--glow-blur) var(--primary-color), inset 0 0 var(--glow-blur) var(--primary-color);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--primary-color), 0 0 30px var(--primary-color);
+            animation: flicker 3s infinite alternate;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--secondary-color), 0 0 25px var(--secondary-color);
+        }
+
+        p {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 8px var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color), inset 0 0 8px var(--primary-color);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--primary-color);
+        }
+
+        .btn.correct {
+            border-color: var(--success-color);
+            color: var(--success-color);
+            text-shadow: 0 0 8px var(--success-color);
+            box-shadow: 0 0 10px var(--success-color), inset 0 0 8px var(--success-color);
+            animation: pulse 0.5s;
+        }
+
+        .btn.wrong {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            text-shadow: 0 0 8px var(--danger-color);
+            box-shadow: 0 0 10px var(--danger-color), inset 0 0 8px var(--danger-color);
+        }
+
+        #start-btn, #restart-btn {
+            background-color: var(--secondary-color);
+            color: var(--bg-color);
+            border: none;
+            box-shadow: 0 0 var(--glow-blur) var(--secondary-color);
+            text-shadow: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        #start-btn:hover, #restart-btn:hover {
+            box-shadow: 0 0 var(--glow-blur-strong) var(--secondary-color), 0 0 40px var(--secondary-color);
+        }
+        
+        #quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        #timer {
+            color: var(--success-color);
+            text-shadow: 0 0 10px var(--success-color);
+            font-weight: bold;
+            transition: color 0.5s, text-shadow 0.5s, transform 0.2s;
+        }
+
+        #timer.warning {
+            color: var(--danger-color);
+            text-shadow: 0 0 10px var(--danger-color);
+            animation: pulse-warning 1s infinite;
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        .skull {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30vmax;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            animation: flash-skull 0.3s ease-out;
+            text-shadow: 0 0 20px red;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--primary-color), 0 0 30px var(--primary-color);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse-warning {
+             0% { transform: scale(1); text-shadow: 0 0 10px var(--danger-color); }
+             50% { transform: scale(1.1); text-shadow: 0 0 20px var(--danger-color), 0 0 30px var(--danger-color); }
+             100% { transform: scale(1); text-shadow: 0 0 10px var(--danger-color); }
+        }
+
+        @keyframes flash-skull {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            p { font-size: 1rem; }
+            .btn-grid { grid-template-columns: 1fr; }
+            .btn { font-size: 1rem; padding: 12px 20px; }
+            #quiz-header { font-size: 1.2rem; }
+            #start-btn, #restart-btn { font-size: 1.2rem; padding: 15px 30px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas" width="367" height="494"></canvas>
+
+    <div class="container" id="main-container">
+        <div id="start-screen" class="hide">
+            <h1>Final Destination</h1>
+            <p>Death is coming. Can you escape your fate? Answer the questions before your time runs out. The clock is ticking...</p>
+            <button id="start-btn" class="btn">CHEAT DEATH</button>
+        </div>
+
+        <div id="quiz-screen" class="hide">
+            <div id="quiz-header">
+                <div id="question-counter">Fate 10 of 10</div>
+                <div id="timer" class="">14</div>
+            </div>
+            <h2 id="question">Where does the final confrontation with Peter take place?</h2>
+            <div id="answer-buttons" class="btn-grid"><button class="btn">An abandoned factory</button><button class="btn" data-correct="true">A kitchen/restaurant</button><button class="btn">On the damaged bridge</button><button class="btn">At an airport</button></div>
+        </div>
+
+        <div id="end-screen" class="">
+            <h2>YOUR FATE IS SEALED</h2>
+            <p id="score-text">You correctly predicted 4 out of 10 fates.</p>
+            <p id="end-message">You saw some of the signs, but Death's design is flawless.</p>
+            <button id="restart-btn" class="btn">TRY AGAIN?</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const startButton = document.getElementById('start-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const mainContainer = document.getElementById('main-container');
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const endScreen = document.getElementById('end-screen');
+        const questionElement = document.getElementById('question');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const questionCounterElement = document.getElementById('question-counter');
+        const timerElement = document.getElementById('timer');
+        const scoreTextElement = document.getElementById('score-text');
+        const endMessageElement = document.getElementById('end-message');
+
+        // --- Quiz State ---
+        let shuffledQuestions, currentQuestionIndex;
+        let score = 0;
+        let timer;
+        let timeLeft;
+        const TIME_LIMIT = 15;
+
+        // --- Audio Context for Sounds ---
+        let audioCtx;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        function playSound(type) {
+            if (!audioCtx) return;
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+            switch (type) {
+                case 'start':
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(80, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.5);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                    break;
+                case 'correct':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    break;
+                case 'wrong':
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    flashSkull();
+                    break;
+                case 'tick':
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                    break;
+                case 'timesup':
+                     oscillator.type = 'sawtooth';
+                     for(let i=0; i<3; i++) {
+                        let t = audioCtx.currentTime + i * 0.2;
+                        oscillator.frequency.setValueAtTime(200, t);
+                        oscillator.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+                     }
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                    flashSkull();
+                    break;
+            }
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 1);
+        }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', () => {
+            initAudio();
+            startQuiz();
+        });
+        restartButton.addEventListener('click', startQuiz);
+
+        // --- Quiz Flow Functions ---
+        function startQuiz() {
+            playSound('start');
+            score = 0;
+            shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            startScreen.classList.add('hide');
+            endScreen.classList.add('hide');
+            quizScreen.classList.remove('hide');
+            mainContainer.classList.remove('shake');
+            setNextQuestion();
+        }
+
+        function setNextQuestion() {
+            resetState();
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                questionCounterElement.innerText = `Fate ${currentQuestionIndex + 1} of ${shuffledQuestions.length}`;
+                showQuestion(shuffledQuestions[currentQuestionIndex]);
+                startTimer();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function showQuestion(question) {
+            questionElement.innerText = question.question;
+            answerButtonsElement.innerHTML = '';
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function selectAnswer(e) {
+            clearInterval(timer);
+            const selectedButton = e.target;
+            const correct = selectedButton.dataset.correct === 'true';
+
+            if (correct) {
+                score++;
+                playSound('correct');
+            } else {
+                playSound('wrong');
+                mainContainer.classList.add('shake');
+            }
+
+            Array.from(answerButtonsElement.children).forEach(button => {
+                setStatusClass(button, button.dataset.correct === 'true');
+                button.disabled = true;
+            });
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                mainContainer.classList.remove('shake');
+                setNextQuestion();
+            }, 1500);
+        }
+
+        function setStatusClass(element, correct) {
+            clearStatusClass(element);
+            if (correct) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+
+        function clearStatusClass(element) {
+            element.classList.remove('correct');
+            element.classList.remove('wrong');
+        }
+
+        function resetState() {
+            Array.from(answerButtonsElement.children).forEach(button => {
+                clearStatusClass(button);
+                button.disabled = false;
+            });
+        }
+
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerElement.innerText = timeLeft;
+            timerElement.classList.remove('warning');
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = timeLeft;
+                if (timeLeft <= 5) {
+                    playSound('tick');
+                    timerElement.classList.add('warning');
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function timeUp() {
+            playSound('timesup');
+            mainContainer.classList.add('shake');
+            Array.from(answerButtonsElement.children).forEach(button => {
+                setStatusClass(button, button.dataset.correct === 'true');
+                button.disabled = true;
+            });
+             setTimeout(() => {
+                currentQuestionIndex++;
+                mainContainer.classList.remove('shake');
+                setNextQuestion();
+            }, 2000);
+        }
+
+        function endQuiz() {
+            quizScreen.classList.add('hide');
+            endScreen.classList.remove('hide');
+            scoreTextElement.innerText = `You correctly predicted ${score} out of ${shuffledQuestions.length} fates.`;
+            
+            let message = "";
+            const percentage = (score / shuffledQuestions.length) * 100;
+            if (percentage === 100) {
+                message = "You've seen it all... you have cheated Death. For now.";
+            } else if (percentage >= 75) {
+                message = "You have a strong sense of premonition. But one slip is all it takes.";
+            } else if (percentage >= 40) {
+                message = "You saw some of the signs, but Death's design is flawless.";
+            } else {
+                message = "You were blind to the design. Death has claimed you.";
+            }
+            endMessageElement.innerText = message;
+        }
+
+        function flashSkull() {
+            const skull = document.createElement('div');
+            skull.innerText = '💀';
+            skull.classList.add('skull');
+            document.body.appendChild(skull);
+            setTimeout(() => {
+                skull.remove();
+            }, 300);
+        }
+
+        // --- Canvas Background ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = 100;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = `rgba(0, 255, 255, ${Math.random() * 0.5 + 0.2})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.size > 0.1) this.size -= 0.01;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].size <= 0.1) {
+                    particles.splice(i, 1);
+                    particles.push(new Particle());
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            initParticles();
+        });
+
+        initParticles();
+        animateParticles();
+
+        // --- Quiz Questions ---
+        const questions = [
+            {
+                question: 'What premonition does Sam have at the start of Final Destination 5?',
+                answers: [
+                    { text: 'A roller coaster crash', correct: false },
+                    { text: 'A bridge collapse', correct: true },
+                    { text: 'A plane explosion', correct: false },
+                    { text: 'A highway pile-up', correct: false }
+                ]
+            },
+            {
+                question: 'Who is the first survivor to die after the bridge collapse?',
+                answers: [
+                    { text: 'Candice Hooper', correct: true },
+                    { text: 'Isaac Palmer', correct: false },
+                    { text: 'Olivia Castle', correct: false },
+                    { text: 'Nathan Sears', correct: false }
+                ]
+            },
+            {
+                question: 'How does Olivia Castle meet her demise?',
+                answers: [
+                    { text: 'Acupuncture needles', correct: false },
+                    { text: 'A falling Buddha statue', correct: false },
+                    { text: 'Laser eye surgery mishap', correct: true },
+                    { text: 'Gymnastics equipment failure', correct: false }
+                ]
+            },
+            {
+                question: 'What rule does Bludworth introduce that could save a survivor?',
+                answers: [
+                    { text: 'Leaving the country', correct: false },
+                    { text: 'Never sleeping again', correct: false },
+                    { text: 'Killing someone else', correct: true },
+                    { text: 'Destroying the list', correct: false }
+                ]
+            },
+            {
+                question: 'What object impales and kills Isaac Palmer in the spa?',
+                answers: [
+                    { text: 'Acupuncture needle', correct: false },
+                    { text: 'A falling Buddha statue head', correct: true },
+                    { text: 'A shard of glass', correct: false },
+                    { text: 'A loose shelf', correct: false }
+                ]
+            },
+            {
+                question: 'How does Nathan "cheat" death temporarily?',
+                answers: [
+                    { text: 'He accidentally causes Roy\\'s death', correct: true },
+                    { text: 'He saves Molly from a falling sign', correct: false },
+                    { text: 'He kills Peter', correct: false },
+                    { text: 'He moves to another city', correct: false }
+                ]
+            },
+            {
+                question: 'Who kills Agent Block to try and take his life span?',
+                answers: [
+                    { text: 'Sam Lawton', correct: false },
+                    { text: 'Nathan Sears', correct: false },
+                    { text: 'Molly Harper', correct: false },
+                    { text: 'Peter Friedkin', correct: true }
+                ]
+            },
+            {
+                question: 'The ending reveals that Final Destination 5 is a prequel. Which flight are Sam and Molly on?',
+                answers: [
+                    { text: 'Flight 180', correct: true },
+                    { text: 'Flight 247', correct: false },
+                    { text: 'Flight 555', correct: false },
+                    { text: 'Flight 321', correct: false }
+                ]
+            },
+            {
+                question: "What does Candice break during her gymnastics practice, leading to her death?",
+                answers: [
+                    { text: "Her ankle", correct: false },
+                    { text: "The uneven bars", correct: false },
+                    { text: "Her spine", correct: true },
+                    { text: "A ceiling fan", correct: false }
+                ]
+            },
+            {
+                question: "Where does the final confrontation with Peter take place?",
+                answers: [
+                    { text: "An abandoned factory", correct: false },
+                    { text: "A kitchen/restaurant", correct: true },
+                    { text: "On the damaged bridge", correct: false },
+                    { text: "At an airport", correct: false }
+                ]
+            }
+        ];
+    </script>
+
+</body></html>"
