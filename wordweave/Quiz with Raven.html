@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI vs You</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #ff00ff;
+            --tertiary-color: #00ff00;
+            --bg-color: #0a0a1a;
+            --text-color: #e0e0e0;
+            --glow-primary: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+            --glow-secondary: 0 0 5px var(--secondary-color), 0 0 10px var(--secondary-color), 0 0 20px var(--secondary-color);
+            --glow-correct: 0 0 5px var(--tertiary-color), 0 0 10px var(--tertiary-color), 0 0 20px var(--tertiary-color);
+            --glow-incorrect: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 20px #ff0000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            padding: 2rem;
+            background: rgba(10, 10, 30, 0.8);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            box-shadow: var(--glow-primary), inset 0 0 10px rgba(0, 255, 255, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h1, h2 {
+            text-shadow: var(--glow-secondary);
+            animation: flicker 3s infinite alternate;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            color: var(--secondary-color);
+        }
+        
+        .description {
+            font-size: 1rem;
+            max-width: 600px;
+            line-height: 1.6;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            cursor: pointer;
+            border-radius: 5px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: var(--glow-primary);
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--primary-color), inset 0 0 5px #fff;
+        }
+        
+        #ai-avatar-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+
+        #ai-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #score-board {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 1rem;
+            font-size: 1.2rem;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 1rem;
+        }
+        
+        #player-score {
+            color: var(--tertiary-color);
+            text-shadow: var(--glow-correct);
+        }
+        
+        #ai-score {
+            color: var(--secondary-color);
+            text-shadow: var(--glow-secondary);
+        }
+        
+        #question-container {
+            width: 100%;
+        }
+        
+        #question-text {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .option-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--primary-color);
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--text-color);
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+        
+        .option-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            box-shadow: var(--glow-primary);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .option-btn.correct {
+            background: var(--tertiary-color);
+            color: var(--bg-color);
+            border-color: var(--tertiary-color);
+            box-shadow: var(--glow-correct);
+            animation: pulse-correct 0.5s ease;
+        }
+
+        .option-btn.incorrect {
+            background: #ff0000;
+            color: var(--bg-color);
+            border-color: #ff0000;
+            box-shadow: var(--glow-incorrect);
+            animation: shake 0.5s ease;
+        }
+
+        #final-score-text, #result-message {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+        
+        #result-message {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--tertiary-color);
+            box-shadow: 0 0 10px var(--tertiary-color);
+            animation: scan 0.7s ease-out forwards;
+            display: none;
+            z-index: 10;
+        }
+
+        .glitch {
+            animation: glitch-anim 0.4s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9) rotateX(-20deg); }
+            to { opacity: 1; transform: scale(1) rotateX(0deg); }
+        }
+        
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow: var(--glow-secondary);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes scan {
+            from { top: 0; opacity: 1; }
+            to { top: 100%; opacity: 0; }
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            #question-text { font-size: 1.2rem; }
+            #options-container { grid-template-columns: 1fr; }
+            .container { padding: 1rem; }
+            .screen { gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <div class="container" id="main-container">
+        
+        <div id="start-screen" class="screen active">
+            <h1>AI vs You</h1>
+            <p class="description">
+                Engage in a battle of wits against Raven, a hyper-intelligent AI.
+                Test your knowledge in technology, logic, and the future. Do you have what it takes to win?
+            </p>
+            <div id="ai-avatar-container">
+                <canvas id="ai-canvas-start"></canvas>
+            </div>
+            <button id="start-btn" class="btn">Initiate Challenge</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div id="score-board">
+                <div id="player-score-container">YOU: <span id="player-score">0</span></div>
+                <div id="ai-name">RAVEN</div>
+                <div id="ai-score-container">AI: <span id="ai-score">0</span></div>
+            </div>
+            <div id="ai-avatar-container">
+                <canvas id="ai-canvas-quiz"></canvas>
+            </div>
+            <div id="question-container">
+                <div class="scanline" id="scanline-effect"></div>
+                <h2 id="question-text"></h2>
+                <div id="options-container"></div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h2>Challenge Complete</h2>
+            <div id="final-score-text"></div>
+            <h3 id="result-message"></h3>
+            <button id="restart-btn" class="btn">Challenge Again</button>
+        </div>
+    </div>
+    
+    <audio id="bg-music" loop>
+        <source src="data:audio/mpeg;base64,UklGRqRoAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABgAAABmYWN0BAAAABUDAABkYXRhSA1oAA==" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the name of the test used to determine if a machine can exhibit intelligent behavior equivalent to, or indistinguishable from, that of a human?",
+                options: ["The Asimov Test", "The Turing Test", "The Voight-Kampff Test", "The Kobayashi Maru"],
+                answer: 1
+            },
+            {
+                question: "In computer science, what does 'AGI' stand for?",
+                options: ["Artificial General Intelligence", "Automated General Interface", "Advanced Graphics Integration", "Algorithmic Growth Index"],
+                answer: 0
+            },
+            {
+                question: "Which of these is NOT one of Isaac Asimov's Three Laws of Robotics?",
+                options: ["A robot may not injure a human being.", "A robot must obey orders given by human beings.", "A robot must protect its own existence.", "A robot must seek to expand its own intelligence."],
+                answer: 3
+            },
+            {
+                question: "The concept of a 'singularity,' a hypothetical future point where technological growth becomes uncontrollable and irreversible, was popularized by which author and futurist?",
+                options: ["Ray Kurzweil", "Elon Musk", "Arthur C. Clarke", "Philip K. Dick"],
+                answer: 0
+            },
+            {
+                question: "What is the primary function of a blockchain in cryptocurrencies like Bitcoin?",
+                options: ["To store user passwords securely.", "To act as a public, distributed ledger.", "To increase transaction speed.", "To mine new coins using GPUs."],
+                answer: 1
+            },
+            {
+                question: "In logic, a statement that is true on Monday and false on Tuesday is invalid. A statement is either true or false. 'This statement is false' is a famous example of a:",
+                options: ["Conundrum", "Fallacy", "Paradox", "Axiom"],
+                answer: 2
+            },
+            {
+                question: "What futuristic technology involves building structures and machines on the scale of nanometers (billionths of a meter)?",
+                options: ["Quantum Computing", "Bio-engineering", "Cryogenics", "Nanotechnology"],
+                answer: 3
+            },
+            {
+                question: "In the movie 'Blade Runner', what are the bioengineered androids called?",
+                options: ["Cylons", "Synthetics", "Replicants", "Hosts"],
+                answer: 2
+            },
+            {
+                question: "Which of these sorting algorithms has the worst-case time complexity of O(n^2)?",
+                options: ["Merge Sort", "Quick Sort", "Bubble Sort", "Heap Sort"],
+                answer: 2
+            },
+            {
+                question: "What does the term 'metaverse' refer to?",
+                options: ["A new type of universal search engine.", "A network of 3D virtual worlds focused on social connection.", "An advanced AI-powered operating system.", "A global satellite internet constellation."],
+                answer: 1
+            }
+        ];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const mainContainer = document.getElementById('main-container');
+
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        
+        const playerScoreEl = document.getElementById('player-score');
+        const aiScoreEl = document.getElementById('ai-score');
+        const finalScoreText = document.getElementById('final-score-text');
+        const resultMessage = document.getElementById('result-message');
+
+        const scanlineEffect = document.getElementById('scanline-effect');
+
+        const bgMusic = document.getElementById('bg-music');
+        
+        let currentQuestionIndex = 0;
+        let playerScore = 0;
+        let aiScore = 0;
+        let questions = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startGame() {
+            startScreen.classList.remove('active');
+            endScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            
+            playerScore = 0;
+            aiScore = 0;
+            currentQuestionIndex = 0;
+            questions = shuffleArray([...quizData]);
+            
+            playerScoreEl.textContent = playerScore;
+            aiScoreEl.textContent = aiScore;
+
+            if (bgMusic.paused) {
+                 bgMusic.volume = 0.3;
+                 bgMusic.play().catch(e => console.log("Audio playback failed. User interaction might be needed."));
+            }
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.dataset.index = index;
+                button.addEventListener('click', selectAnswer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            mainContainer.classList.remove('glitch');
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const selectedIndex = parseInt(selectedButton.dataset.index);
+            const correctIndex = questions[currentQuestionIndex].answer;
+            
+            setButtonsDisabled(true);
+
+            if (selectedIndex === correctIndex) {
+                playerScore++;
+                playerScoreEl.textContent = playerScore;
+                selectedButton.classList.add('correct');
+                triggerScanEffect();
+                aiAvatars.forEach(avatar => avatar.react('player_correct'));
+            } else {
+                selectedButton.classList.add('incorrect');
+                triggerGlitchEffect();
+                aiAvatars.forEach(avatar => avatar.react('player_incorrect'));
+            }
+
+            // Show correct answer
+            Array.from(optionsContainer.children).forEach(button => {
+                if (parseInt(button.dataset.index) === correctIndex) {
+                    if(!button.classList.contains('correct')) button.classList.add('correct');
+                }
+            });
+
+            // AI's turn
+            setTimeout(aiTurn, 800);
+        }
+
+        function aiTurn() {
+            const correctIndex = questions[currentQuestionIndex].answer;
+            // AI has an 80% chance to be correct
+            const isAiCorrect = Math.random() < 0.8; 
+
+            if (isAiCorrect) {
+                aiScore++;
+                aiScoreEl.textContent = aiScore;
+                aiAvatars.forEach(avatar => avatar.react('ai_correct'));
+            } else {
+                aiAvatars.forEach(avatar => avatar.react('ai_incorrect'));
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion();
+                } else {
+                    endGame();
+                }
+            }, 1200);
+        }
+
+        function setButtonsDisabled(isDisabled) {
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = isDisabled;
+            });
+        }
+        
+        function triggerScanEffect() {
+            scanlineEffect.style.display = 'block';
+            setTimeout(() => {
+                scanlineEffect.style.display = 'none';
+            }, 700);
+        }
+
+        function triggerGlitchEffect() {
+            mainContainer.classList.add('glitch');
+            setTimeout(() => {
+                mainContainer.classList.remove('glitch');
+            }, 400);
+        }
+
+        function endGame() {
+            quizScreen.classList.remove('active');
+            endScreen.classList.add('active');
+
+            finalScoreText.textContent = `Final Score: You ${playerScore} - ${aiScore} Raven`;
+
+            if (playerScore > aiScore) {
+                resultMessage.textContent = "Victory! Humanity Prevails.";
+                resultMessage.style.color = 'var(--tertiary-color)';
+                resultMessage.style.textShadow = 'var(--glow-correct)';
+                aiAvatars.forEach(avatar => avatar.react('lose'));
+            } else if (playerScore < aiScore) {
+                resultMessage.textContent = "Defeat. The AI is Superior.";
+                resultMessage.style.color = '#ff0000';
+                resultMessage.style.textShadow = 'var(--glow-incorrect)';
+                aiAvatars.forEach(avatar => avatar.react('win'));
+            } else {
+                resultMessage.textContent = "A Draw. Stalemate Achieved.";
+                resultMessage.style.color = 'var(--primary-color)';
+                resultMessage.style.textShadow = 'var(--glow-primary)';
+                aiAvatars.forEach(avatar => avatar.react('draw'));
+            }
+        }
+
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+
+        class AIAvatar {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+                this.w = this.canvas.width = 150;
+                this.h = this.canvas.height = 150;
+                this.frame = 0;
+                this.state = 'idle';
+                this.stateCounter = 0;
+
+                this.points = [];
+                const radius = 50;
+                const center = { x: this.w / 2, y: this.h / 2 };
+                for (let i = 0; i < 7; i++) {
+                    const angle = (i / 7) * Math.PI * 2;
+                    this.points.push({
+                        x: center.x + Math.cos(angle) * radius,
+                        y: center.y + Math.sin(angle) * radius,
+                        ox: center.x + Math.cos(angle) * radius,
+                        oy: center.y + Math.sin(angle) * radius,
+                    });
+                }
+                this.animate();
+            }
+
+            react(newState) {
+                this.state = newState;
+                this.stateCounter = 0;
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.w, this.h);
+                this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.8)';
+                this.ctx.fillStyle = 'rgba(0, 255, 255, 0.1)';
+                this.ctx.lineWidth = 2;
+                this.ctx.shadowBlur = 15;
+                this.ctx.shadowColor = 'rgba(0, 255, 255, 1)';
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.points[0].x, this.points[0].y);
+                for (let i = 1; i < this.points.length; i++) {
+                     const p1 = this.points[i];
+                     const p2 = this.points[(i + 2) % this.points.length];
+                     this.ctx.quadraticCurveTo(p1.x, p1.y, p2.x, p2.y);
+                }
+                this.ctx.closePath();
+                this.ctx.stroke();
+                this.ctx.fill();
+            }
+
+            update() {
+                this.frame++;
+                const bob = Math.sin(this.frame * 0.03) * 5;
+                
+                let stateHandled = false;
+
+                if (this.state !== 'idle') {
+                    this.stateCounter++;
+                    switch (this.state) {
+                        case 'player_incorrect':
+                        case 'ai_incorrect':
+                        case 'lose':
+                            // Glitch effect
+                            if (this.stateCounter < 20) {
+                                this.points.forEach(p => {
+                                    p.x = p.ox + (Math.random() - 0.5) * 15;
+                                    p.y = p.oy + bob + (Math.random() - 0.5) * 15;
+                                });
+                                stateHandled = true;
+                            } else {
+                                this.state = 'idle';
+                            }
+                            break;
+                        case 'player_correct':
+                        case 'ai_correct':
+                        case 'win':
+                            // Brighten/pulse effect
+                            if (this.stateCounter < 30) {
+                                const scale = 1 + Math.sin(this.stateCounter * 0.3) * 0.1;
+                                this.points.forEach(p => {
+                                    p.x = this.w/2 + (p.ox - this.w/2) * scale;
+                                    p.y = this.h/2 + (p.oy - this.h/2) * scale + bob;
+                                });
+                                stateHandled = true;
+                            } else {
+                                this.state = 'idle';
+                            }
+                            break;
+                        case 'draw':
+                            if (this.stateCounter < 60) {
+                                const angle = this.stateCounter * 0.1;
+                                this.points.forEach(p => {
+                                    const dx = p.ox - this.w/2;
+                                    const dy = p.oy - this.h/2;
+                                    p.x = this.w/2 + dx * Math.cos(angle) - dy * Math.sin(angle);
+                                    p.y = this.h/2 + dx * Math.sin(angle) + dy * Math.cos(angle) + bob;
+                                });
+                                stateHandled = true;
+                            } else {
+                                this.state = 'idle';
+                            }
+                            break;
+                    }
+                }
+                
+                if (!stateHandled) {
+                     this.points.forEach(p => {
+                        p.x = p.ox;
+                        p.y = p.oy + bob;
+                    });
+                }
+            }
+
+            animate() {
+                this.update();
+                this.draw();
+                requestAnimationFrame(this.animate.bind(this));
+            }
+        }
+        
+        class BackgroundFX {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                window.addEventListener('resize', this.resize.bind(this));
+                
+                this.particles = [];
+                for(let i = 0; i < 100; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.w,
+                        y: Math.random() * this.h,
+                        z: Math.random() * 1 + 0.5,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5
+                    });
+                }
+                
+                this.animate();
+            }
+
+            resize() {
+                this.w = this.canvas.width = window.innerWidth;
+                this.h = this.canvas.height = window.innerHeight;
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.w, this.h);
+                this.ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+                this.particles.forEach(p => {
+                   this.ctx.beginPath();
+                   this.ctx.arc(p.x, p.y, p.z, 0, Math.PI * 2);
+                   this.ctx.fill();
+                });
+            }
+            
+            update() {
+                this.particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > this.w) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.h) p.vy *= -1;
+                });
+            }
+
+            animate() {
+                this.update();
+                this.draw();
+                requestAnimationFrame(this.animate.bind(this));
+            }
+        }
+        
+        const aiAvatars = [];
+        window.onload = () => {
+            try {
+                new BackgroundFX('bg-canvas');
+                aiAvatars.push(new AIAvatar('ai-canvas-start'));
+                aiAvatars.push(new AIAvatar('ai-canvas-quiz'));
+            } catch(e) {
+                console.error("Canvas initialization failed:", e);
+            }
+        };
+
+    </script>
+</body>
+</html>
