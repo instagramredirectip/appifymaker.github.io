@@ -4,19 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0b0b">
+  <meta name="theme-color" content="#000000">
   <title>SportX Live - Latest Sports News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0b0b;
-      --card-bg: #1c1c1e;
-      --accent: #ffd700;
-      --text: #f5f5f5;
-      --text-secondary: #aaaaaa;
-      --shadow-color: rgba(255, 215, 0, 0.2);
+      --bg-dark: #0a0a0a;
+      --bg-card: #1a1a1a;
+      --accent-gold: #ffd700;
+      --text-primary: #f0f0f0;
+      --text-secondary: #a0a0a0;
+      --glow-color: rgba(255, 215, 0, 0.5);
     }
 
     * {
@@ -25,187 +25,193 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-weight: 300;
+      font-size: 16px;
       line-height: 1.6;
-      overflow-x: hidden;
+      padding-top: 70px;
+      padding-bottom: 70px;
     }
 
     /* --- Header --- */
-    .header {
-      position: sticky;
+    .app-header {
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
+      background-color: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 1.5rem;
-      background-color: rgba(11, 11, 11, 0.85);
-      backdrop-filter: blur(10px);
       z-index: 100;
-      border-bottom: 1px solid #2c2c2e;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
     }
 
-    .header-title {
+    .app-header__title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--accent);
-      text-shadow: 0 0 5px var(--shadow-color), 0 0 10px var(--shadow-color);
+      color: var(--accent-gold);
+      text-shadow: 0 0 8px var(--glow-color);
     }
 
     .search-container {
-      position: relative;
       display: flex;
       align-items: center;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      width: 20px;
-      height: 20px;
-      fill: var(--text-secondary);
-    }
-
-    #search-input {
-      background-color: var(--card-bg);
-      border: 1px solid #333;
+      background-color: var(--bg-card);
       border-radius: 20px;
-      padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-      color: var(--text);
-      font-family: inherit;
-      width: 150px;
-      transition: width 0.3s ease-in-out, background-color 0.2s;
+      padding: 5px 10px;
+      border: 1px solid #333;
+    }
+
+    .search-container svg {
+      fill: var(--text-secondary);
+      width: 18px;
+      height: 18px;
     }
     
-    #search-input::placeholder {
-      color: var(--text-secondary);
+    #search-input {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      outline: none;
+      width: 100px;
+      padding-left: 8px;
+      transition: width 0.3s ease;
     }
 
     #search-input:focus {
-      outline: none;
-      width: 200px;
-      border-color: var(--accent);
-      background-color: #222;
-      box-shadow: 0 0 8px var(--shadow-color);
+        width: 150px;
     }
 
-    /* --- Main Content --- */
-    main {
-      padding: 75px 1rem 100px 1rem;
-      max-width: 800px;
-      margin: 0 auto;
+    /* --- News Feed --- */
+    .news-feed {
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
     }
 
-    #news-feed {
-      display: grid;
-      gap: 1.5rem;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .news-card {
-      background-color: var(--card-bg);
+      background-color: var(--bg-card);
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      border: 1px solid #2c2c2e;
-      display: flex;
-      flex-direction: column;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--glow-color);
+      border: 1px solid #2a2a2a;
       animation: fadeIn 0.5s ease-out forwards;
-      opacity: 0;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+    .news-card.hidden {
+      display: none;
     }
 
-    .card-image {
+    .news-card__image {
       width: 100%;
       height: 200px;
       object-fit: cover;
       display: block;
-      border-bottom: 2px solid var(--accent);
+      border-bottom: 2px solid var(--accent-gold);
     }
 
-    .card-content {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
+    .news-card__content {
+      padding: 20px;
     }
 
-    .card-source {
-      background-color: var(--accent);
-      color: var(--bg);
+    .news-card__source {
+      display: inline-block;
+      background-color: var(--accent-gold);
+      color: var(--bg-dark);
+      padding: 4px 12px;
+      border-radius: 20px;
       font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      align-self: flex-start;
-      margin-bottom: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
-    .card-title {
-      font-size: 1.2rem;
+    .news-card__title {
+      font-size: 1.25rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text);
+      margin-bottom: 10px;
+      color: var(--text-primary);
     }
 
-    .card-description {
+    .news-card__description {
       font-size: 0.9rem;
       color: var(--text-secondary);
-      margin-bottom: 1rem;
-      flex-grow: 1;
+      margin-bottom: 15px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .card-footer {
+    .news-card__footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: auto;
-    }
-    
-    .card-time {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
     }
 
-    .read-more-btn {
-      background: linear-gradient(90deg, var(--accent), #f9b208);
-      color: var(--bg);
+    .news-card__time {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .news-card__read-more {
+      background-color: transparent;
+      color: var(--accent-gold);
+      border: 1px solid var(--accent-gold);
+      padding: 8px 16px;
+      border-radius: 20px;
       text-decoration: none;
       font-weight: 600;
-      padding: 0.6rem 1.2rem;
-      border-radius: 20px;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-size: 0.85rem;
+      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
     }
 
-    .read-more-btn:hover, .read-more-btn:focus {
-      transform: scale(1.05);
-      box-shadow: 0 0 15px var(--shadow-color);
+    .news-card__read-more:hover,
+    .news-card__read-more:focus {
+      background-color: var(--accent-gold);
+      color: var(--bg-dark);
+      box-shadow: 0 0 10px var(--glow-color);
+      outline: none;
     }
 
     /* --- Bottom Navigation --- */
-    .bottom-nav {
+    .app-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
+      background-color: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 0.75rem 0;
-      background-color: rgba(11, 11, 11, 0.85);
-      backdrop-filter: blur(10px);
+      padding: 10px 0;
+      border-top: 1px solid rgba(255, 215, 0, 0.2);
       z-index: 100;
-      border-top: 1px solid #2c2c2e;
     }
 
     .nav-item {
@@ -214,11 +220,7 @@
       align-items: center;
       color: var(--text-secondary);
       text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .nav-item.active, .nav-item:hover {
-      color: var(--accent);
+      transition: color 0.2s, transform 0.2s;
     }
 
     .nav-item svg {
@@ -227,143 +229,139 @@
       fill: currentColor;
       margin-bottom: 4px;
     }
-    
-    .nav-item.active svg {
-      filter: drop-shadow(0 0 3px var(--shadow-color));
+
+    .nav-item__label {
+      font-size: 0.7rem;
     }
 
-    .nav-label {
-      font-size: 0.7rem;
-      font-weight: 400;
+    .nav-item.active {
+      color: var(--accent-gold);
+      transform: scale(1.1);
     }
     
-    .no-results {
-        text-align: center;
-        padding: 2rem;
-        color: var(--text-secondary);
+    .nav-item:focus {
+        outline: 2px solid var(--accent-gold);
+        outline-offset: 2px;
+        border-radius: 4px;
     }
   </style>
 </head>
 <body>
 
-  <header class="header">
-    <h1 class="header-title">SportX Live</h1>
+  <header class="app-header">
+    <h1 class="app-header__title">SportX Live</h1>
     <div class="search-container">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input type="text" id="search-input" placeholder="Search news..." aria-label="Search news articles">
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+      <input type="search" id="search-input" placeholder="Search news..." aria-label="Search sports news">
     </div>
   </header>
 
-  <main>
-    <div id="news-feed">
-      <!-- News cards will be injected here by JavaScript -->
-    </div>
+  <main class="news-feed" id="news-feed-container">
+    <!-- News articles will be injected here by JavaScript -->
   </main>
 
-  <nav class="bottom-nav">
-    <a href="#" class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      <span class="nav-label">Home</span>
+  <nav class="app-nav">
+    <a href="#" class="nav-item" aria-label="Home">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 160l-1.8-.1c-1.4 0-2.8 0-4.2-.1c-1.1 .1-2.2 .1-3.3 .1H128c-22.1 0-40-17.9-40-40V455.8c-.3-2.7-.5-5.4-.5-8.1l.7-160.2h-32c-17 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
+      <span class="nav-item__label">Home</span>
     </a>
-    <a href="#" class="nav-item active">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-      <span class="nav-label">News</span>
+    <a href="#" class="nav-item active" aria-label="News">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M559.1 233.4c16.4-16.4 16.4-42.9 0-59.3l-11.7-11.7c-16.4-16.4-42.9-16.4-59.3 0L336 314.5V120c0-22.1-17.9-40-40-40h-48c-22.1 0-40 17.9-40 40v194.5L56.9 162.4c-16.4-16.4-42.9-16.4-59.3 0L16.9 174.1c-16.4 16.4-16.4 42.9 0 59.3l145 145c16.4 16.4 42.9 16.4 59.3 0l43-43 43 43c16.4 16.4 42.9 16.4 59.3 0l145-145zm-343 145L128 290.3l-43 43c-16.4 16.4-42.9 16.4-59.3 0L16.9 324.7c-16.4-16.4-16.4-42.9 0-59.3l11.7-11.7c16.4-16.4 42.9-16.4 59.3 0l43 43L224 203.8V120c0-22.1 17.9-40 40-40h48c22.1 0 40 17.9 40 40v83.8l93.1 93.1 43-43c16.4-16.4 42.9-16.4 59.3 0l11.7 11.7c16.4 16.4 16.4 42.9 0 59.3l-8.8 8.8L384 416.2l-43-43-43 43-71.9-71.9z"/></svg>
+      <span class="nav-item__label">News</span>
     </a>
-    <a href="#" class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-      <span class="nav-label">Trending</span>
+    <a href="#" class="nav-item" aria-label="Trending">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M368.5 240.4c12.3-13.4 11.4-34-2-46.3l-83.8-77.9c-11.1-10.4-27.1-11.1-39.2-1.8L192 169.1 114.6 98c-12.1-9.3-28.1-8.6-39.2 1.8L-8.5 177.7c-13.4 12.3-14.3 32.9-2 46.3l109.1 121c11.1 12.3 28.5 13.3 40.8 2.3l48.6-43.2 48.6 43.2c12.3 11 29.7 10 40.8-2.3l109-121z"/></svg>
+      <span class="nav-item__label">Trending</span>
     </a>
-    <a href="#" class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      <span class="nav-label">Profile</span>
+    <a href="#" class="nav-item" aria-label="Profile">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
+      <span class="nav-item__label">Profile</span>
     </a>
   </nav>
-  
+
   <script type="application/json" id="newsData">
-  [{"source":{"id":null,"name":"MLB Trade Rumors"},"author":"Nick Deeds","title":"The Opener: Blue Jays, Dodgers, World Series - MLB Trade Rumors","description":"Here are three things to keep an eye on headed into Game 1 later today: 1. Blue Jays roster decisions:...","url":"https://www.mlbtraderumors.com/2025/10/the-opener-blue-jays-dodgers-world-series.html","urlToImage":"https://cdn.mlbtraderumors.com/files/2025/10/USATSI_23129909-1024x683.jpg","publishedAt":"2025-10-24T13:37:42Z","content":"Here are three things to keep an eye on headed into Game 1 later today:\r\n1. Blue Jays roster decisions:\r\nAs the Blue Jays finalize their World Series roster, the biggest question for the club is what… [+2879 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Josh Alper","title":"Kevin O’Connell: If J.J. McCarthy is healthy, he’ll play - NBC Sports","description":"Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/kevin-oconnell-if-j-j-mccarthy-is-healthy-hell-play","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f2b41b9/2147483647/strip/true/crop/5569x3133+0+0/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2F1f%2F3f%2F0c48b49443bfb260dfd81ddae6fa%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242928223","publishedAt":"2025-10-24T10:51:26Z","content":"Thursday nights blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy and watching Carson Wentz try to battle through injury throughout th… [+1435 chars]"},{"source":{"id":"talksport","name":"TalkSport"},"author":"Kerrie Jacobs-Bryant","title":"Aaron Rodgers announces shock retirement decision amid Green Bay Packers return - talkSPORT","description":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer.Ahead of the 4-2 Steelers' blockbuster Week 8 clash against h","url":"http://talksport.com/nfl/3673989/aaron-rodgers-retirement-decision-green-bay-packers-pittsburgh-steelers/","urlToImage":"https://talksport.com/wp-content/uploads/sites/5/2025/09/8-pittsburgh-steelers-reacts-throwing-1023401897.jpg?strip=all&quality=100&w=1920&h=1080&crop=1","publishedAt":"2025-10-24T09:39:25Z","content":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer. \r\nAhead of the 4-2 Steelers' blockbuster Week 8 clash against his former team on Sunday Night Football, the 2… [+5337 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Michael David Smith","title":"Chargers’ Oronde Gadsden II leads all NFL tight ends in receiving yards per game - NBC Sports","description":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didn't know how good a player they had.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/chargers-oronde-gadsden-ii-leads-all-nfl-tight-ends-in-receiving-yards-per-game","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f0ba22d/2147483647/strip/true/crop/3783x2128+0+197/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fb8%2F25%2F560448784f7698971bd7ac623409%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242569701","publishedAt":"2025-10-24T09:33:48Z","content":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didnt know how good a player they had. They didnt even know after seeing him through the offseason… [+980 chars]"},{"source":{"id":null,"name":"Bloody Elbow"},"author":null,"title":"Tom Aspinall comes in much heavier than Ciryl Gane at UFC 321 weigh-ins while one fighter misses by 3lbs - Bloody Elbow","description":"Two fighters missed the mark ahead of UFC 321 on Saturday night","url":"https://bloodyelbow.com/2025/10/24/tom-aspinall-comes-in-much-heavier-than-ciryl-gane-at-ufc-321-weigh-ins-while-one-fighter-misses-by-3lbs/","urlToImage":"https://bloodyelbow.com/wp-content/uploads/1/2025/10/Jake-Paul-chicken-scaled.jpg","publishedAt":"2025-10-24T08:29:19Z","content":"The weigh-in results are in for the Octagons return to Abu Dhabi on Saturday night.\r\nIn the main event, Tom Aspinall faces Ciryl Gane in the first defense of his undisputed UFC heavyweight title.\r\nTh… [+3384 chars]"},{"source":{"id":null,"name":"BBC News"},"author":"Emily Salley","title":"NBA: Shai Gilgeous-Alexander stars as Oklahoma City Thunder beat Indian Pacers in Finals rematch - BBC","description":"Shai Gilgeous-Alexander scores a career-high 55 points as the Oklahoma City Thunder claim their second straight win in double overtime.","url":"https://www.bbc.com/sport/basketball/articles/cd67jl19ewwo","urlToImage":"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/63bb/live/3ded47c0-b09d-11f0-a866-df0ece153fc7.jpg","publishedAt":"2025-10-24T06:16:57Z","content":"Once again the Canadian guard proved crucial, netting nine points in the second overtime as he beat his previous career-best of 54 points.\r\n\"This team has two great qualities,\" Gilgeous-Alexander sai… [+626 chars]"},{"source":{"id":"espn","name":"ESPN"},"author":"ESPN","title":"Chargers 37-10 Vikings (Oct 23, 2025) Game Recap - ESPN","description":null,"url":"https://www.espn.com/nfl/recap?gameId\\\\u003d401772942","urlToImage":null,"publishedAt":"2025-10-24T04:41:15Z","content":null},{"source":{"id":null,"name":"San Francisco Chronicle"},"author":"Susan Slusser","title":"New Giants manager Tony Vitello raised as St. Louis sports royalty, but ‘he’s for real’ - San Francisco Chronicle","description":"Tony Vitello comes to the San Francisco Giants with a past that inspires as the son of a legendary coach. “The front office didn’t do this on a whim.”","url":"https://www.sfchronicle.com/sports/giants/article/giants-tony-vitello-for-real-know-21115499.php","urlToImage":"https://s.hdnux.com/photos/01/54/72/43/28551367/3/rawImage.jpg","publishedAt":"2025-10-24T00:25:41Z","content":"Tennessee coach Tony Vitello, left, cheers on his players during an NCAA Super Regional game against Southern Mississippi in 2023. \r\nRogelio V. Solis/AP\r\nAfter the Giants lured Tony Vitello away from… [+10470 chars]"},{"source":{"id":null,"name":"BBC News"},"author":null,"title":"How a mafia poker scam allegedly stole millions using X-rays and tech - BBC","description":"Prosecutors said the elaborate plot, which allegedly netted $7m from victims, belonged in a Hollywood film.","url":"https://www.bbc.com/news/articles/cz6nd9wnzn6o","urlToImage":"https://ichef.bbci.co.uk/news/1024/branded_news/aaad/live/9999e380-b0d4-11f0-b2a1-6f537f66f9aa.jpg","publishedAt":"2025-10-23T22:48:22Z","content":"Former NBA player Damon Jones (left) and basketball coach Chauncey Billups were arrested in connection with the scheme\r\nCelebrities, professional sports stars and wealthy gamblers sat at a table hopi… [+5032 chars]"},{"source":{"id":null,"name":"NPR"},"author":"Alana Wise","title":"Chess body investigating ex-world champion who accused Daniel Naroditsky of cheating - NPR","description":"U.S. chess grandmaster Daniel Naroditsky died this week at age 29. Former world champion Vladimir Kramnik had accused Naroditsky, among others, of cheating in the sport.","url":"https://www.npr.org/2025/10/23/nx-s1-5584161/chess-fide-investigation-naroditsky-kramnik","urlToImage":"https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5544x3119+0+0/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F77%2F05%2F9ac37ed540cfb5dbb4bbec807686%2Fgettyimages-2166786414.jpg","publishedAt":"2025-10-23T22:31:27Z","content":"The International Chess Federation is investigating a Russian grandmaster for allegations of cheating he levied at fellow elite players, including 29-year-old U.S. grandmaster and YouTube sensation D… [+3459 chars]"},{"source":{"id":null,"name":"Fantasypoints.com"},"author":null,"title":"Week 8 Fantasy Football Start 'Em, Sit 'Em - Fantasy Points","description":"Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.","url":"https://www.fantasypoints.com/nfl/articles/2025/week-8-fantasy-football-start-em-sit-em","urlToImage":"https://static.fantasypts.com/photos/b2b69874054d71a709f3f1be9bb8b8c3bcaa7128/cd1e25e964f97312c7f9355f4efab5f014327c06/cover.jpg?size=1200x628&t=1761239146727","publishedAt":"2025-10-23T15:00:00Z","content":"Welcome to Week 8 Start Em, Sit Em.\r\nThis game-by-game article breaks down every player that is relevant for fantasy football. As always, please use our projections to make your start/sit decisions e… [+35187 chars]"}]
+    [{"source":{"id":null,"name":"MLB Trade Rumors"},"author":"Nick Deeds","title":"The Opener: Blue Jays, Dodgers, World Series - MLB Trade Rumors","description":"Here are three things to keep an eye on headed into Game 1 later today: 1. Blue Jays roster decisions:...","url":"https://www.mlbtraderumors.com/2025/10/the-opener-blue-jays-dodgers-world-series.html","urlToImage":"https://cdn.mlbtraderumors.com/files/2025/10/USATSI_23129909-1024x683.jpg","publishedAt":"2025-10-24T13:37:42Z","content":"Here are three things to keep an eye on headed into Game 1 later today:\r\n1. Blue Jays roster decisions:\r\nAs the Blue Jays finalize their World Series roster, the biggest question for the club is what… [+2879 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Josh Alper","title":"Kevin O’Connell: If J.J. McCarthy is healthy, he’ll play - NBC Sports","description":"Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/kevin-oconnell-if-j-j-mccarthy-is-healthy-hell-play","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f2b41b9/2147483647/strip/true/crop/5569x3133+0+0/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2F1f%2F3f%2F0c48b49443bfb260dfd81ddae6fa%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242928223","publishedAt":"2025-10-24T10:51:26Z","content":"Thursday nights blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy and watching Carson Wentz try to battle through injury throughout th… [+1435 chars]"},{"source":{"id":"talksport","name":"TalkSport"},"author":"Kerrie Jacobs-Bryant","title":"Aaron Rodgers announces shock retirement decision amid Green Bay Packers return - talkSPORT","description":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer.Ahead of the 4-2 Steelers' blockbuster Week 8 clash against h","url":"http://talksport.com/nfl/3673989/aaron-rodgers-retirement-decision-green-bay-packers-pittsburgh-steelers/","urlToImage":"https://talksport.com/wp-content/uploads/sites/5/2025/09/8-pittsburgh-steelers-reacts-throwing-1023401897.jpg?strip=all&quality=100&w=1920&h=1080&crop=1","publishedAt":"2025-10-24T09:39:25Z","content":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer. \r\nAhead of the 4-2 Steelers' blockbuster Week 8 clash against his former team on Sunday Night Football, the 2… [+5337 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Michael David Smith","title":"Chargers’ Oronde Gadsden II leads all NFL tight ends in receiving yards per game - NBC Sports","description":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didn't know how good a player they had.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/chargers-oronde-gadsden-ii-leads-all-nfl-tight-ends-in-receiving-yards-per-game","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f0ba22d/2147483647/strip/true/crop/3783x2128+0+197/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fb8%2F25%2F560448784f7698971bd7ac623409%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242569701","publishedAt":"2025-10-24T09:33:48Z","content":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didnt know how good a player they had. They didnt even know after seeing him through the offseason… [+980 chars]"},{"source":{"id":null,"name":"Bloody Elbow"},"author":null,"title":"Tom Aspinall comes in much heavier than Ciryl Gane at UFC 321 weigh-ins while one fighter misses by 3lbs - Bloody Elbow","description":"Two fighters missed the mark ahead of UFC 321 on Saturday night","url":"https://bloodyelbow.com/2025/10/24/tom-aspinall-comes-in-much-heavier-than-ciryl-gane-at-ufc-321-weigh-ins-while-one-fighter-misses-by-3lbs/","urlToImage":"https://bloodyelbow.com/wp-content/uploads/1/2025/10/Jake-Paul-chicken-scaled.jpg","publishedAt":"2025-10-24T08:29:19Z","content":"The weigh-in results are in for the Octagons return to Abu Dhabi on Saturday night.\r\nIn the main event, Tom Aspinall faces Ciryl Gane in the first defense of his undisputed UFC heavyweight title.\r\nTh… [+3384 chars]"},{"source":{"id":null,"name":"BBC News"},"author":"Emily Salley","title":"NBA: Shai Gilgeous-Alexander stars as Oklahoma City Thunder beat Indian Pacers in Finals rematch - BBC","description":"Shai Gilgeous-Alexander scores a career-high 55 points as the Oklahoma City Thunder claim their second straight win in double overtime.","url":"https://www.bbc.com/sport/basketball/articles/cd67jl19ewwo","urlToImage":"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/63bb/live/3ded47c0-b09d-11f0-a866-df0ece153fc7.jpg","publishedAt":"2025-10-24T06:16:57Z","content":"Once again the Canadian guard proved crucial, netting nine points in the second overtime as he beat his previous career-best of 54 points.\r\n\"This team has two great qualities,\" Gilgeous-Alexander sai… [+626 chars]"},{"source":{"id":"espn","name":"ESPN"},"author":"ESPN","title":"Chargers 37-10 Vikings (Oct 23, 2025) Game Recap - ESPN","description":null,"url":"https://www.espn.com/nfl/recap?gameId\\\\u003d401772942","urlToImage":null,"publishedAt":"2025-10-24T04:41:15Z","content":null},{"source":{"id":null,"name":"San Francisco Chronicle"},"author":"Susan Slusser","title":"New Giants manager Tony Vitello raised as St. Louis sports royalty, but ‘he’s for real’ - San Francisco Chronicle","description":"Tony Vitello comes to the San Francisco Giants with a past that inspires as the son of a legendary coach. “The front office didn’t do this on a whim.”","url":"https://www.sfchronicle.com/sports/giants/article/giants-tony-vitello-for-real-know-21115499.php","urlToImage":"https://s.hdnux.com/photos/01/54/72/43/28551367/3/rawImage.jpg","publishedAt":"2025-10-24T00:25:41Z","content":"Tennessee coach Tony Vitello, left, cheers on his players during an NCAA Super Regional game against Southern Mississippi in 2023. \r\nRogelio V. Solis/AP\r\nAfter the Giants lured Tony Vitello away from… [+10470 chars]"},{"source":{"id":null,"name":"BBC News"},"author":null,"title":"How a mafia poker scam allegedly stole millions using X-rays and tech - BBC","description":"Prosecutors said the elaborate plot, which allegedly netted $7m from victims, belonged in a Hollywood film.","url":"https://www.bbc.com/news/articles/cz6nd9wnzn6o","urlToImage":"https://ichef.bbci.co.uk/news/1024/branded_news/aaad/live/9999e380-b0d4-11f0-b2a1-6f537f66f9aa.jpg","publishedAt":"2025-10-23T22:48:22Z","content":"Former NBA player Damon Jones (left) and basketball coach Chauncey Billups were arrested in connection with the scheme\r\nCelebrities, professional sports stars and wealthy gamblers sat at a table hopi… [+5032 chars]"},{"source":{"id":null,"name":"NPR"},"author":"Alana Wise","title":"Chess body investigating ex-world champion who accused Daniel Naroditsky of cheating - NPR","description":"U.S. chess grandmaster Daniel Naroditsky died this week at age 29. Former world champion Vladimir Kramnik had accused Naroditsky, among others, of cheating in the sport.","url":"https://www.npr.org/2025/10/23/nx-s1-5584161/chess-fide-investigation-naroditsky-kramnik","urlToImage":"https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5544x3119+0+0/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F77%2F05%2F9ac37ed540cfb5dbb4bbec807686%2Fgettyimages-2166786414.jpg","publishedAt":"2025-10-23T22:31:27Z","content":"The International Chess Federation is investigating a Russian grandmaster for allegations of cheating he levied at fellow elite players, including 29-year-old U.S. grandmaster and YouTube sensation D… [+3459 chars]"},{"source":{"id":null,"name":"Fantasypoints.com"},"author":null,"title":"Week 8 Fantasy Football Start 'Em, Sit 'Em - Fantasy Points","description":"Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.","url":"https://www.fantasypoints.com/nfl/articles/2025/week-8-fantasy-football-start-em-sit-em","urlToImage":"https://static.fantasypts.com/photos/b2b69874054d71a709f3f1be9bb8b8c3bcaa7128/cd1e25e964f97312c7f9355f4efab5f014327c06/cover.jpg?size=1200x628&t=1761239146727","publishedAt":"2025-10-23T15:00:00Z","content":"Welcome to Week 8 Start Em, Sit Em.\r\nThis game-by-game article breaks down every player that is relevant for fantasy football. As always, please use our projections to make your start/sit decisions e… [+35187 chars]"}]
   </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const newsDataElement = document.getElementById('newsData');
-      const newsFeed = document.getElementById('news-feed');
+      const newsData = JSON.parse(document.getElementById('newsData').textContent);
+      const newsFeedContainer = document.getElementById('news-feed-container');
       const searchInput = document.getElementById('search-input');
       const placeholderImage = 'https://via.placeholder.com/800x400?text=Sports+News';
 
-      if (!newsDataElement || !newsFeed) {
-        console.error('Required elements not found in the DOM.');
-        return;
-      }
-      
-      const allArticles = JSON.parse(newsDataElement.textContent);
+      const timeAgo = (date) => {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + "y ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + "mo ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + "d ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return Math.floor(seconds) + "s ago";
+      };
 
-      function timeAgo(dateString) {
-          if (!dateString) return '';
-          const date = new Date(dateString);
-          const now = new Date();
-          const seconds = Math.floor((now - date) / 1000);
-
-          let interval = seconds / 31536000;
-          if (interval > 1) return Math.floor(interval) + "y ago";
-          interval = seconds / 2592000;
-          if (interval > 1) return Math.floor(interval) + "mo ago";
-          interval = seconds / 86400;
-          if (interval > 1) return Math.floor(interval) + "d ago";
-          interval = seconds / 3600;
-          if (interval > 1) return Math.floor(interval) + "h ago";
-          interval = seconds / 60;
-          if (interval > 1) return Math.floor(interval) + "m ago";
-          return Math.floor(seconds) + "s ago";
-      }
-
-      function renderArticles(articles) {
-        newsFeed.innerHTML = '';
-        if (articles.length === 0) {
-            newsFeed.innerHTML = '<p class="no-results">No articles found. Try a different search.</p>';
-            return;
-        }
+      const createNewsCard = (article) => {
+        const card = document.createElement('article');
+        card.className = 'news-card';
         
-        articles.forEach(article => {
-          if (!article.title || article.title === '[Removed]') return;
+        const cardTitle = article.title || 'No Title';
+        const cardSource = article.source.name || 'Unknown Source';
 
-          const card = document.createElement('div');
-          card.className = 'news-card';
-          
-          const description = article.description ? article.description.substring(0, 100) + '...' : 'No description available.';
-          
-          card.innerHTML = `
-            <img src="${article.urlToImage || placeholderImage}" alt="${article.title}" class="card-image" loading="lazy" onerror="this.src='${placeholderImage}'">
-            <div class="card-content">
-              <span class="card-source">${article.source.name || 'Unknown Source'}</span>
-              <h2 class="card-title">${article.title}</h2>
-              <p class="card-description">${description}</p>
-              <div class="card-footer">
-                <span class="card-time">${timeAgo(article.publishedAt)}</span>
-                <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
-              </div>
+        card.innerHTML = `
+          <img src="${article.urlToImage || placeholderImage}" alt="${cardTitle}" class="news-card__image" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImage}';">
+          <div class="news-card__content">
+            <span class="news-card__source">${cardSource}</span>
+            <h2 class="news-card__title">${cardTitle}</h2>
+            <p class="news-card__description">${article.description || ''}</p>
+            <div class="news-card__footer">
+              <span class="news-card__time">${timeAgo(article.publishedAt)}</span>
+              <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="news-card__read-more">Read More</a>
             </div>
-          `;
-          newsFeed.appendChild(card);
-        });
-      }
+          </div>
+        `;
+        return card;
+      };
 
-      function handleSearch() {
-        const query = searchInput.value.toLowerCase().trim();
-        const filteredArticles = allArticles.filter(article => {
-            const title = (article.title || '').toLowerCase();
-            const source = (article.source.name || '').toLowerCase();
-            return title.includes(query) || source.includes(query);
-        });
-        renderArticles(filteredArticles);
-      }
+      const renderArticles = (articles) => {
+        newsFeedContainer.innerHTML = '';
+        if (articles.length === 0) {
+          newsFeedContainer.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">No articles found.</p>';
+        } else {
+            articles.forEach(article => {
+                if (article.title && article.title !== '[Removed]') {
+                    newsFeedContainer.appendChild(createNewsCard(article));
+                }
+            });
+        }
+      };
+      
+      const filterArticles = () => {
+          const query = searchInput.value.toLowerCase().trim();
+          const allCards = newsFeedContainer.querySelectorAll('.news-card');
 
-      searchInput.addEventListener('input', handleSearch);
+          allCards.forEach(card => {
+              const title = card.querySelector('.news-card__title').textContent.toLowerCase();
+              const source = card.querySelector('.news-card__source').textContent.toLowerCase();
+              
+              if(title.includes(query) || source.includes(query)){
+                  card.classList.remove('hidden');
+              } else {
+                  card.classList.add('hidden');
+              }
+          });
+      };
+
+      searchInput.addEventListener('input', filterArticles);
 
       // Initial render
-      renderArticles(allArticles);
+      renderArticles(newsData);
     });
   </script>
-
 </body>
 </html>
 ```
