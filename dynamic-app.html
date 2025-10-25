@@ -1,0 +1,1791 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Sports Pulse</title>
+    <meta name="description" content="Your daily dose of sports news and updates.">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/">
+    <meta property="og:title" content="Sports Pulse">
+    <meta property="og:description" content="Your daily dose of sports news and updates.">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+    <!-- Favicon placeholders (can be data URLs or SVGs) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='0' y='14' font-size='16'>⚽</text></svg>" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-card: #282828;
+            --accent-golden: #FFD700; /* Golden Yellow */
+            --accent-golden-light: #FFEA7A;
+            --text-light: #f0f0f0;
+            --text-muted: #aaaaaa;
+            --border-color: #383838;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --red-alert: #dc3545;
+            --ripple-color: rgba(255, 255, 255, 0.1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: radial-gradient(circle at top left, var(--bg-card) 0%, transparent 40%),
+                        radial-gradient(circle at bottom right, var(--bg-card) 0%, transparent 40%),
+                        var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+            padding-bottom: 70px; /* Space for fixed bottom navigation */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scroll due to overlays */
+        }
+
+        /* Scrollbar styles for modern browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-golden);
+            border-radius: 10px;
+            border: 2px solid var(--bg-card);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-golden-light);
+        }
+
+        /* Generic styles */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: var(--accent-golden);
+            text-decoration: none;
+        }
+
+        a:hover, a:focus {
+            text-decoration: underline;
+        }
+
+        button, .button {
+            background-color: var(--accent-golden);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            -webkit-appearance: none; /* For iOS button styling */
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        button:hover, button:focus, .button:hover, .button:focus {
+            background-color: var(--accent-golden-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+            outline: none;
+        }
+
+        button:active, .button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: var(--ripple-color);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Header (App Bar) */
+        .app-bar {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            height: 60px; /* Fixed height */
+        }
+
+        .app-bar__title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-golden);
+            letter-spacing: -0.5px;
+        }
+
+        .app-bar__icon-button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px; /* Ensure tap target size */
+            height: 44px; /* Ensure tap target size */
+        }
+
+        .app-bar__icon-button:hover, .app-bar__icon-button:focus {
+            background-color: var(--bg-card);
+            outline: none;
+        }
+
+        .app-bar__icon-button svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Main Content Area */
+        main {
+            flex-grow: 1;
+            padding: 16px 0;
+            max-width: 900px; /* Max width for central content */
+            margin: 0 auto; /* Center content */
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            margin-bottom: 32px;
+            padding: 0 16px;
+        }
+
+        .hero-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 6px 15px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        }
+        .hero-card:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 15px var(--shadow-color);
+        }
+
+        .hero-card__image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            object-position: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-card__content {
+            padding: 20px;
+            position: relative;
+        }
+
+        .hero-card__category {
+            display: inline-block;
+            background-color: var(--accent-golden);
+            color: var(--bg-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .hero-card__title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-light);
+        }
+
+        .hero-card__excerpt {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-height: 4.5em; /* Limit to 3 lines for excerpt */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 16px 20px 16px;
+            margin-bottom: 20px;
+            gap: 10px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .category-filters::-webkit-scrollbar {
+            display: none; /* Webkit */
+        }
+
+        .category-chip {
+            background-color: var(--bg-card);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            flex-shrink: 0; /* Prevent chips from shrinking */
+            border: 1px solid var(--border-color);
+        }
+
+        .category-chip:hover, .category-chip:focus {
+            background-color: var(--border-color);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .category-chip.active {
+            background-color: var(--accent-golden);
+            color: var(--bg-dark);
+            font-weight: 600;
+            border-color: var(--accent-golden);
+        }
+
+        /* Article Feed */
+        .article-feed {
+            padding: 0 16px;
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Fallback for older browsers */
+        }
+
+        @media (min-width: 768px) {
+            .article-feed {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .article-feed {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+
+        .article-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px var(--shadow-color);
+        }
+        .article-card:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .article-card__image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            object-position: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .article-card__content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .article-card__title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            flex-grow: 1; /* Allows title to take available space */
+            max-height: 3.6em; /* Limit to 2 lines for title */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .article-card__meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-card__excerpt {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.4;
+            max-height: 4.2em; /* Limit to 3 lines */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .article-card__actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: auto; /* Push actions to the bottom */
+        }
+
+        .article-card__action-button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .article-card__action-button:hover, .article-card__action-button:focus {
+            background-color: var(--border-color);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .article-card__action-button.bookmarked svg {
+            fill: var(--accent-golden);
+        }
+
+        .article-card__action-button svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Skeleton Loader */
+        .skeleton-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .skeleton-card__image {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(90deg, var(--border-color) 0%, #383838 50%, var(--border-color) 100%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s infinite linear;
+        }
+        .skeleton-card__content {
+            padding: 16px;
+        }
+        .skeleton-card__title, .skeleton-card__excerpt, .skeleton-card__meta {
+            height: 1em;
+            background: linear-gradient(90deg, var(--border-color) 0%, #383838 50%, var(--border-color) 100%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s infinite linear;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .skeleton-card__title { width: 90%; height: 24px; margin-bottom: 12px; }
+        .skeleton-card__meta { width: 60%; height: 16px; }
+        .skeleton-card__excerpt { width: 100%; height: 16px; }
+        .skeleton-card__excerpt:last-of-type { width: 70%; }
+        .skeleton-card__excerpt:nth-child(3) { margin-bottom: 16px; }
+
+
+        @keyframes skeleton-pulse {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-dark);
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 5px var(--shadow-color);
+            height: 60px;
+        }
+
+        .bottom-nav__item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            padding: 4px 0;
+            border-radius: 8px; /* For focus outline */
+            min-width: 44px; /* Ensure tap target size */
+            min-height: 44px; /* Ensure tap target size */
+        }
+
+        .bottom-nav__item:hover, .bottom-nav__item:focus {
+            color: var(--text-light);
+            outline: none; /* Managed by custom focus style */
+            background-color: var(--border-color);
+        }
+        .bottom-nav__item:focus-visible {
+            outline: 2px solid var(--accent-golden);
+            outline-offset: -2px;
+        }
+
+        .bottom-nav__item.active {
+            color: var(--accent-golden);
+        }
+
+        .bottom-nav__item svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            margin-bottom: 4px;
+        }
+
+        /* Overlay Styles (Search, Article Detail, Bookmarks) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            z-index: 1100;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+            opacity: 0;
+            visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 0; /* No bottom padding for overlay */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .overlay.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            flex-shrink: 0;
+        }
+
+        .overlay-header__title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .overlay-close-button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay-close-button:hover, .overlay-close-button:focus {
+            background-color: var(--border-color);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .overlay-close-button svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Search Overlay Specific */
+        .search-overlay .overlay-content {
+            padding: 20px 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-golden);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+
+        .search-results-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .search-results-list li {
+            margin-bottom: 15px;
+        }
+
+        .search-results-list .article-card {
+            box-shadow: none;
+            border: 1px solid var(--border-color);
+            flex-direction: row; /* Horizontal layout for search results */
+            align-items: center;
+            padding: 10px;
+        }
+
+        .search-results-list .article-card__image {
+            width: 80px;
+            min-width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            margin-right: 15px;
+            border: none;
+        }
+
+        .search-results-list .article-card__content {
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .search-results-list .article-card__title {
+            font-size: 1rem;
+            margin-bottom: 4px;
+            -webkit-line-clamp: 2;
+        }
+
+        .search-results-list .article-card__meta {
+            font-size: 0.75rem;
+            margin-bottom: 0;
+        }
+
+        .search-results-list .article-card__excerpt,
+        .search-results-list .article-card__actions {
+            display: none; /* Hide excerpt and actions in search results */
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 40px;
+        }
+
+        /* Article Detail Overlay Specific */
+        .article-detail-overlay .overlay-content {
+            padding: 20px 0; /* Padding for scrollable content */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .article-detail-content-wrapper {
+            padding: 0 16px 20px 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .article-detail__hero-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            object-position: center;
+            margin-bottom: 20px;
+        }
+        @media (min-width: 768px) {
+            .article-detail__hero-image {
+                height: 350px;
+            }
+        }
+
+        .article-detail__category {
+            display: inline-block;
+            background-color: var(--accent-golden);
+            color: var(--bg-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .article-detail__title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+        @media (min-width: 768px) {
+            .article-detail__title {
+                font-size: 2.5rem;
+            }
+        }
+
+        .article-detail__meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .article-detail__meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .article-detail__meta svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .article-detail__content p {
+            margin-bottom: 1em;
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .article-detail__video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            margin: 20px 0;
+            background-color: var(--bg-card); /* Placeholder background */
+        }
+
+        .article-detail__video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .article-detail__actions {
+            display: flex;
+            justify-content: flex-start;
+            gap: 15px;
+            margin: 25px 0 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .article-detail__action-button {
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .article-detail__action-button:hover, .article-detail__action-button:focus {
+            background-color: var(--border-color);
+            color: var(--accent-golden);
+            outline: none;
+        }
+
+        .article-detail__action-button.bookmarked {
+            border-color: var(--accent-golden);
+            color: var(--accent-golden);
+        }
+
+        .article-detail__action-button svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        .article-detail__action-button.bookmarked svg {
+            fill: var(--accent-golden);
+        }
+
+
+        .related-articles {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .related-articles h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+
+        .related-articles-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .related-articles-list li {
+            margin-bottom: 10px;
+        }
+
+        .related-articles-list a {
+            display: block;
+            background-color: var(--bg-card);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .related-articles-list a:hover, .related-articles-list a:focus {
+            background-color: var(--border-color);
+            border-color: var(--accent-golden);
+            text-decoration: none;
+        }
+
+        /* Bookmarks Overlay Specific */
+        .bookmarks-overlay .overlay-content {
+            padding: 20px 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .bookmarks-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Re-use article-feed grid */
+        }
+        .bookmarks-list.empty {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        @media (min-width: 768px) {
+            .bookmarks-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .bookmarks-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0; /* No bottom padding on desktop */
+            }
+            .bottom-nav {
+                display: none; /* Hide bottom nav on larger screens */
+            }
+            .app-bar {
+                height: 70px; /* Slightly taller on desktop */
+                padding: 12px 24px;
+            }
+            .app-bar__title {
+                font-size: 1.8rem;
+            }
+            .main-content {
+                padding-top: 30px;
+            }
+            .hero-section, .category-filters, .article-feed {
+                padding: 0 24px;
+            }
+            .overlay-header {
+                padding: 15px 24px;
+            }
+            .overlay-header__title {
+                font-size: 1.6rem;
+            }
+            .search-overlay .overlay-content,
+            .bookmarks-overlay .overlay-content {
+                padding: 25px 24px;
+            }
+            .article-detail-content-wrapper {
+                padding: 0 24px 30px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-bar">
+        <h1 class="app-bar__title">Sports Pulse</h1>
+        <button class="app-bar__icon-button" aria-label="Search articles" id="searchButton">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5a6.5 6.5 0 1 0-6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+        </button>
+    </header>
+
+    <main>
+        <section class="hero-section" aria-labelledby="featuredArticleHeading">
+            <h2 id="featuredArticleHeading" class="sr-only">Featured Article</h2>
+            <div id="heroArticleContainer" class="hero-card">
+                <!-- Hero article loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="category-filters" aria-labelledby="categoryFilterHeading">
+            <h2 id="categoryFilterHeading" class="sr-only">Filter by Category</h2>
+            <button class="category-chip active" data-category="all" aria-pressed="true">All</button>
+            <!-- Category chips loaded dynamically -->
+        </section>
+
+        <section class="article-feed" aria-labelledby="articleFeedHeading">
+            <h2 id="articleFeedHeading" class="sr-only">Latest Articles</h2>
+            <!-- Skeleton loaders initially -->
+            <div class="skeleton-card">
+                <div class="skeleton-card__image"></div>
+                <div class="skeleton-card__content">
+                    <div class="skeleton-card__title"></div>
+                    <div class="skeleton-card__meta"></div>
+                    <div class="skeleton-card__excerpt"></div>
+                    <div class="skeleton-card__excerpt"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-card__image"></div>
+                <div class="skeleton-card__content">
+                    <div class="skeleton-card__title"></div>
+                    <div class="skeleton-card__meta"></div>
+                    <div class="skeleton-card__excerpt"></div>
+                    <div class="skeleton-card__excerpt"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-card__image"></div>
+                <div class="skeleton-card__content">
+                    <div class="skeleton-card__title"></div>
+                    <div class="skeleton-card__meta"></div>
+                    <div class="skeleton-card__excerpt"></div>
+                    <div class="skeleton-card__excerpt"></div>
+                </div>
+            </div>
+            <!-- Articles loaded dynamically here -->
+        </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+        <a href="#home" class="bottom-nav__item active" data-nav="home">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="#categories" class="bottom-nav__item" data-nav="categories">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 17h10V7H7v10zm2-8h6v6H9V9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+            <span>Categories</span>
+        </a>
+        <a href="#bookmarks" class="bottom-nav__item" data-nav="bookmarks">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>
+            <span>Bookmarks</span>
+        </a>
+        <a href="#profile" class="bottom-nav__item" data-nav="profile">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="searchOverlayTitle">
+        <header class="overlay-header">
+            <h2 id="searchOverlayTitle" class="overlay-header__title">Search Articles</h2>
+            <button class="overlay-close-button" aria-label="Close search" id="closeSearchButton">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </header>
+        <div class="overlay-content">
+            <input type="search" id="searchInput" class="search-input" placeholder="Search by title or content..." aria-label="Search articles">
+            <ul id="searchResultsList" class="search-results-list">
+                <!-- Search results loaded dynamically -->
+            </ul>
+            <p id="noSearchResults" class="no-results" style="display: none;">No articles found matching your query.</p>
+        </div>
+    </div>
+
+    <!-- Article Detail Overlay -->
+    <div id="articleDetailOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="articleDetailTitle">
+        <header class="overlay-header">
+            <h2 id="articleDetailTitle" class="overlay-header__title sr-only">Article Details</h2>
+            <button class="overlay-close-button" aria-label="Close article" id="closeArticleDetailButton">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </header>
+        <div class="overlay-content" id="articleDetailContent">
+            <!-- Article content loaded dynamically -->
+        </div>
+    </div>
+
+    <!-- Bookmarks Overlay -->
+    <div id="bookmarksOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="bookmarksOverlayTitle">
+        <header class="overlay-header">
+            <h2 id="bookmarksOverlayTitle" class="overlay-header__title">Bookmarked Articles</h2>
+            <button class="overlay-close-button" aria-label="Close bookmarks" id="closeBookmarksButton">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </header>
+        <div class="overlay-content">
+            <div id="bookmarksList" class="bookmarks-list">
+                <!-- Bookmarked articles loaded dynamically -->
+            </div>
+            <p id="noBookmarks" class="no-results" style="display: none;">You haven't bookmarked any articles yet.</p>
+        </div>
+    </div>
+
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            const swContent = `
+                const CACHE_NAME = 'sports-pulse-cache-v1';
+                const urlsToCache = [
+                    '/',
+                    'index.html' // Cache the main HTML file
+                ];
+
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then((cache) => {
+                                console.log('Opened cache');
+                                return cache.addAll(urlsToCache);
+                            })
+                    );
+                });
+
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then((response) => {
+                                if (response) {
+                                    return response; // Found in cache
+                                }
+                                return fetch(event.request) // Fallback to network
+                                    .catch(() => {
+                                        // Optional: serve an offline page for specific requests
+                                        // For now, just let it fail if no network and not in cache
+                                        console.log('Network request failed for:', event.request.url);
+                                    });
+                            })
+                    );
+                });
+
+                self.addEventListener('activate', (event) => {
+                    const cacheWhitelist = [CACHE_NAME];
+                    event.waitUntil(
+                        caches.keys().then((cacheNames) => {
+                            return Promise.all(
+                                cacheNames.map((cacheName) => {
+                                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                        return caches.delete(cacheName); // Delete old caches
+                                    }
+                                })
+                            );
+                        })
+                    );
+                });
+            `;
+            const swBlob = new Blob([swContent], { type: 'application/javascript' });
+            const swBlobUrl = URL.createObjectURL(swBlob);
+
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register(swBlobUrl)
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // --- Data ---
+        const articlesData = [
+            {
+                id: 'article-1',
+                category: 'Football',
+                title: 'Champions League Final: Underdog Claims Stunner Victory',
+                author: 'John Doe',
+                time: '2 hours ago',
+                readTime: '5 min read',
+                excerpt: 'In a match that defied all expectations, the underdog team clinched a dramatic victory in the Champions League final, leaving fans in awe...',
+                content: [
+                    'The atmosphere was electric as two titans of European football clashed in a highly anticipated Champions League final. From the opening whistle, it was clear that this would be no ordinary game. The favored team, boasting a star-studded lineup, pressed hard, but the underdogs showed incredible resilience and tactical discipline.',
+                    'The first half saw a tense midfield battle, with few clear-cut chances. However, a moment of brilliance in the 35th minute gave the underdogs the lead. A perfectly executed counter-attack culminated in a clinical finish that sent their half of the stadium into raptures. The second half intensified, with the favorites throwing everything they had forward.',
+                    'Their relentless pressure eventually paid off with an equalizer midway through the half, setting up a nail-biting finish. Extra time brought more drama, but neither side could find the decisive goal. It all came down to a penalty shootout, where nerves of steel and a heroic goalkeeping performance sealed an unforgettable victory for the underdog team, etching their name in history.',
+                    'The celebrations continued long into the night, as players and fans alike reveled in a triumph that will be talked about for generations. This victory serves as a powerful reminder that in football, anything is possible, and the spirit of competition can overcome even the greatest odds.'
+                ],
+                imageUrl: 'https://picsum.photos/seed/football1/400/250',
+                videoUrl: 'https://www.youtube.embed/example1' // Placeholder for an embedded video
+            },
+            {
+                id: 'article-2',
+                category: 'Basketball',
+                title: 'Rising Star Leads Team to Playoff Berth',
+                author: 'Jane Smith',
+                time: 'Yesterday',
+                readTime: '4 min read',
+                excerpt: 'A phenomenal performance by the team\'s young point guard secured their spot in the highly competitive playoffs after a thrilling regular season...',
+                content: [
+                    'The regular season finale was a must-win game for the City Blazers, and their young sensation, "Flash" Thompson, rose to the occasion with an MVP-caliber performance. Facing a formidable opponent, the Blazers needed every ounce of energy and skill to secure their playoff spot, and Thompson delivered.',
+                    'From the tip-off, Thompson dictated the pace, dishing out assists and knocking down clutch shots. His explosive drives to the basket kept the defense on its heels, opening up opportunities for his teammates. By halftime, he had already amassed a double-double, showcasing his all-around impact on the game.',
+                    'The second half saw the opposition mount a comeback, narrowing the deficit. But with the game on the line, Thompson hit back-to-back three-pointers, igniting the crowd and reaffirming his team\'s control. He finished the game with a career-high in points and assists, a testament to his rapid development and leadership.',
+                    'This playoff berth is a significant milestone for the franchise and a strong indicator of the team\'s potential. With "Flash" Thompson at the helm, the future looks incredibly bright for the City Blazers, and their fans are eagerly anticipating a deep playoff run.'
+                ],
+                imageUrl: 'https://picsum.photos/seed/basketball1/400/250',
+                videoUrl: 'https://www.youtube.embed/example2'
+            },
+            {
+                id: 'article-3',
+                category: 'Tennis',
+                title: 'Grand Slam Upset: Unseeded Player Makes History',
+                author: 'David Lee',
+                time: '3 days ago',
+                readTime: '6 min read',
+                excerpt: 'History was made at the Grand Slam as an unseeded player battled through the ranks to claim the coveted title, shocking the tennis world...',
+                content: [
+                    'The roar of the crowd was deafening as the final point landed in, sealing an improbable victory for the unseeded sensation, Elena Petrova. The tennis world watched in disbelief as Petrova, ranked outside the top 100, hoisted the Grand Slam trophy, completing one of the most remarkable underdog stories in recent memory.',
+                    'Petrova\'s journey through the tournament was a testament to her unwavering determination and powerful baseline game. She overcame several top-seeded opponents, each match pushing her to her limits. Her quarter-final clash against the reigning champion was a marathon, lasting over four hours and showcasing her incredible mental fortitude.',
+                    'In the final, she faced a seasoned veteran who had been in multiple Grand Slam finals. Despite losing the first set, Petrova found another gear, hitting winners from all corners of the court. Her serve, usually a weakness, became a weapon, and her relentless pressure eventually broke her opponent\'s resolve.',
+                    'This victory is not just a personal triumph for Petrova but also an inspiration for aspiring athletes worldwide. It proves that with hard work, belief, and a little bit of magic, anyone can achieve their dreams, regardless of their initial standing.'
+                ],
+                imageUrl: 'https://picsum.photos/seed/tennis1/400/250',
+                videoUrl: '' // No video for this one
+            },
+            {
+                id: 'article-4',
+                category: 'Formula 1',
+                title: 'Thrilling Photo Finish at Monaco Grand Prix',
+                author: 'Emily White',
+                time: 'Last week',
+                readTime: '7 min read',
+                excerpt: 'The Monaco Grand Prix delivered an unforgettable spectacle with a thrilling photo finish, decided by mere milliseconds between the top two drivers...',
+                content: [
+                    'The iconic streets of Monaco once again played host to a Formula 1 spectacle that will be etched in history. From pole position, it seemed like a straightforward victory for the championship leader, Max Verstappen. However, the unique challenges of the circuit and a cunning strategy from Ferrari\'s Charles Leclerc turned the race into a high-stakes chess match.',
+                    'Leclerc, starting P2, managed to jump Verstappen during a chaotic pit stop under a safety car. What followed was a masterclass in defensive driving from Leclerc and relentless attacking from Verstappen. For nearly 50 laps, the two drivers were never more than a second apart, pushing their cars to the absolute limit around the narrow, unforgiving track.',
+                    'The tension was palpable in the final laps. Verstappen, employing DRS on the main straight, attempted multiple overtakes, but Leclerc held his line with precision. Coming out of the final corner on the last lap, Verstappen got a better exit, and it was a drag race to the finish line. The crowd erupted as the cars crossed the line simultaneously.',
+                    'After a breathless wait, the stewards confirmed Leclerc had held on by a minuscule 0.011 seconds, a true photo finish. This victory, hard-fought and tactical, was a testament to both drivers\' skill and the unpredictable nature of street circuit racing. It sets the tone for a thrilling championship battle ahead.'
+                ],
+                imageUrl: 'https://picsum.photos/seed/f1/400/250',
+                videoUrl: ''
+            },
+            {
+                id: 'article-5',
+                category: 'Olympics',
+                title: 'Gymnast Achieves Perfect Score, Secures Gold',
+                author: 'Sophie Brown',
+                time: '2 weeks ago',
+                readTime: '3 min read',
+                excerpt: 'A stunning performance on the uneven bars earned the young gymnast a rare perfect score, clinching a gold medal for her country...',
+                content: [
+                    'The Olympic arena held its breath as the young prodigy, Anya Sharma, stepped onto the podium for her uneven bars routine. Known for her innovative combinations and flawless execution, the pressure was immense, with a gold medal on the line for her country. From the moment she leaped onto the bars, she captivated everyone present.',
+                    'Her routine was a symphony of strength, grace, and daring. Each release and re-catch was perfectly timed, every twist and flip executed with breathtaking precision. The crowd gasped at a particularly complex transition, a move few gymnasts even attempt, let alone land with such fluidity. It was a performance that seemed to transcend the physical, entering the realm of artistry.',
+                    'As she dismounted with a powerful, stuck landing, the arena erupted. The judges, typically stoic, exchanged glances of awe before holding up their scores. One by one, "10.0" flashed across the board, culminating in a perfect score – a rare feat in Olympic gymnastics, especially on such a demanding apparatus. Tears welled up in Anya\'s eyes as she realized the magnitude of her achievement.',
+                    'This perfect score not only secured the gold medal but also cemented Anya Sharma\'s place in Olympic history. Her performance will undoubtedly inspire a new generation of gymnasts and stands as a shining example of dedication and pursuit of excellence.'
+                ],
+                imageUrl: 'https://picsum.photos/seed/gymnastics/400/250',
+                videoUrl: ''
+            },
+            {
+                id: 'article-6',
+                category: 'Esports',
+                title: 'Legendary Team Wins World Championship',
+                author: 'Chris Green',
+                time: '1 month ago',
+                readTime: '5 min read',
+                excerpt: 'After years of fierce competition, the veteran esports team finally secured the coveted World Championship title in a thrilling five-game series...',
+                content: [
+                    'The digital arena vibrated with anticipation as two of the world\'s best esports teams faced off in the grand finals of the Global Championship. Team Phoenix, a legendary squad with a history of near-misses, was determined to finally claim the ultimate prize against the reigning champions, Nexus Gaming. It was set to be an epic clash of titans, and it did not disappoint.',
+                    'The series started with a dominant performance from Nexus Gaming, taking the first two games with decisive strategies and flawless execution. Doubts began to creep into the minds of Phoenix fans, fearing another heartbreaking defeat. However, the veterans of Team Phoenix rallied, showcasing their unparalleled resilience and tactical depth.',
+                    'In a stunning turnaround, Phoenix clawed back game three and then game four, forcing a decisive fifth game. The final match was a masterclass in strategic plays and individual skill. Both teams traded blows, with the lead swinging back and forth, keeping millions of viewers on the edge of their seats globally. The tension was palpable.',
+                    'In the climactic final moments, Team Phoenix executed a daring maneuver, catching Nexus Gaming off guard and securing the final objective. The crowd roared as the "Victory" screen appeared for Phoenix, marking the culmination of years of hard work and dedication. Their captain, known for his calm demeanor, finally let out a yell of triumph. It was a victory for the ages, cementing their legacy in esports history.'
+                ],
+                imageUrl: 'https://picsum.photos/seed/esports/400/250',
+                videoUrl: 'https://www.youtube.embed/example3'
+            }
+        ];
+
+        // --- DOM Elements ---
+        const heroArticleContainer = document.getElementById('heroArticleContainer');
+        const categoryFiltersContainer = document.querySelector('.category-filters');
+        const articleFeedContainer = document.querySelector('.article-feed');
+        const searchButton = document.getElementById('searchButton');
+        const searchOverlay = document.getElementById('searchOverlay');
+        const closeSearchButton = document.getElementById('closeSearchButton');
+        const searchInput = document.getElementById('searchInput');
+        const searchResultsList = document.getElementById('searchResultsList');
+        const noSearchResults = document.getElementById('noSearchResults');
+        const articleDetailOverlay = document.getElementById('articleDetailOverlay');
+        const articleDetailContent = document.getElementById('articleDetailContent');
+        const closeArticleDetailButton = document.getElementById('closeArticleDetailButton');
+        const bottomNav = document.querySelector('.bottom-nav');
+        const bottomNavItems = document.querySelectorAll('.bottom-nav__item');
+        const bookmarksOverlay = document.getElementById('bookmarksOverlay');
+        const closeBookmarksButton = document.getElementById('closeBookmarksButton');
+        const bookmarksListContainer = document.getElementById('bookmarksList');
+        const noBookmarksMessage = document.getElementById('noBookmarks');
+
+        // --- State Variables ---
+        let currentCategory = 'all';
+        let featuredArticle = articlesData[0]; // Assuming the first article is featured
+        let currentActiveOverlay = null;
+
+        // --- Utility Functions ---
+
+        // Adds ripple effect to clicked elements
+        function addRippleEffect(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add('ripple');
+
+            const ripple = button.getElementsByClassName('ripple')[0];
+            if (ripple) {
+                ripple.remove();
+            }
+            button.appendChild(circle);
+        }
+
+        // Formats date/time (simple for sample data)
+        function formatTime(timeString) {
+            // For real-world, would use Date objects and format
+            return timeString;
+        }
+
+        // Generate SVG icons
+        const bookmarkIcon = `<svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>`;
+        const shareIcon = `<svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77l-7.2-4.2c.0-.08.0-.16.0-.25s0-.17 0-.25l7.19-4.18c.5-.46 1.18-.76 1.95-.76 1.66 0 3 1.34 3 3s-1.34 3-3 3c-.77 0-1.45-.3-1.96-.77L8.85 12.2a3.003 3.003 0 0 0 0 .58l7.19 4.18c.51.46 1.19.76 1.96.76 1.66 0 3-1.34 3-3s-1.34-3-3-3z"/></svg>`;
+        const clockIcon = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
+        const userIcon = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+
+
+        // --- Render Functions ---
+
+        function createRippleWrapper(element) {
+            element.addEventListener('click', addRippleEffect);
+            element.style.position = 'relative';
+            element.style.overflow = 'hidden';
+            return element;
+        }
+
+        function renderHeroArticle(article) {
+            if (!article) {
+                heroArticleContainer.innerHTML = '<p class="no-results">No featured article available.</p>';
+                return;
+            }
+
+            heroArticleContainer.innerHTML = `
+                <img src="${article.imageUrl}" alt="${article.title}" class="hero-card__image" loading="lazy">
+                <div class="hero-card__content">
+                    <span class="hero-card__category">${article.category}</span>
+                    <h3 class="hero-card__title">${article.title}</h3>
+                    <p class="hero-card__excerpt">${article.excerpt}</p>
+                </div>
+            `;
+            heroArticleContainer.setAttribute('data-id', article.id);
+            heroArticleContainer.addEventListener('click', (event) => {
+                showArticleDetail(article.id);
+            });
+            createRippleWrapper(heroArticleContainer);
+        }
+
+        function renderCategoryChips() {
+            const categories = ['all', ...new Set(articlesData.map(a => a.category))];
+            categoryFiltersContainer.innerHTML = ''; // Clear existing chips
+
+            categories.forEach(category => {
+                const chip = document.createElement('button');
+                chip.classList.add('category-chip');
+                if (category === currentCategory) {
+                    chip.classList.add('active');
+                    chip.setAttribute('aria-pressed', 'true');
+                } else {
+                    chip.setAttribute('aria-pressed', 'false');
+                }
+                chip.setAttribute('data-category', category);
+                chip.textContent = category === 'all' ? 'All' : category;
+                chip.addEventListener('click', () => {
+                    filterArticlesByCategory(category);
+                });
+                categoryFiltersContainer.appendChild(chip);
+                createRippleWrapper(chip);
+            });
+        }
+
+        function renderArticleCards(articles, container, isBookmarkView = false) {
+            container.innerHTML = ''; // Clear existing content
+
+            if (articles.length === 0) {
+                if (container === searchResultsList) {
+                    noSearchResults.style.display = 'block';
+                } else if (container === bookmarksListContainer) {
+                    noBookmarksMessage.style.display = 'block';
+                } else {
+                    container.innerHTML = '<p class="no-results">No articles found.</p>';
+                }
+                return;
+            } else {
+                noSearchResults.style.display = 'none';
+                noBookmarksMessage.style.display = 'none';
+            }
+
+            articles.forEach(article => {
+                const isBookmarked = getBookmarkedArticles().some(b => b.id === article.id);
+                const card = document.createElement('div');
+                card.classList.add('article-card');
+                card.setAttribute('data-id', article.id);
+                card.setAttribute('tabindex', '0'); // Make cards keyboard focusable
+                card.setAttribute('role', 'article');
+                card.setAttribute('aria-labelledby', `article-title-${article.id}`);
+
+
+                card.innerHTML = `
+                    <img src="${article.imageUrl}" alt="${article.title}" class="article-card__image" loading="lazy">
+                    <div class="article-card__content">
+                        <h3 id="article-title-${article.id}" class="article-card__title">${article.title}</h3>
+                        <div class="article-card__meta">
+                            <span>${userIcon} ${article.author}</span>
+                            <span>${clockIcon} ${formatTime(article.time)}</span>
+                        </div>
+                        <p class="article-card__excerpt">${article.excerpt}</p>
+                        <div class="article-card__actions">
+                            <button class="article-card__action-button bookmark-button ${isBookmarked ? 'bookmarked' : ''}" aria-label="${isBookmarked ? 'Remove from bookmarks' : 'Bookmark article'}" data-id="${article.id}">
+                                ${bookmarkIcon}
+                            </button>
+                            <button class="article-card__action-button share-button" aria-label="Share article" data-id="${article.id}">
+                                ${shareIcon}
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Handle card click to open detail (excluding action buttons)
+                const contentArea = card.querySelector('.article-card__content');
+                const actionButtons = card.querySelector('.article-card__actions');
+
+                card.addEventListener('click', (event) => {
+                    if (!actionButtons.contains(event.target) && event.target !== actionButtons) {
+                        showArticleDetail(article.id);
+                    }
+                });
+
+                // Attach event listeners for bookmark and share
+                const bookmarkBtn = card.querySelector('.bookmark-button');
+                bookmarkBtn.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent card click event
+                    toggleBookmark(article.id);
+                    bookmarkBtn.classList.toggle('bookmarked');
+                    bookmarkBtn.setAttribute('aria-label', bookmarkBtn.classList.contains('bookmarked') ? 'Remove from bookmarks' : 'Bookmark article');
+                    if (isBookmarkView) { // Re-render bookmarks if we're in the bookmarks overlay
+                        renderBookmarkedArticles();
+                    }
+                });
+
+                const shareBtn = card.querySelector('.share-button');
+                shareBtn.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent card click event
+                    shareArticle(article.id, article.title, article.excerpt);
+                });
+
+                createRippleWrapper(card);
+                createRippleWrapper(bookmarkBtn);
+                createRippleWrapper(shareBtn);
+
+                container.appendChild(card);
+            });
+        }
+
+        // --- Filtering and Search ---
+
+        function filterArticlesByCategory(category) {
+            currentCategory = category;
+
+            // Update active state of category chips
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                if (chip.dataset.category === category) {
+                    chip.classList.add('active');
+                    chip.setAttribute('aria-pressed', 'true');
+                } else {
+                    chip.classList.remove('active');
+                    chip.setAttribute('aria-pressed', 'false');
+                }
+            });
+
+            const filtered = category === 'all'
+                ? articlesData
+                : articlesData.filter(article => article.category === category);
+            renderArticleCards(filtered, articleFeedContainer);
+        }
+
+        let searchTimeout;
+        function handleSearchInput() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = searchInput.value.toLowerCase().trim();
+                const filtered = articlesData.filter(article =>
+                    article.title.toLowerCase().includes(query) ||
+                    article.excerpt.toLowerCase().includes(query) ||
+                    article.content.some(p => p.toLowerCase().includes(query))
+                );
+                renderArticleCards(filtered, searchResultsList);
+            }, 300); // Debounce search input
+        }
+
+        // --- Bookmarking ---
+
+        function getBookmarkedArticles() {
+            try {
+                const bookmarks = localStorage.getItem('bookmarkedArticles');
+                return bookmarks ? JSON.parse(bookmarks) : [];
+            } catch (e) {
+                console.error("Error reading bookmarks from localStorage:", e);
+                return [];
+            }
+        }
+
+        function saveBookmarkedArticles(bookmarks) {
+            try {
+                localStorage.setItem('bookmarkedArticles', JSON.stringify(bookmarks));
+            } catch (e) {
+                console.error("Error saving bookmarks to localStorage:", e);
+            }
+        }
+
+        function toggleBookmark(articleId) {
+            let bookmarks = getBookmarkedArticles();
+            const article = articlesData.find(a => a.id === articleId);
+
+            if (!article) return;
+
+            const index = bookmarks.findIndex(b => b.id === articleId);
+            if (index > -1) {
+                // Remove bookmark
+                bookmarks.splice(index, 1);
+            } else {
+                // Add bookmark
+                bookmarks.push(article);
+            }
+            saveBookmarkedArticles(bookmarks);
+        }
+
+        function renderBookmarkedArticles() {
+            const bookmarked = getBookmarkedArticles();
+            renderArticleCards(bookmarked, bookmarksListContainer, true);
+        }
+
+
+        // --- Share Functionality ---
+
+        function shareArticle(articleId, title, text) {
+            const articleUrl = window.location.origin + window.location.pathname + `#article-${articleId}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: articleUrl,
+                }).catch(error => console.error('Error sharing:', error));
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(`${title}: ${articleUrl}`).then(() => {
+                    alert('Article link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy link. Please try again or share manually.');
+                });
+            }
+        }
+
+        // --- Overlay Management ---
+
+        function showOverlay(overlayElement) {
+            if (currentActiveOverlay && currentActiveOverlay !== overlayElement) {
+                hideOverlay(currentActiveOverlay);
+            }
+            overlayElement.classList.add('active');
+            overlayElement.setAttribute('aria-hidden', 'false');
+            overlayElement.focus(); // Focus the overlay for accessibility
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
+            currentActiveOverlay = overlayElement;
+
+            // Manage history
+            if (window.location.hash.split('-')[0] !== `#${overlayElement.id.replace('Overlay', '')}`.toLowerCase()) {
+                 history.pushState(null, '', `#${overlayElement.id.replace('Overlay', '').toLowerCase()}`);
+            }
+        }
+
+        function hideOverlay(overlayElement) {
+            if (!overlayElement) return;
+
+            overlayElement.classList.remove('active');
+            overlayElement.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = ''; // Restore body scroll
+            currentActiveOverlay = null;
+
+            // Remove hash if it corresponds to an overlay
+            if (window.location.hash.split('-')[0] === `#${overlayElement.id.replace('Overlay', '')}`.toLowerCase()) {
+                history.back(); // Go back to previous hash or root
+            }
+        }
+
+        // --- Article Detail View ---
+
+        function showArticleDetail(articleId) {
+            const article = articlesData.find(a => a.id === articleId);
+            if (!article) return;
+
+            const isBookmarked = getBookmarkedArticles().some(b => b.id === articleId);
+            const bookmarkButtonClass = isBookmarked ? 'bookmarked' : '';
+            const bookmarkButtonLabel = isBookmarked ? 'Remove from bookmarks' : 'Bookmark article';
+
+            articleDetailContent.innerHTML = `
+                <div class="article-detail-content-wrapper">
+                    <span class="article-detail__category">${article.category}</span>
+                    <h2 id="articleDetailTitle" class="article-detail__title">${article.title}</h2>
+                    <div class="article-detail__meta">
+                        <span>${userIcon} ${article.author}</span>
+                        <span>${clockIcon} ${formatTime(article.time)}</span>
+                        <span>${article.readTime}</span>
+                    </div>
+                    <img src="${article.imageUrl}" alt="${article.title}" class="article-detail__hero-image" loading="lazy">
+                    <div class="article-detail__content">
+                        ${article.content.map(p => `<p>${p}</p>`).join('')}
+                        ${article.videoUrl ? `
+                            <div class="article-detail__video-wrapper">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0&modestbranding=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>` : ''}
+                    </div>
+                    <div class="article-detail__actions">
+                        <button class="article-detail__action-button bookmark-button ${bookmarkButtonClass}" aria-label="${bookmarkButtonLabel}" data-id="${article.id}">
+                            ${bookmarkIcon} Bookmark
+                        </button>
+                        <button class="article-detail__action-button share-button" aria-label="Share article" data-id="${article.id}">
+                            ${shareIcon} Share
+                        </button>
+                    </div>
+                    ${renderRelatedArticles(article)}
+                </div>
+            `;
+
+            // Attach event listeners for detail page buttons
+            const detailBookmarkBtn = articleDetailContent.querySelector('.bookmark-button');
+            detailBookmarkBtn.addEventListener('click', (event) => {
+                toggleBookmark(article.id);
+                detailBookmarkBtn.classList.toggle('bookmarked');
+                detailBookmarkBtn.setAttribute('aria-label', detailBookmarkBtn.classList.contains('bookmarked') ? 'Remove from bookmarks' : 'Bookmark article');
+                // Update the icon fill for the detail bookmark button
+                detailBookmarkBtn.querySelector('svg').style.fill = detailBookmarkBtn.classList.contains('bookmarked') ? 'var(--accent-golden)' : 'currentColor';
+                createRippleWrapper(detailBookmarkBtn);
+            });
+
+            const detailShareBtn = articleDetailContent.querySelector('.share-button');
+            detailShareBtn.addEventListener('click', (event) => {
+                shareArticle(article.id, article.title, article.excerpt);
+                createRippleWrapper(detailShareBtn);
+            });
+
+            // Make sure the close button is accessible
+            closeArticleDetailButton.focus();
+
+            showOverlay(articleDetailOverlay);
+            // Scroll to top of overlay content
+            articleDetailOverlay.scrollTop = 0;
+            // Update hash for deep linking
+            history.pushState(null, '', `#article-${articleId}`);
+        }
+
+        function renderRelatedArticles(currentArticle) {
+            const related = articlesData
+                .filter(a => a.id !== currentArticle.id && a.category === currentArticle.category)
+                .slice(0, 3); // Get up to 3 related articles
+
+            if (related.length === 0) return '';
+
+            return `
+                <section class="related-articles" aria-labelledby="relatedArticlesHeading">
+                    <h3 id="relatedArticlesHeading">Related Articles</h3>
+                    <ul class="related-articles-list">
+                        ${related.map(art => `
+                            <li><a href="#article-${art.id}" data-id="${art.id}" role="link">${art.title}</a></li>
+                        `).join('')}
+                    </ul>
+                </section>
+            `;
+        }
+
+        // --- Routing and Initialization ---
+
+        function activateBottomNavItem(navId) {
+            bottomNavItems.forEach(item => {
+                if (item.dataset.nav === navId) {
+                    item.classList.add('active');
+                    item.setAttribute('aria-current', 'page');
+                } else {
+                    item.classList.remove('active');
+                    item.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        function handleHashChange() {
+            const hash = window.location.hash;
+
+            // Hide all overlays first
+            hideOverlay(searchOverlay);
+            hideOverlay(articleDetailOverlay);
+            hideOverlay(bookmarksOverlay);
+
+            // Reset active nav item and main view
+            activateBottomNavItem('home');
+            document.querySelector('main').style.display = 'block';
+
+            if (hash.startsWith('#article-')) {
+                const articleId = hash.substring(hash.indexOf('-') + 1);
+                showArticleDetail(articleId);
+                // No specific bottom nav item is active for article view
+            } else if (hash === '#search') {
+                showOverlay(searchOverlay);
+                searchInput.focus();
+                // No specific bottom nav item is active for search view
+            } else if (hash === '#bookmarks') {
+                showOverlay(bookmarksOverlay);
+                renderBookmarkedArticles();
+                activateBottomNavItem('bookmarks');
+            } else if (hash === '#categories') {
+                // Categories are part of the main page, just scroll to it
+                document.querySelector('main').style.display = 'block';
+                const categoriesSection = document.querySelector('.category-filters');
+                if (categoriesSection) categoriesSection.scrollIntoView({ behavior: 'smooth' });
+                activateBottomNavItem('categories');
+                // The category chips are managed separately by filterArticlesByCategory
+            } else if (hash === '#profile') {
+                document.querySelector('main').style.display = 'block';
+                // Placeholder for profile view - for now just shows home
+                activateBottomNavItem('profile');
+                // Could display a simple profile message or redirect to home if no profile content
+                console.log('Profile page is a placeholder for now.');
+            } else { // Default to home view
+                window.location.hash = '#home'; // Set hash to home if not already
+                document.querySelector('main').style.display = 'block';
+                activateBottomNavItem('home');
+                filterArticlesByCategory(currentCategory); // Ensure feed is rendered
+            }
+        }
+
+        function initApp() {
+            // Render initial components
+            renderHeroArticle(featuredArticle);
+            renderCategoryChips();
+            // Initially render skeleton loaders, then replace with actual articles
+            setTimeout(() => { // Simulate network delay
+                renderArticleCards(articlesData, articleFeedContainer);
+            }, 800);
+
+            // --- Event Listeners ---
+            searchButton.addEventListener('click', () => {
+                showOverlay(searchOverlay);
+                searchInput.focus();
+                history.pushState(null, '', '#search'); // Update hash for search
+            });
+            closeSearchButton.addEventListener('click', () => {
+                hideOverlay(searchOverlay);
+                searchInput.value = ''; // Clear search input
+                searchResultsList.innerHTML = ''; // Clear search results
+                noSearchResults.style.display = 'none';
+            });
+            searchInput.addEventListener('input', handleSearchInput);
+
+            closeArticleDetailButton.addEventListener('click', () => hideOverlay(articleDetailOverlay));
+            closeBookmarksButton.addEventListener('click', () => hideOverlay(bookmarksOverlay));
+
+            // Bottom navigation
+            bottomNavItems.forEach(item => {
+                createRippleWrapper(item); // Add ripple to nav items
+            });
+
+            // Handle browser navigation (back/forward)
+            window.addEventListener('hashchange', handleHashChange);
+
+            // Initial route handling on page load
+            if (!window.location.hash) {
+                window.location.hash = '#home'; // Default to home
+            } else {
+                handleHashChange(); // Process current hash
+            }
+
+            // Delegation for related articles links (inside the article detail overlay)
+            articleDetailContent.addEventListener('click', (event) => {
+                const target = event.target.closest('a[data-id]');
+                if (target && articleDetailOverlay.classList.contains('active')) {
+                    event.preventDefault(); // Prevent full page reload
+                    const newArticleId = target.dataset.id;
+                    showArticleDetail(newArticleId); // Load new article in the same overlay
+                }
+            });
+
+            // Keyboard accessibility for overlays
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    if (searchOverlay.classList.contains('active')) {
+                        hideOverlay(searchOverlay);
+                    } else if (articleDetailOverlay.classList.contains('active')) {
+                        hideOverlay(articleDetailOverlay);
+                    } else if (bookmarksOverlay.classList.contains('active')) {
+                        hideOverlay(bookmarksOverlay);
+                    }
+                }
+            });
+        }
+
+        // Initialize the application
+        initApp();
+    </script>
+</body>
+</html>
