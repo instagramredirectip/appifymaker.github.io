@@ -1,22 +1,23 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0b0b">
+  <meta name="theme-color" content="#000000">
   <title>SportX Live - Latest Sports News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0b0b;
+      --bg-dark: #0a0a0a;
       --bg-card: #1a1a1a;
-      --accent: #ffd700;
-      --accent-glow: rgba(255, 215, 0, 0.5);
-      --text: #f5f5f5;
-      --text-muted: #999;
-      --border: #2a2a2a;
+      --accent-gold: #ffd700;
+      --accent-gold-glow: rgba(255, 215, 0, 0.4);
+      --text-primary: #f0f0f0;
+      --text-secondary: #a0a0a0;
+      --border-color: #2a2a2a;
     }
 
     * {
@@ -25,78 +26,87 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
       padding-top: 70px;
       padding-bottom: 70px;
     }
 
     /* --- Header --- */
-    .header {
+    .top-bar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
+      height: 70px;
+      background-color: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem;
-      background-color: rgba(11, 11, 11, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border-color);
       z-index: 1000;
     }
 
-    .header-title {
+    .logo {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--accent);
-      text-shadow: 0 0 5px var(--accent-glow);
+      color: var(--text-primary);
     }
 
-    .search-container {
-      position: relative;
-      display: flex;
-      align-items: center;
+    .logo span {
+      color: var(--accent-gold);
+      text-shadow: 0 0 8px var(--accent-gold-glow);
     }
     
+    .search-container {
+        display: flex;
+        align-items: center;
+        background-color: var(--bg-card);
+        border-radius: 20px;
+        padding: 5px 10px;
+        border: 1px solid var(--border-color);
+    }
+
     .search-icon {
-      width: 24px;
-      height: 24px;
-      stroke: var(--text-muted);
-      margin-right: 8px;
+        width: 20px;
+        height: 20px;
+        stroke: var(--text-secondary);
+        margin-right: 5px;
     }
 
     #search-input {
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1rem;
-      width: 0;
-      opacity: 0;
-      transition: width 0.3s ease, opacity 0.3s ease;
-    }
-    
-    #search-input:focus {
-      outline: none;
-      width: 150px;
-      opacity: 1;
-      border-bottom: 1px solid var(--accent);
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        outline: none;
+        font-family: 'Poppins', sans-serif;
+        width: 100px;
+        transition: width 0.3s ease-in-out;
     }
 
-    /* --- Main Content --- */
-    #news-feed {
-      padding: 1rem;
+    #search-input:focus {
+        width: 150px;
+    }
+
+    /* --- Main News Feed --- */
+    .news-feed {
+      padding: 20px 15px;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 20px;
     }
 
-    @keyframes fadeIn {
+    @keyframes fadeInUp {
       from {
         opacity: 0;
         transform: translateY(20px);
@@ -111,79 +121,81 @@
       background-color: var(--bg-card);
       border-radius: 16px;
       overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 0.5s ease-out forwards;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      animation: fadeInUp 0.5s ease-out forwards;
+      opacity: 0;
     }
     
-    .news-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow);
+    .news-card.hidden {
+        display: none;
     }
-    
+
     .card-image {
       width: 100%;
       height: 200px;
       object-fit: cover;
-      display: block;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .card-content {
-      padding: 1rem;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
     }
 
     .card-title {
       font-size: 1.1rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
     }
 
     .card-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
     }
 
     .card-source {
-        font-weight: 600;
-        color: var(--accent);
+      background-color: rgba(255, 215, 0, 0.1);
+      color: var(--accent-gold);
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-weight: 600;
     }
 
     .card-description {
       font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;  
-      overflow: hidden;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      flex-grow: 1;
+      margin-bottom: 15px;
     }
 
     .read-more-btn {
       display: inline-block;
-      background-color: var(--accent);
-      color: var(--bg);
+      background-color: var(--accent-gold);
+      color: var(--bg-dark);
       text-decoration: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 30px;
+      padding: 10px 15px;
+      border-radius: 8px;
       font-weight: 600;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+      transition: background-color 0.2s, box-shadow 0.2s;
+      align-self: flex-start;
     }
 
     .read-more-btn:hover, .read-more-btn:focus-visible {
-      background-color: #ffed4a;
-      box-shadow: 0 0 10px var(--accent-glow);
+      background-color: #ffeb80;
+      box-shadow: 0 0 15px var(--accent-gold-glow);
       outline: none;
-    }
-    
-    .no-results {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 2rem;
     }
 
     /* --- Bottom Navigation --- */
@@ -192,12 +204,14 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      background-color: rgba(11, 11, 11, 0.8);
+      height: 70px;
+      background-color: rgba(10, 10, 10, 0.8);
       backdrop-filter: blur(10px);
-      border-top: 1px solid var(--border);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       justify-content: space-around;
-      padding: 0.5rem 0;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
       z-index: 1000;
     }
 
@@ -205,29 +219,27 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 0.25rem;
-      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color 0.2s;
     }
     
     .nav-item.active {
-      color: var(--accent);
+      color: var(--accent-gold);
+    }
+
+    .nav-item:hover {
+        color: var(--text-primary);
     }
 
     .nav-item svg {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       margin-bottom: 4px;
-      transition: transform 0.2s ease;
     }
     
     .nav-item.active svg {
-      filter: drop-shadow(0 0 3px var(--accent-glow));
-    }
-    
-    .nav-item:hover svg {
-        transform: scale(1.1);
+        filter: drop-shadow(0 0 5px var(--accent-gold-glow));
     }
 
     .nav-label {
@@ -238,125 +250,119 @@
 </head>
 <body>
 
-  <header class="header">
-    <h1 class="header-title">SportX Live</h1>
+  <header class="top-bar">
+    <div class="logo">SportX<span>Live</span></div>
     <div class="search-container">
-       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-       </svg>
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+      </svg>
       <input type="text" id="search-input" placeholder="Search news...">
     </div>
   </header>
 
-  <main id="news-feed">
-    <!-- News articles will be injected here -->
+  <main class="news-feed" id="news-feed">
+    <!-- News articles will be injected here by JavaScript -->
   </main>
 
   <nav class="bottom-nav">
-    <a href="#" class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" /></svg>
-      <span class="nav-label">Home</span>
-    </a>
-    <a href="#" class="nav-item active">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 18V6.75c0-.621.504-1.125 1.125-1.125H9M12 9.75a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H12.75a.75.75 0 0 1-.75-.75V9.75Z" /></svg>
-      <span class="nav-label">News</span>
-    </a>
-    <a href="#" class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-      <span class="nav-label">Trending</span>
-    </a>
-    <a href="#" class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-      <span class="nav-label">Profile</span>
-    </a>
+    <div class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" /></svg>
+        <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" /></svg>
+        <span class="nav-label">News</span>
+    </div>
+    <div class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.287 8.287 0 0 0 3-1.832 8.287 8.287 0 0 0 3.362-2.555Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214C14.252 5.214 13.2 5.433 12.24 5.79c-.958.356-1.85.86-2.64 1.486A8.252 8.252 0 0 0 6.038 7.047 8.252 8.252 0 0 0 12 21a8.252 8.252 0 0 0 5.962-13.953 8.287 8.287 0 0 0-2.6-1.832Z" /></svg>
+        <span class="nav-label">Trending</span>
+    </div>
+    <div class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+        <span class="nav-label">Profile</span>
+    </div>
   </nav>
-
-  <script type="application/json" id="newsData">
+  
+  <script id="newsData" type="application/json">
   [{"source":{"id":null,"name":"MLB Trade Rumors"},"author":"Nick Deeds","title":"The Opener: Blue Jays, Dodgers, World Series - MLB Trade Rumors","description":"Here are three things to keep an eye on headed into Game 1 later today: 1. Blue Jays roster decisions:...","url":"https://www.mlbtraderumors.com/2025/10/the-opener-blue-jays-dodgers-world-series.html","urlToImage":"https://cdn.mlbtraderumors.com/files/2025/10/USATSI_23129909-1024x683.jpg","publishedAt":"2025-10-24T13:37:42Z","content":"Here are three things to keep an eye on headed into Game 1 later today:\r\n1. Blue Jays roster decisions:\r\nAs the Blue Jays finalize their World Series roster, the biggest question for the club is what… [+2879 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Josh Alper","title":"Kevin O’Connell: If J.J. McCarthy is healthy, he’ll play - NBC Sports","description":"Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/kevin-oconnell-if-j-j-mccarthy-is-healthy-hell-play","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f2b41b9/2147483647/strip/true/crop/5569x3133+0+0/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2F1f%2F3f%2F0c48b49443bfb260dfd81ddae6fa%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242928223","publishedAt":"2025-10-24T10:51:26Z","content":"Thursday nights blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy and watching Carson Wentz try to battle through injury throughout th… [+1435 chars]"},{"source":{"id":"talksport","name":"TalkSport"},"author":"Kerrie Jacobs-Bryant","title":"Aaron Rodgers announces shock retirement decision amid Green Bay Packers return - talkSPORT","description":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer.Ahead of the 4-2 Steelers' blockbuster Week 8 clash against h","url":"http://talksport.com/nfl/3673989/aaron-rodgers-retirement-decision-green-bay-packers-pittsburgh-steelers/","urlToImage":"https://talksport.com/wp-content/uploads/sites/5/2025/09/8-pittsburgh-steelers-reacts-throwing-1023401897.jpg?strip=all&quality=100&w=1920&h=1080&crop=1","publishedAt":"2025-10-24T09:39:25Z","content":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer. \r\nAhead of the 4-2 Steelers' blockbuster Week 8 clash against his former team on Sunday Night Football, the 2… [+5337 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Michael David Smith","title":"Chargers’ Oronde Gadsden II leads all NFL tight ends in receiving yards per game - NBC Sports","description":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didn't know how good a player they had.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/chargers-oronde-gadsden-ii-leads-all-nfl-tight-ends-in-receiving-yards-per-game","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f0ba22d/2147483647/strip/true/crop/3783x2128+0+197/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fb8%2F25%2F560448784f7698971bd7ac623409%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242569701","publishedAt":"2025-10-24T09:33:48Z","content":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didnt know how good a player they had. They didnt even know after seeing him through the offseason… [+980 chars]"},{"source":{"id":null,"name":"Bloody Elbow"},"author":null,"title":"Tom Aspinall comes in much heavier than Ciryl Gane at UFC 321 weigh-ins while one fighter misses by 3lbs - Bloody Elbow","description":"Two fighters missed the mark ahead of UFC 321 on Saturday night","url":"https://bloodyelbow.com/2025/10/24/tom-aspinall-comes-in-much-heavier-than-ciryl-gane-at-ufc-321-weigh-ins-while-one-fighter-misses-by-3lbs/","urlToImage":"https://bloodyelbow.com/wp-content/uploads/1/2025/10/Jake-Paul-chicken-scaled.jpg","publishedAt":"2025-10-24T08:29:19Z","content":"The weigh-in results are in for the Octagons return to Abu Dhabi on Saturday night.\r\nIn the main event, Tom Aspinall faces Ciryl Gane in the first defense of his undisputed UFC heavyweight title.\r\nTh… [+3384 chars]"},{"source":{"id":null,"name":"BBC News"},"author":"Emily Salley","title":"NBA: Shai Gilgeous-Alexander stars as Oklahoma City Thunder beat Indian Pacers in Finals rematch - BBC","description":"Shai Gilgeous-Alexander scores a career-high 55 points as the Oklahoma City Thunder claim their second straight win in double overtime.","url":"https://www.bbc.com/sport/basketball/articles/cd67jl19ewwo","urlToImage":"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/63bb/live/3ded47c0-b09d-11f0-a866-df0ece153fc7.jpg","publishedAt":"2025-10-24T06:16:57Z","content":"Once again the Canadian guard proved crucial, netting nine points in the second overtime as he beat his previous career-best of 54 points.\r\n\"This team has two great qualities,\" Gilgeous-Alexander sai… [+626 chars]"},{"source":{"id":"espn","name":"ESPN"},"author":"ESPN","title":"Chargers 37-10 Vikings (Oct 23, 2025) Game Recap - ESPN","description":null,"url":"https://www.espn.com/nfl/recap?gameId\\\\u003d401772942","urlToImage":null,"publishedAt":"2025-10-24T04:41:15Z","content":null},{"source":{"id":null,"name":"San Francisco Chronicle"},"author":"Susan Slusser","title":"New Giants manager Tony Vitello raised as St. Louis sports royalty, but ‘he’s for real’ - San Francisco Chronicle","description":"Tony Vitello comes to the San Francisco Giants with a past that inspires as the son of a legendary coach. “The front office didn’t do this on a whim.”","url":"https://www.sfchronicle.com/sports/giants/article/giants-tony-vitello-for-real-know-21115499.php","urlToImage":"https://s.hdnux.com/photos/01/54/72/43/28551367/3/rawImage.jpg","publishedAt":"2025-10-24T00:25:41Z","content":"Tennessee coach Tony Vitello, left, cheers on his players during an NCAA Super Regional game against Southern Mississippi in 2023. \r\nRogelio V. Solis/AP\r\nAfter the Giants lured Tony Vitello away from… [+10470 chars]"},{"source":{"id":null,"name":"BBC News"},"author":null,"title":"How a mafia poker scam allegedly stole millions using X-rays and tech - BBC","description":"Prosecutors said the elaborate plot, which allegedly netted $7m from victims, belonged in a Hollywood film.","url":"https://www.bbc.com/news/articles/cz6nd9wnzn6o","urlToImage":"https://ichef.bbci.co.uk/news/1024/branded_news/aaad/live/9999e380-b0d4-11f0-b2a1-6f537f66f9aa.jpg","publishedAt":"2025-10-23T22:48:22Z","content":"Former NBA player Damon Jones (left) and basketball coach Chauncey Billups were arrested in connection with the scheme\r\nCelebrities, professional sports stars and wealthy gamblers sat at a table hopi… [+5032 chars]"},{"source":{"id":null,"name":"NPR"},"author":"Alana Wise","title":"Chess body investigating ex-world champion who accused Daniel Naroditsky of cheating - NPR","description":"U.S. chess grandmaster Daniel Naroditsky died this week at age 29. Former world champion Vladimir Kramnik had accused Naroditsky, among others, of cheating in the sport.","url":"https://www.npr.org/2025/10/23/nx-s1-5584161/chess-fide-investigation-naroditsky-kramnik","urlToImage":"https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5544x3119+0+0/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F77%2F05%2F9ac37ed540cfb5dbb4bbec807686%2Fgettyimages-2166786414.jpg","publishedAt":"2025-10-23T22:31:27Z","content":"The International Chess Federation is investigating a Russian grandmaster for allegations of cheating he levied at fellow elite players, including 29-year-old U.S. grandmaster and YouTube sensation D… [+3459 chars]"},{"source":{"id":null,"name":"Fantasypoints.com"},"author":null,"title":"Week 8 Fantasy Football Start 'Em, Sit 'Em - Fantasy Points","description":"Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.","url":"https://www.fantasypoints.com/nfl/articles/2025/week-8-fantasy-football-start-em-sit-em","urlToImage":"https://static.fantasypts.com/photos/b2b69874054d71a709f3f1be9bb8b8c3bcaa7128/cd1e25e964f97312c7f9355f4efab5f014327c06/cover.jpg?size=1200x628&t=1761239146727","publishedAt":"2025-10-23T15:00:00Z","content":"Welcome to Week 8 Start Em, Sit Em.\r\nThis game-by-game article breaks down every player that is relevant for fantasy football. As always, please use our projections to make your start/sit decisions e… [+35187 chars]"}]
   </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const newsData = JSON.parse(document.getElementById('newsData').textContent);
       const newsFeed = document.getElementById('news-feed');
       const searchInput = document.getElementById('search-input');
-      const newsDataElement = document.getElementById('newsData');
-      
-      let allArticles = [];
-      try {
-        allArticles = JSON.parse(newsDataElement.textContent);
-      } catch (error) {
-        console.error("Error parsing news data:", error);
-        newsFeed.innerHTML = `<p class="no-results">Could not load news data.</p>`;
-        return;
-      }
+      const placeholderImage = 'https://via.placeholder.com/800x400?text=Sports+News';
 
       function formatTimeAgo(dateString) {
         if (!dateString) return '';
-        const date = new Date(dateString);
         const now = new Date();
-        const seconds = Math.round((now - date) / 1000);
-        
-        const intervals = {
-            year: 31536000,
-            month: 2592000,
-            day: 86400,
-            hour: 3600,
-            minute: 60,
-        };
+        const past = new Date(dateString);
+        const seconds = Math.floor((now - past) / 1000);
 
-        if (seconds < 60) return `${seconds}s ago`;
-        if (seconds < intervals.hour) return `${Math.floor(seconds / intervals.minute)}m ago`;
-        if (seconds < intervals.day) return `${Math.floor(seconds / intervals.hour)}h ago`;
-        if (seconds < intervals.month) return `${Math.floor(seconds / intervals.day)}d ago`;
-        if (seconds < intervals.year) return `${Math.floor(seconds / intervals.month)}mo ago`;
-        return `${Math.floor(seconds / intervals.year)}y ago`;
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + "y ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + "d ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return Math.floor(seconds) + "s ago";
       }
-      
+
       function renderArticles(articles) {
-        if (!articles || articles.length === 0) {
-          newsFeed.innerHTML = `<p class="no-results">No articles found.</p>`;
-          return;
+        newsFeed.innerHTML = '';
+        if (articles.length === 0) {
+            newsFeed.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No articles found.</p>';
+            return;
         }
 
-        const articlesHtml = articles.map(article => {
-          const { title, description, url, urlToImage, publishedAt, source } = article;
-          const imageUrl = urlToImage || 'https://via.placeholder.com/800x400?text=Sports+News';
-          const timeAgo = formatTimeAgo(publishedAt);
-          const sourceName = source.name || 'Unknown Source';
-          const articleDescription = description || 'No description available.';
+        articles.forEach((article, index) => {
+          if (!article.title || article.title === '[Removed]') return;
 
-          return `
-            <article class="news-card">
-              <img src="${imageUrl}" alt="" class="card-image" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x400?text=Sports+News';">
-              <div class="card-content">
-                <div class="card-meta">
-                  <span class="card-source">${sourceName}</span>
-                  <time datetime="${publishedAt}">${timeAgo}</time>
-                </div>
-                <h2 class="card-title">${title || 'No title available'}</h2>
-                <p class="card-description">${articleDescription}</p>
-                <a href="${url}" class="read-more-btn" target="_blank" rel="noopener noreferrer">Read More</a>
+          const card = document.createElement('div');
+          card.className = 'news-card';
+          card.style.animationDelay = `${index * 50}ms`;
+
+          const imageUrl = article.urlToImage || placeholderImage;
+          const description = article.description || 'No description available.';
+
+          card.innerHTML = `
+            <img src="${imageUrl}" alt="${article.title}" class="card-image" loading="lazy" onerror="this.src='${placeholderImage}'">
+            <div class="card-content">
+              <div class="card-meta">
+                <span class="card-source">${article.source.name || 'Unknown Source'}</span>
+                <span class="card-time">${formatTimeAgo(article.publishedAt)}</span>
               </div>
-            </article>
+              <h2 class="card-title">${article.title}</h2>
+              <p class="card-description">${description}</p>
+              <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
+            </div>
           `;
-        }).join('');
-
-        newsFeed.innerHTML = articlesHtml;
+          newsFeed.appendChild(card);
+        });
       }
-      
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        const filteredArticles = allArticles.filter(article => {
-          const titleMatch = article.title && article.title.toLowerCase().includes(query);
-          const sourceMatch = article.source && article.source.name && article.source.name.toLowerCase().includes(query);
-          return titleMatch || sourceMatch;
+
+      function filterArticles() {
+        const query = searchInput.value.toLowerCase().trim();
+        const filteredArticles = newsData.filter(article => {
+          const title = article.title ? article.title.toLowerCase() : '';
+          const source = article.source && article.source.name ? article.source.name.toLowerCase() : '';
+          return title.includes(query) || source.includes(query);
         });
         renderArticles(filteredArticles);
-      });
+      }
+
+      searchInput.addEventListener('input', filterArticles);
 
       // Initial render
-      renderArticles(allArticles);
+      renderArticles(newsData);
     });
   </script>
+
 </body>
 </html>
+```
