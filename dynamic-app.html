@@ -1,1750 +1,427 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#121212">
-    <meta name="description" content="Your daily dose of sports news and analysis.">
-    <meta property="og:title" content="SportSphere - Your Sports Blog">
-    <meta property="og:description" content="Modern, mobile-first sports blog with a dark and gold theme.">
-    <meta property="og:image" content="https://picsum.photos/1200/630?grayscale&blur=2">
-    <meta property="og:url" content="https://example.com/sportsblog">
-    <meta property="og:type" content="website">
-    <title>SportSphere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-dark: #121212;
-            --bg-card: #1E1E1E;
-            --accent-gold: #FFD700;
-            --accent-gold-light: #FFEA80;
-            --text-light: #E0E0E0;
-            --text-secondary: #A0A0A0;
-            --shadow-color: rgba(0, 0, 0, 0.5);
-            --border-radius-sm: 8px;
-            --border-radius-md: 12px;
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --header-height: 60px;
-            --nav-height: 60px;
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-            background: linear-gradient(to bottom right, var(--bg-dark) 0%, #0a0a0a 100%);
-            color: var(--text-light);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: var(--nav-height); /* Space for bottom nav */
-            padding-top: var(--header-height); /* Space for top header */
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background: radial-gradient(circle at top left, rgba(255, 215, 0, 0.05) 0%, transparent 20%),
-                        radial-gradient(circle at bottom right, rgba(255, 215, 0, 0.03) 0%, transparent 15%);
-            z-index: -1;
-        }
-
-        a {
-            color: var(--accent-gold);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        button {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: inherit;
-            padding: 0;
-            outline: none;
-            transition: transform 0.1s ease-out, background-color 0.2s ease-out;
-            touch-action: manipulation;
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        button:focus-visible {
-            outline: 2px solid var(--accent-gold-light);
-            outline-offset: 2px;
-            border-radius: var(--border-radius-sm);
-        }
-
-        /* Utility Classes */
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-md);
-        }
-
-        .flex-center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .text-gold {
-            color: var(--accent-gold);
-        }
-
-        .text-secondary {
-            color: var(--text-secondary);
-        }
-
-        /* Header (App Bar) */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: var(--header-height);
-            background: rgba(30, 30, 30, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 var(--spacing-md);
-            z-index: 1000;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--accent-gold);
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-        }
-
-        .icon-button {
-            padding: var(--spacing-sm);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease-out;
-        }
-
-        .icon-button:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-        }
-
-        .icon-button svg {
-            fill: var(--text-light);
-            width: 24px;
-            height: 24px;
-        }
-
-        /* Main Content */
-        main {
-            flex-grow: 1;
-            padding: var(--spacing-md) 0;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Hero Article */
-        .hero-article {
-            background-color: var(--bg-card);
-            border-radius: var(--border-radius-md);
-            overflow: hidden;
-            margin-bottom: var(--spacing-lg);
-            box-shadow: 0 4px 15px var(--shadow-color);
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-        }
-
-        .hero-article:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px var(--shadow-color);
-        }
-
-        .hero-article-image {
-            width: 100%;
-            height: 200px; /* Fixed height for mobile hero image */
-            object-fit: cover;
-            object-position: center;
-            background-color: #333; /* Placeholder background */
-        }
-
-        .hero-article-content {
-            padding: var(--spacing-md);
-            position: relative;
-            z-index: 1;
-        }
-
-        .category-pill {
-            display: inline-block;
-            background-color: var(--accent-gold);
-            color: var(--bg-dark);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--border-radius-sm);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            text-transform: uppercase;
-        }
-
-        .hero-article-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-light);
-        }
-
-        .hero-article-excerpt {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-        }
-
-        /* Categories Filter */
-        .categories-filter {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: var(--spacing-sm) 0;
-            margin-bottom: var(--spacing-lg);
-            white-space: nowrap;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE 10+ */
-        }
-        .categories-filter::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-
-        .category-chip {
-            display: inline-flex;
-            align-items: center;
-            background-color: var(--bg-card);
-            color: var(--text-secondary);
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-right: var(--spacing-sm);
-            cursor: pointer;
-            transition: background-color 0.2s ease-out, color 0.2s ease-out, transform 0.1s ease-out;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 215, 0, 0.1);
-        }
-
-        .category-chip:last-child {
-            margin-right: 0;
-        }
-
-        .category-chip:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-            color: var(--text-light);
-        }
-
-        .category-chip.active {
-            background-color: var(--accent-gold);
-            color: var(--bg-dark);
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
-            border-color: var(--accent-gold);
-        }
-
-        /* Article Feed */
-        .article-feed {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--spacing-md);
-        }
-
-        /* Article Card */
-        .article-card {
-            background-color: var(--bg-card);
-            border-radius: var(--border-radius-md);
-            overflow: hidden;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-        }
-
-        .article-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px var(--shadow-color);
-        }
-
-        .article-card-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background-color: #333;
-        }
-
-        .article-card-content {
-            padding: var(--spacing-md);
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .article-card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-light);
-        }
-
-        .article-card-meta {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-sm);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-        .article-card-meta span:not(:last-child)::after {
-            content: "·";
-            margin-left: var(--spacing-xs);
-        }
-
-        .article-card-excerpt {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-md);
-            flex-grow: 1;
-        }
-
-        .article-card-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .article-card-read-time {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-        .article-card-read-time svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--text-secondary);
-        }
-
-        .article-card-action-buttons {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .bookmark-icon, .share-icon {
-            padding: var(--spacing-xs);
-            border-radius: 50%;
-            transition: background-color 0.2s ease-out;
-        }
-        .bookmark-icon:hover, .share-icon:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-        }
-        .bookmark-icon svg, .share-icon svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-secondary);
-        }
-        .bookmark-icon.bookmarked svg {
-            fill: var(--accent-gold);
-        }
-
-        /* Skeleton Loader */
-        .skeleton-loader {
-            background-color: #2a2a2a;
-            border-radius: var(--border-radius-sm);
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.8; }
-            50% { opacity: 0.6; }
-            100% { opacity: 0.8; }
-        }
-        .skeleton-loader.card-image {
-            width: 100%;
-            height: 180px;
-        }
-        .skeleton-loader.card-title {
-            width: 90%;
-            height: 20px;
-            margin-bottom: var(--spacing-sm);
-        }
-        .skeleton-loader.card-meta {
-            width: 70%;
-            height: 14px;
-            margin-bottom: var(--spacing-sm);
-        }
-        .skeleton-loader.card-excerpt {
-            width: 100%;
-            height: 16px;
-            margin-bottom: var(--spacing-xs);
-        }
-        .skeleton-loader.card-excerpt:last-of-type {
-            width: 80%;
-        }
-        .skeleton-loader.category-chip {
-            width: 90px;
-            height: 36px;
-            display: inline-block;
-            margin-right: var(--spacing-sm);
-        }
-        .skeleton-loader.hero-image {
-            width: 100%;
-            height: 200px;
-        }
-        .skeleton-loader.hero-pill {
-            width: 80px;
-            height: 24px;
-            margin-bottom: var(--spacing-sm);
-        }
-        .skeleton-loader.hero-title {
-            width: 100%;
-            height: 28px;
-            margin-bottom: var(--spacing-sm);
-        }
-        .skeleton-loader.hero-excerpt {
-            width: 100%;
-            height: 18px;
-            margin-bottom: var(--spacing-xs);
-        }
-        .skeleton-loader.hero-excerpt:last-of-type {
-            width: 90%;
-        }
-
-
-        /* Article Detail View */
-        .article-detail-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-dark); /* Full opacity for the detail page */
-            z-index: 2000;
-            overflow-y: auto;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-            padding-top: var(--header-height);
-            -webkit-overflow-scrolling: touch;
-        }
-        .article-detail-overlay.active {
-            transform: translateY(0);
-        }
-
-        .article-detail-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: var(--header-height);
-            background: rgba(30, 30, 30, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 var(--spacing-md);
-            z-index: 2001;
-            justify-content: space-between;
-        }
-        .article-detail-header .header-title {
-            font-size: 1.1rem;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            max-width: calc(100% - 120px);
-        }
-        .article-detail-header-actions {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .article-detail-content {
-            padding: var(--spacing-md);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .article-detail-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            margin-bottom: var(--spacing-lg);
-            border-radius: var(--border-radius-md);
-            background-color: #333;
-        }
-        .article-detail-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: var(--spacing-md);
-            color: var(--text-light);
-        }
-        .article-detail-meta {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-lg);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-        .article-detail-meta span:not(:last-child)::after {
-            content: "·";
-            margin-left: var(--spacing-xs);
-        }
-        .article-detail-body p {
-            margin-bottom: var(--spacing-md);
-            color: var(--text-light);
-            font-size: 1rem;
-        }
-        .article-detail-body p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Responsive Video Embed */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            margin: var(--spacing-lg) 0;
-            border-radius: var(--border-radius-md);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            background-color: #333;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        .related-articles {
-            margin-top: var(--spacing-xl);
-            padding-top: var(--spacing-md);
-            border-top: 1px solid rgba(255, 215, 0, 0.1);
-        }
-        .related-articles h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-lg);
-            color: var(--text-light);
-        }
-        .related-articles-list .article-card {
-            margin-bottom: var(--spacing-md);
-        }
-        .related-articles-list .article-card:last-child {
-            margin-bottom: 0;
-        }
-
-
-        /* Search Overlay */
-        .search-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-dark);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            transform: translateY(-100%);
-            transition: transform 0.3s ease-out;
-            padding-top: var(--header-height);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .search-overlay.active {
-            transform: translateY(0);
-        }
-
-        .search-input-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: var(--header-height);
-            background: rgba(30, 30, 30, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 var(--spacing-md);
-            z-index: 2001;
-            gap: var(--spacing-md);
-        }
-
-        .search-input {
-            flex-grow: 1;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            background-color: #333;
-            color: var(--text-light);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
-        }
-        .search-input::placeholder {
-            color: var(--text-secondary);
-        }
-        .search-input:focus {
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
-        }
-
-        .search-results {
-            padding: var(--spacing-md);
-            flex-grow: 1;
-            margin-top: var(--spacing-md); /* Space below fixed search input */
-        }
-        .search-results .article-card {
-            margin-bottom: var(--spacing-md);
-        }
-
-        .no-results {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            padding: var(--spacing-xl);
-        }
-
-        /* Bookmarks View */
-        .bookmarks-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-dark);
-            z-index: 1500;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%); /* Slide in from right */
-            transition: transform 0.3s ease-out;
-            padding-top: var(--header-height);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .bookmarks-view.active {
-            transform: translateX(0);
-        }
-
-        .bookmarks-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: var(--header-height);
-            background: rgba(30, 30, 30, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 var(--spacing-md);
-            z-index: 1501;
-        }
-        .bookmarks-header .header-title {
-            flex-grow: 1;
-            text-align: center;
-            margin-right: 48px; /* To visually center title despite back button */
-        }
-
-        .bookmarks-content {
-            padding: var(--spacing-md);
-            flex-grow: 1;
-            margin-top: var(--spacing-md);
-        }
-        .bookmarks-content .article-card {
-            margin-bottom: var(--spacing-md);
-        }
-
-
-        /* Bottom Navigation */
-        nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: var(--nav-height);
-            background: rgba(30, 30, 30, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 215, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--border-radius-sm);
-            transition: color 0.2s ease-out, background-color 0.2s ease-out;
-        }
-        .nav-item:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-        }
-
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-secondary);
-            margin-bottom: var(--spacing-xs);
-            transition: fill 0.2s ease-out;
-        }
-
-        .nav-item.active {
-            color: var(--accent-gold);
-        }
-
-        .nav-item.active svg {
-            fill: var(--accent-gold);
-        }
-
-        /* Responsive Adjustments */
-        @media (min-width: 768px) {
-            body {
-                padding-bottom: 0; /* No bottom nav on desktop */
-            }
-
-            header {
-                position: relative; /* Not sticky on desktop, unless preferred */
-                height: 80px;
-                background: linear-gradient(to right, var(--bg-dark), #0a0a0a);
-                border-bottom: none;
-            }
-            .header-title {
-                font-size: 1.8rem;
-            }
-            .header-content {
-                gap: var(--spacing-md);
-            }
-            .header-content nav { /* Main navigation for desktop */
-                position: relative;
-                height: auto;
-                background: none;
-                border-top: none;
-                display: flex;
-                flex-grow: 1;
-                justify-content: flex-end;
-                gap: var(--spacing-lg);
-                padding-bottom: 0;
-            }
-            .header-content .nav-item {
-                font-size: 0.9rem;
-                flex-direction: row;
-                gap: var(--spacing-xs);
-                padding: var(--spacing-sm) var(--spacing-md);
-                border-radius: var(--border-radius-sm);
-            }
-            .header-content .nav-item svg {
-                margin-bottom: 0;
-            }
-            .header-search-button {
-                margin-left: var(--spacing-md);
-            }
-
-            main {
-                padding: var(--spacing-lg) 0;
-            }
-
-            .hero-article {
-                margin-bottom: var(--spacing-xl);
-            }
-            .hero-article-image {
-                height: 300px;
-            }
-            .hero-article-title {
-                font-size: 2rem;
-            }
-            .hero-article-excerpt {
-                font-size: 1rem;
-            }
-
-            .categories-filter {
-                margin-bottom: var(--spacing-xl);
-            }
-            .category-chip {
-                font-size: 1rem;
-                padding: var(--spacing-sm) var(--spacing-lg);
-            }
-
-            .article-feed {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: var(--spacing-lg);
-            }
-
-            .article-card-image {
-                height: 200px;
-            }
-            .article-card-title {
-                font-size: 1.2rem;
-            }
-
-            .article-detail-overlay {
-                padding-top: 0; /* Header is static on desktop */
-                transform: translateX(100%); /* Full slide for desktop */
-                width: 60%; /* Occupy part of the screen */
-                left: auto;
-                right: 0;
-                box-shadow: -10px 0 30px var(--shadow-color);
-            }
-            .article-detail-overlay.active {
-                transform: translateX(0);
-            }
-            .article-detail-header {
-                position: absolute; /* Relative to overlay */
-                top: 0;
-                left: 0;
-                width: 100%;
-                background: rgba(30, 30, 30, 0.9);
-            }
-            .article-detail-content {
-                padding-top: var(--header-height);
-            }
-            .article-detail-image {
-                height: 350px;
-            }
-            .article-detail-title {
-                font-size: 2.2rem;
-            }
-            .article-detail-body p {
-                font-size: 1.1rem;
-            }
-
-            .search-overlay {
-                padding-top: 0;
-                transform: translateY(-100%);
-            }
-            .search-input-container {
-                position: relative;
-                top: auto;
-                left: auto;
-                padding: var(--spacing-md) var(--spacing-lg);
-                background: none;
-                backdrop-filter: none;
-                -webkit-backdrop-filter: none;
-                border-bottom: none;
-            }
-            .search-input {
-                max-width: 600px;
-                margin: 0 auto;
-                font-size: 1.1rem;
-            }
-            .search-results {
-                padding: var(--spacing-md) var(--spacing-lg);
-                margin-top: 0;
-            }
-            .search-results .article-feed {
-                max-width: 800px;
-                margin: 0 auto;
-            }
-
-            .bookmarks-view {
-                transform: translateX(100%);
-                width: 60%;
-                box-shadow: -10px 0 30px var(--shadow-color);
-                padding-top: 0;
-            }
-            .bookmarks-header {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                background: rgba(30, 30, 30, 0.9);
-            }
-            .bookmarks-content {
-                padding-top: var(--header-height);
-            }
-        }
-        @media (min-width: 1024px) {
-            .article-feed {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        /* Hide mobile nav on desktop */
-        @media (min-width: 768px) {
-            body > nav {
-                display: none;
-            }
-            header .header-content .header-title {
-                margin-right: auto;
-            }
-        }
-
-        /* Show mobile nav on mobile */
-        @media (max-width: 767px) {
-            header .header-content nav {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0b0b">
+  <title>SportX Live - Latest Sports News</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0b0b;
+      --bg-card: #1c1c1c;
+      --accent-gold: #ffd700;
+      --accent-gold-light: #fff3a3;
+      --text-light: #f5f5f5;
+      --text-muted: #aaaaaa;
+      --shadow-dark: rgba(0, 0, 0, 0.4);
+      --glow-shadow: 0 0 8px var(--accent-gold), 0 0 15px rgba(255, 215, 0, 0.4);
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background-color: var(--bg-card);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 10px var(--shadow-dark);
+      border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .header-title {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: var(--accent-gold);
+      text-shadow: var(--glow-shadow);
+    }
+
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      margin-left: 20px; /* Space between title and search */
+    }
+
+    #search-input {
+      width: 100%; /* Take available width */
+      max-width: 300px; /* Limit max width for wider screens */
+      padding: 10px 15px;
+      padding-left: 40px; /* For search icon */
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 25px;
+      background-color: #2a2a2a;
+      color: var(--text-light);
+      font-size: 1em;
+      outline: none;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    }
+
+    #search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    #search-input:focus {
+      border-color: var(--accent-gold);
+      box-shadow: var(--glow-shadow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      color: var(--accent-gold);
+      font-size: 1.1em;
+    }
+
+    /* Main Content */
+    main {
+      flex-grow: 1;
+      padding: 20px;
+      padding-bottom: 80px; /* Space for fixed bottom nav */
+      max-width: 800px; /* Max width for content on larger screens */
+      margin: 0 auto; /* Center content */
+      width: 100%;
+    }
+
+    #news-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    /* News Card */
+    .news-card {
+      background-color: var(--bg-card);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px var(--shadow-dark);
+      transition: transform var(--transition-speed) ease-out, box-shadow var(--transition-speed) ease-out;
+      animation: fadeIn 0.6s ease-out forwards;
+      opacity: 0; /* Start invisible for animation */
+    }
+
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px var(--shadow-dark), var(--glow-shadow);
+    }
+
+    .news-card img {
+      width: 100%;
+      height: 200px; /* Fixed height for consistency */
+      object-fit: cover;
+      border-bottom: 3px solid var(--accent-gold);
+      transition: transform var(--transition-speed) ease-out;
+    }
+
+    .news-card:hover img {
+      transform: scale(1.02);
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .news-card h3 {
+      font-size: 1.3em;
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: var(--text-light);
+      line-height: 1.4;
+      font-weight: 600;
+      transition: color var(--transition-speed);
+    }
+
+    .news-card h3:hover {
+      color: var(--accent-gold);
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+
+    .news-card .meta {
+      font-size: 0.85em;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .news-card .meta span {
+      background-color: rgba(255, 215, 0, 0.1);
+      padding: 4px 8px;
+      border-radius: 12px;
+      color: var(--accent-gold-light);
+      font-weight: 400;
+    }
+
+    .news-card p.description {
+      font-size: 0.95em;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .read-more {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--accent-gold);
+      color: var(--bg-dark);
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: background-color var(--transition-speed), box-shadow var(--transition-speed), transform var(--transition-speed);
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .read-more:hover,
+    .read-more:focus {
+      background-color: var(--accent-gold-light);
+      box-shadow: var(--glow-shadow);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    /* Bottom Navigation */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--bg-card);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      box-shadow: 0 -2px 10px var(--shadow-dark);
+      border-top: 1px solid rgba(255, 215, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .nav-item {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.8em;
+      font-weight: 400;
+      padding: 5px;
+      transition: color var(--transition-speed), text-shadow var(--transition-speed);
+    }
+
+    .nav-item.active,
+    .nav-item:hover {
+      color: var(--accent-gold);
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+
+    .nav-item .icon {
+      font-size: 1.5em;
+      margin-bottom: 3px;
+    }
+
+    /* Fallback image style */
+    .news-card img.fallback-img {
+      background-color: #333; /* Darker background for placeholder */
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Accessibility */
+    .read-more:focus-visible,
+    #search-input:focus-visible,
+    .nav-item:focus-visible {
+      outline: 2px solid var(--accent-gold-light);
+      outline-offset: 3px;
+    }
+
+    /* Mobile specific adjustments (already mobile-first, but good to ensure) */
+    @media (max-width: 600px) {
+      header {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-bottom: 10px;
+      }
+      .header-title {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .search-container {
+        width: 100%;
+        margin-left: 0;
+        justify-content: center;
+      }
+      #search-input {
+        max-width: 90%;
+      }
+      main {
+        padding: 15px;
+        padding-bottom: 70px;
+      }
+      .news-card h3 {
+        font-size: 1.15em;
+      }
+      .news-card .meta {
+        font-size: 0.8em;
+      }
+      .news-card p.description {
+        font-size: 0.9em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="header-content container">
-            <h1 class="header-title">SportSphere</h1>
-            <nav role="navigation" aria-label="Main Navigation">
-                <a href="#home" class="nav-item active" aria-label="Go to Home">
-                    <svg viewBox="0 0 24 24"><path d="M12 2L3 9V20H21V9L12 2ZM18 18H15V12H9V18H6V10.19L12 5.69L18 10.19V18Z"/></svg>
-                    <span>Home</span>
-                </a>
-                <a href="#categories" class="nav-item" aria-label="View Categories">
-                    <svg viewBox="0 0 24 24"><path d="M10 20H14V4H10V20ZM4 20H8V12H4V20ZM16 20H20V9H16V20Z"/></svg>
-                    <span>Categories</span>
-                </a>
-                <a href="#bookmarks" class="nav-item" aria-label="View Bookmarks">
-                    <svg viewBox="0 0 24 24"><path d="M17 3H7C5.9 3 5 3.9 5 5V21L12 18L19 21V5C19 3.9 18.1 3 17 3Z"/></svg>
-                    <span>Bookmarks</span>
-                </a>
-                <a href="#profile" class="nav-item" aria-label="View Profile">
-                    <svg viewBox="0 0 24 24"><path d="M12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 14C16.42 14 20 15.79 20 18V20H4V18C4 15.79 7.58 14 12 14Z"/></svg>
-                    <span>Profile</span>
-                </a>
-            </nav>
-            <button id="search-button" class="icon-button header-search-button" aria-label="Open search">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19.25 20.75L20.75 19.25L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"/></svg>
-            </button>
-        </div>
-    </header>
 
-    <main>
-        <section id="home-view" class="container">
-            <div id="hero-section">
-                <div class="skeleton-loader hero-image"></div>
-                <div class="skeleton-loader hero-pill"></div>
-                <div class="skeleton-loader hero-title"></div>
-                <div class="skeleton-loader hero-excerpt"></div>
-                <div class="skeleton-loader hero-excerpt"></div>
-            </div>
-
-            <h2 class="text-light" style="font-size: 1.4rem; margin-bottom: var(--spacing-md);">Categories</h2>
-            <div id="categories-filter" class="categories-filter">
-                <!-- Category chips will be rendered here -->
-                <div class="skeleton-loader category-chip"></div>
-                <div class="skeleton-loader category-chip"></div>
-                <div class="skeleton-loader category-chip"></div>
-                <div class="skeleton-loader category-chip"></div>
-                <div class="skeleton-loader category-chip"></div>
-            </div>
-
-            <h2 class="text-light" style="font-size: 1.4rem; margin-bottom: var(--spacing-md);">Latest Articles</h2>
-            <div id="article-feed" class="article-feed">
-                <!-- Skeleton loaders for initial load -->
-                <div class="article-card skeleton-loader-card">
-                    <div class="skeleton-loader card-image"></div>
-                    <div class="article-card-content">
-                        <div class="skeleton-loader card-title"></div>
-                        <div class="skeleton-loader card-meta"></div>
-                        <div class="skeleton-loader card-excerpt"></div>
-                        <div class="skeleton-loader card-excerpt"></div>
-                    </div>
-                </div>
-                <div class="article-card skeleton-loader-card">
-                    <div class="skeleton-loader card-image"></div>
-                    <div class="article-card-content">
-                        <div class="skeleton-loader card-title"></div>
-                        <div class="skeleton-loader card-meta"></div>
-                        <div class="skeleton-loader card-excerpt"></div>
-                        <div class="skeleton-loader card-excerpt"></div>
-                    </div>
-                </div>
-                <div class="article-card skeleton-loader-card">
-                    <div class="skeleton-loader card-image"></div>
-                    <div class="article-card-content">
-                        <div class="skeleton-loader card-title"></div>
-                        <div class="skeleton-loader card-meta"></div>
-                        <div class="skeleton-loader card-excerpt"></div>
-                        <div class="skeleton-loader card-excerpt"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="categories-view" class="container" style="display: none;">
-             <h2 class="text-light" style="font-size: 1.4rem; margin-bottom: var(--spacing-md);">All Categories</h2>
-             <div id="all-categories-filter" class="categories-filter" style="display: flex; flex-wrap: wrap; overflow-x: hidden; gap: var(--spacing-sm); justify-content: center;">
-                 <!-- All category chips will be rendered here -->
-             </div>
-             <h2 class="text-light" style="font-size: 1.4rem; margin-bottom: var(--spacing-md); margin-top: var(--spacing-lg);">Articles by Category</h2>
-             <div id="category-filtered-feed" class="article-feed">
-                 <!-- Category filtered articles will be rendered here -->
-             </div>
-        </section>
-
-        <section id="bookmarks-view-content" class="container" style="display: none;">
-            <h2 class="text-light" style="font-size: 1.4rem; margin-bottom: var(--spacing-md);">Your Bookmarks</h2>
-            <div id="bookmarked-articles-feed" class="article-feed">
-                <!-- Bookmarked articles will be rendered here -->
-            </div>
-            <p id="no-bookmarks-message" class="no-results" style="display: none;">You haven't bookmarked any articles yet.</p>
-        </section>
-    </main>
-
-    <!-- Article Detail Overlay -->
-    <div id="article-detail-overlay" class="article-detail-overlay" role="dialog" aria-modal="true" aria-labelledby="article-detail-title">
-        <header class="article-detail-header">
-            <button id="close-article-detail" class="icon-button" aria-label="Close article">
-                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/></svg>
-            </button>
-            <h2 id="article-detail-title" class="header-title"></h2>
-            <div class="article-detail-header-actions">
-                <button id="article-detail-bookmark-button" class="icon-button bookmark-icon" aria-label="Bookmark this article">
-                    <svg viewBox="0 0 24 24"><path d="M17 3H7C5.9 3 5 3.9 5 5V21L12 18L19 21V5C19 3.9 18.1 3 17 3Z"/></svg>
-                </button>
-                <button id="article-detail-share-button" class="icon-button share-icon" aria-label="Share this article">
-                    <svg viewBox="0 0 24 24"><path d="M18 16.08C17.24 16.08 16.56 16.38 16.04 16.85L8.91 12.7C8.96 12.47 9 12.24 9 12C9 11.76 8.96 11.53 8.91 11.3L15.96 7.15C16.5 7.63 17.21 7.92 18 7.92C19.66 7.92 21 6.58 21 5C21 3.34 19.66 2 18 2C16.34 2 15 3.34 15 5C15 5.24 15.04 5.47 15.09 5.7L8.04 9.85C7.5 9.37 6.79 9.08 6 9.08C4.34 9.08 3 10.42 3 12C3 13.58 4.34 14.92 6 14.92C6.79 14.92 7.5 14.63 8.04 14.15L15.09 18.3C15.04 18.53 15 18.76 15 19C15 20.66 16.34 22 18 22C19.66 22 21 20.66 21 19C21 17.34 19.66 16.08 18 16.08Z"/></svg>
-                </button>
-            </div>
-        </header>
-        <div class="article-detail-content">
-            <img id="article-detail-image" src="" alt="" class="article-detail-image" loading="lazy">
-            <p id="article-detail-category" class="category-pill" style="margin-bottom: var(--spacing-sm);"></p>
-            <div id="article-detail-meta" class="article-detail-meta"></div>
-            <div id="article-detail-body" class="article-detail-body">
-                <p>Loading content...</p>
-                <div class="video-container" style="display: none;">
-                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-            </div>
-            <div class="related-articles">
-                <h3>Related Articles</h3>
-                <div id="related-articles-list" class="related-articles-list article-feed">
-                    <!-- Related articles will be loaded here -->
-                </div>
-            </div>
-        </div>
+  <header>
+    <div class="header-title">SportX Live</div>
+    <div class="search-container">
+      <span class="search-icon">&#128269;</span> <!-- Magnifying glass icon -->
+      <label for="search-input" class="sr-only">Search News</label>
+      <input type="text" id="search-input" placeholder="Search articles or sources...">
     </div>
+  </header>
 
-    <!-- Search Overlay -->
-    <div id="search-overlay" class="search-overlay">
-        <div class="search-input-container">
-            <button id="close-search-overlay" class="icon-button" aria-label="Close search">
-                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/></svg>
-            </button>
-            <input type="text" id="search-input" class="search-input" placeholder="Search articles..." aria-label="Search articles by title or content">
-        </div>
-        <div class="search-results container">
-            <div id="search-results-feed" class="article-feed">
-                <!-- Search results will be rendered here -->
+  <main>
+    <section id="news-feed" aria-live="polite" aria-atomic="true">
+      <!-- News articles will be dynamically loaded here -->
+      <p id="no-results" style="display: none; text-align: center; color: var(--text-muted);">No articles found matching your search.</p>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active" aria-current="page">
+      <span class="icon">&#127942;</span> <!-- Trophy icon -->
+      <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="icon">&#128240;</span> <!-- Newspaper icon -->
+      <span>News</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="icon">&#128293;</span> <!-- Fire icon -->
+      <span>Trending</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="icon">&#128100;</span> <!-- Bust in silhouette icon -->
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- News data embedded as JSON -->
+  <script type="application/json" id="newsData">
+    [{"source":{"id":null,"name":"NBCSports.com"},"author":"Josh Alper","title":"Kevin O’Connell: If J.J. McCarthy is healthy, he’ll play - NBC Sports","description":"Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/kevin-oconnell-if-j-j-mccarthy-is-healthy-hell-play","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f2b41b9/2147483647/strip/true/crop/5569x3133+0+0/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2F1f%2F3f%2F0c48b49443bfb260dfd81ddae6fa%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242928223","publishedAt":"2025-10-24T10:51:26Z","content":"Thursday nights blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy and watching Carson Wentz try to battle through injury throughout th… [+1435 chars]"},{"source":{"id":null,"name":"BBC News"},"author":"Paul Battison in Abu Dhabi","title":"UFC 321: Inside Tom Aspinall's fight camp for his heavyweight title fight with Ciryl Gane - BBC","description":"BBC Sport looks inside Tom Aspinall's intense fight camp before his first undisputed heavyweight title defence against Ciryl Gane at UFC 321 in Abu Dhabi on Saturday.","url":"https://www.bbc.com/sport/mixed-martial-arts/articles/cy0kynlv9rdo","urlToImage":"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/9372/live/da4c9e50-b097-11f0-ba75-093eca1ac29b.jpg","publishedAt":"2025-10-24T07:22:40Z","content":"Aspinall prioritises sleep when he gets home after training but for Andy, this is the time when he often watches fight footage of Gane.\r\n\"Tom watches him too but he doesn't have any say in what we're… [+1091 chars]"},{"source":{"id":null,"name":"Formula 1"},"author":"F1","title":"‘Clean slate’ – Piastri confirms Norris' ‘repercussions’ removed ahead of Mexico as he reflects on ‘threat’ of Verstappen - Formula 1","description":"Oscar Piastri has stated that both he and team mate Lando Norris will arrive into the Mexico City Grand Prix weekend on a “clean slate”, with the repercussions previously given to Norris for contact in Singapore now removed while Piastri has taken a “degree o…","url":"https://www.formula1.com/en/latest/article/piastri-norris-repercussions-mexico-verstappen-f1-title.2QPTpHbgUBuIGHq4ueEtID","urlToImage":"https://media.formula1.com/image/upload/t_16by9Centre/c_lfill,w_2048/q_auto/v1740000000/trackside-images/2025/F1_Grand_Prix_of_Mexico___Previews/2242854388.webp","publishedAt":"2025-10-24T06:37:34Z","content":"The thing thats going to help me to win this championship is trying to get the most out of myself, the most out of the car, the most out of the team around me, and worrying about anyone else on the g… [+887 chars]"},{"source":{"id":null,"name":"BBC News"},"author":"Emily Salley","title":"NBA: Shai Gilgeous-Alexander stars as Oklahoma City Thunder beat Indian Pacers in Finals rematch - BBC","description":"Shai Gilgeous-Alexander scores a career-high 55 points as the Oklahoma City Thunder claim their second straight win in double overtime.","url":"https://www.bbc.com/sport/basketball/articles/cd67jl19ewwo","urlToImage":"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/63bb/live/3ded47c0-b09d-11f0-a866-df0ece153fc7.jpg","publishedAt":"2025-10-24T06:16:57Z","content":"Once again the Canadian guard proved crucial, netting nine points in the second overtime as he beat his previous career-best of 54 points.\r\n\"This team has two great qualities,\" Gilgeous-Alexander sai… [+626 chars]"},{"source":{"id":null,"name":"Sports Illustrated"},"author":"Stephen Douglas","title":"Kirk Herbstreit Rips Carson Wentz for Emotional Sideline Behavior During Loss - Sports Illustrated","description":"Kirk Herbstreit wanted an injured Carson Wentz to act like an alpha and hold his emotion in.","url":"https://www.si.com/nfl/kirk-herbstreit-rips-carson-wentz-emotional-sideline-behavior-loss","urlToImage":"https://images2.minutemediacdn.com/image/upload/c_crop,w_2716,h_1527,x_0,y_18/c_fill,w_1440,ar_16:9,f_auto,q_auto,g_auto/images/voltaxMediaLibrary/mmsport/si/01k8a5pb8ykqnswyjpjk.png","publishedAt":"2025-10-24T04:07:10Z","content":"Carson Wentz started his fourth game of the season for the Vikings on Thursday as the team lost to the Chargers 3710 on the road. Wentz was sacked five times and hit even more often before he finally… [+1433 chars]"},{"source":{"id":null,"name":"San Francisco Chronicle"},"author":"Susan Slusser","title":"New Giants manager Tony Vitello raised as St. Louis sports royalty, but ‘he’s for real’ - San Francisco Chronicle","description":"Tony Vitello comes to the San Francisco Giants with a past that inspires as the son of a legendary coach. “The front office didn’t do this on a whim.”","url":"https://www.sfchronicle.com/sports/giants/article/giants-tony-vitello-for-real-know-21115499.php","urlToImage":"https://s.hdnux.com/photos/01/54/72/43/28551367/3/rawImage.jpg","publishedAt":"2025-10-24T00:25:41Z","content":"Tennessee coach Tony Vitello, left, cheers on his players during an NCAA Super Regional game against Southern Mississippi in 2023. Rogelio V. Solis/AP\r\nAfter the Giants lured Tony Vitello away from… [+10470 chars]"},{"source":{"id":null,"name":"Ctinsider.com"},"author":"Maggie Vanoni","title":"UConn women's basketball regular season opener moved from Germany to U.S. Naval Academy - CT Insider","description":"UConn women's basketball's 2025-26 season opener against Louisville in the Armed Forces Classic has been relocated from Germany to the Naval Academy.","url":"https://www.ctinsider.com/sports/uconn-womens-basketball/article/armed-forces-classic-relocation-germany-navy-21104111.php","urlToImage":"https://s.hdnux.com/photos/01/54/71/01/28545091/3/rawImage.jpg","publishedAt":"2025-10-23T23:53:34Z","content":"UNCASVILLE, CT - OCTOBER 13: UConn Huskies Head Coach Geno Auriemma looks on during the Naismith Basketball Hall of Fame exhibition women's college basketball game between the UConn Huskies and the B… [+2352 chars]"},{"source":{"id":null,"name":"NPR"},"author":"Alana Wise","title":"Chess body investigating ex-world champion who accused Daniel Naroditsky of cheating - NPR","description":"U.S. chess grandmaster Daniel Naroditsky died this week at age 29. Former world champion Vladimir Kramnik had accused Naroditsky, among others, of cheating in the sport.","url":"https://www.npr.org/2025/10/23/nx-s1-5584161/chess-fide-investigation-naroditsky-kramnik","urlToImage":"https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5544x3119+0+0/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F77%2F05%2F9ac37ed540cfb5dbb4bbec807686%2Fgettyimages-2166786414.jpg","publishedAt":"2025-10-23T22:31:27Z","content":"The International Chess Federation is investigating a Russian grandmaster for allegations of cheating he levied at fellow elite players, including 29-year-old U.S. grandmaster and YouTube sensation D… [+3459 chars]"},{"source":{"id":null,"name":"Fantasypoints.com"},"author":null,"title":"Week 8 Fantasy Football Start 'Em, Sit 'Em - Fantasy Points","description":"Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.","url":"https://www.fantasypoints.com/nfl/articles/2025/week-8-fantasy-football-start-em-sit-em","urlToImage":"https://static.fantasypts.com/photos/b2b69874054d71a709f3f1be9bb8b8c3bcaa7128/cd1e25e964f97312c7f9355f4efab5f014327c06/cover.jpg?size=1200x628&t=1761239146727","publishedAt":"2025-10-23T15:00:00Z","content":"Welcome to Week 8 Start Em, Sit Em.\r\nThis game-by-game article breaks down every player that is relevant for fantasy football. As always, please use our projections to make your start/sit decisions e… [+35187 chars]"}]
+  </script>
+
+  <script>
+    const newsDataString = document.getElementById("newsData").textContent;
+    const articles = JSON.parse(newsDataString);
+    const newsFeed = document.getElementById("news-feed");
+    const searchInput = document.getElementById("search-input");
+    const noResultsMessage = document.getElementById("no-results");
+
+    // Function to format time
+    function formatRelativeTime(dateString) {
+      const now = new Date();
+      const publishedDate = new Date(dateString);
+      const diffSeconds = Math.floor((now - publishedDate) / 1000);
+
+      const minutes = Math.floor(diffSeconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const months = Math.floor(days / 30);
+      const years = Math.floor(days / 365);
+
+      if (years > 0) return `${years}y ago`;
+      if (months > 0) return `${months}m ago`;
+      if (days > 0) return `${days}d ago`;
+      if (hours > 0) return `${hours}h ago`;
+      if (minutes > 0) return `${minutes}min ago`;
+      return "just now";
+    }
+
+    // Function to render articles
+    function renderArticles(articlesToRender) {
+      newsFeed.innerHTML = ''; // Clear existing articles
+      if (articlesToRender.length === 0) {
+        noResultsMessage.style.display = 'block';
+        return;
+      } else {
+        noResultsMessage.style.display = 'none';
+      }
+
+      articlesToRender.forEach((article, index) => {
+        const articleCard = document.createElement('div');
+        articleCard.className = 'news-card';
+        articleCard.style.animationDelay = `${index * 0.1}s`; // Staggered fade-in
+
+        const imageUrl = article.urlToImage || 'https://via.placeholder.com/800x400?text=Sports+News';
+
+        articleCard.innerHTML = `
+          <img src="${imageUrl}" alt="${article.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x400?text=Sports+News'; this.classList.add('fallback-img');">
+          <div class="card-content">
+            <h3>${article.title}</h3>
+            <div class="meta" aria-label="Article details">
+              <span role="presentation">${article.source.name}</span>
+              ${article.author ? `<span role="presentation">${article.author}</span>` : ''}
+              <span role="presentation">${formatRelativeTime(article.publishedAt)}</span>
             </div>
-            <p id="no-search-results" class="no-results" style="display: none;">No articles found matching your search.</p>
-        </div>
-    </div>
+            <p class="description">${article.description || 'No description available.'}</p>
+            <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more" aria-label="Read full article: ${article.title}">Read More</a>
+          </div>
+        `;
+        newsFeed.appendChild(articleCard);
+      });
+    }
 
-    <!-- Bottom Navigation Bar (Mobile only) -->
-    <nav role="navigation" aria-label="Bottom Navigation">
-        <a href="#home" class="nav-item active" aria-label="Go to Home">
-            <svg viewBox="0 0 24 24"><path d="M12 2L3 9V20H21V9L12 2ZM18 18H15V12H9V18H6V10.19L12 5.69L18 10.19V18Z"/></svg>
-            <span>Home</span>
-        </a>
-        <a href="#categories" class="nav-item" aria-label="View Categories">
-            <svg viewBox="0 0 24 24"><path d="M10 20H14V4H10V20ZM4 20H8V12H4V20ZM16 20H20V9H16V20Z"/></svg>
-            <span>Categories</span>
-        </a>
-        <a href="#bookmarks" class="nav-item" aria-label="View Bookmarks">
-            <svg viewBox="0 0 24 24"><path d="M17 3H7C5.9 3 5 3.9 5 5V21L12 18L19 21V5C19 3.9 18.1 3 17 3Z"/></svg>
-            <span>Bookmarks</span>
-        </a>
-        <a href="#profile" class="nav-item" aria-label="View Profile">
-            <svg viewBox="0 0 24 24"><path d="M12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 14C16.42 14 20 15.79 20 18V20H4V18C4 15.79 7.58 14 12 14Z"/></svg>
-            <span>Profile</span>
-        </a>
-    </nav>
+    // Search functionality
+    searchInput.addEventListener('input', (event) => {
+      const searchTerm = event.target.value.toLowerCase();
+      const filteredArticles = articles.filter(article =>
+        article.title.toLowerCase().includes(searchTerm) ||
+        article.source.name.toLowerCase().includes(searchTerm)
+      );
+      renderArticles(filteredArticles);
+    });
 
-    <script>
-        // Article Data (expanded for detail view)
-        const articlesData = [
-            {
-                "id": "article-1",
-                "source": "NBCSports.com",
-                "author": "Josh Alper",
-                "title": "Kevin O’Connell: If J.J. McCarthy is healthy, he’ll play",
-                "description": "Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy.",
-                "url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/kevin-oconnell-if-j-j-mccarthy-is-healthy-hell-play",
-                "urlToImage": "https://picsum.photos/seed/1/400/225",
-                "publishedAt": "2025-10-24T10:51:26Z",
-                "category": "NFL",
-                "content": "Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy and watching Carson Wentz try to battle through injury throughout the game only highlighted the team's struggles. Coach Kevin O'Connell addressed the situation in his post-game press conference, emphasizing the importance of McCarthy's health. \"If J.J. is healthy, he'll play,\" O'Connell stated, clearing up any speculation about the team's quarterback strategy going forward. This declaration signals a strong commitment to their young prospect once he's medically cleared.\n\nThe Vikings' season has been plagued by injuries, particularly at the quarterback position. The absence of McCarthy has forced the team to rely on backups, leading to inconsistent performances. Fans and analysts alike have been eager for an update on McCarthy's return, hoping his presence can inject new life into the struggling offense. O'Connell's firm stance suggests that when McCarthy is ready, he will be immediately reinserted into the starting lineup.\n\nThe team's medical staff is reportedly working closely with McCarthy to ensure a full recovery, prioritizing his long-term health over a rushed return. While the current situation is challenging, there's optimism within the organization that McCarthy's eventual return will provide a much-needed boost and help the Vikings turn their season around."
-            },
-            {
-                "id": "article-2",
-                "source": "BBC News",
-                "author": "Paul Battison",
-                "title": "UFC 321: Inside Tom Aspinall's fight camp for his heavyweight title fight with Ciryl Gane",
-                "description": "BBC Sport looks inside Tom Aspinall's intense fight camp before his first undisputed heavyweight title defence against Ciryl Gane at UFC 321 in Abu Dhabi.",
-                "url": "https://www.bbc.com/sport/mixed-martial-arts/articles/cy0kynlv9rdo",
-                "urlToImage": "https://picsum.photos/seed/2/400/225",
-                "publishedAt": "2025-10-24T07:22:40Z",
-                "category": "UFC",
-                "content": "Tom Aspinall prioritises sleep when he gets home after training, but for Andy, his coach, this is the time when he often watches fight footage of Gane. \"Tom watches him too but he doesn't have any say in what we're going to be watching tonight,\" Andy explains, highlighting the collaborative yet focused approach of their training camp. The meticulous preparation is crucial as Aspinall prepares for his first undisputed heavyweight title defense against Ciryl Gane at UFC 321 in Abu Dhabi on Saturday.\n\nThe camp focuses on a blend of physical conditioning, technical drills, and strategic analysis. Every aspect of Aspinall's routine, from diet to recovery, is optimized to ensure he reaches peak performance on fight night. Gane presents a unique challenge with his elusive striking and movement, requiring Aspinall to be at his sharpest. The team is confident, however, that their rigorous training regimen will prepare Tom for whatever Gane brings to the octagon.\n\nFans are eagerly anticipating this clash of heavyweight titans. Aspinall's powerful striking and ground game, combined with Gane's technical prowess, promise an exciting main event. The atmosphere in Abu Dhabi is expected to be electric, with both fighters having strong fan bases. A win here would solidify Aspinall's position as the dominant force in the heavyweight division."
-            },
-            {
-                "id": "article-3",
-                "source": "Formula 1",
-                "author": "F1",
-                "title": "‘Clean slate’ – Piastri confirms Norris' ‘repercussions’ removed ahead of Mexico as he reflects on ‘threat’ of Verstappen",
-                "description": "Oscar Piastri has stated that both he and team mate Lando Norris will arrive into the Mexico City Grand Prix weekend on a 'clean slate'.",
-                "url": "https://www.formula1.com/en/latest/article/piastri-norris-repercussions-mexico-verstappen-f1-title.2QPTpHbgUBuIGHq4ueEtID",
-                "urlToImage": "https://picsum.photos/seed/3/400/225",
-                "publishedAt": "2025-10-24T06:37:34Z",
-                "category": "Formula 1",
-                "content": "Oscar Piastri has stated that both he and team mate Lando Norris will arrive into the Mexico City Grand Prix weekend on a 'clean slate,' with the repercussions previously given to Norris for contact in Singapore now removed. Piastri also took a 'degree of blame' himself, emphasizing a mature approach to team dynamics. \"The thing that's going to help me to win this championship is trying to get the most out of myself, the most out of the car, the most out of the team around me, and worrying about anyone else on the grid is not going to help me,\" Piastri commented, reflecting on the 'threat' of Verstappen.\n\nThis renewed focus comes as the McLaren team looks to consolidate its strong performance in the latter half of the season. The internal rivalry between Piastri and Norris has been a talking point, but both drivers appear committed to pushing the team forward while competing fiercely. The 'clean slate' approach is intended to foster a more productive environment as they head into crucial races.\n\nWith Max Verstappen continuing his dominant run, McLaren understands the importance of maximizing every point. Piastri's acknowledgement of Verstappen's threat indicates a realistic assessment of the championship battle, but also a determination to improve and challenge for victories. The Mexico City Grand Prix promises to be an exciting event, with McLaren aiming for a strong showing."
-            },
-            {
-                "id": "article-4",
-                "source": "BBC News",
-                "author": "Emily Salley",
-                "title": "NBA: Shai Gilgeous-Alexander stars as Oklahoma City Thunder beat Indian Pacers in Finals rematch",
-                "description": "Shai Gilgeous-Alexander scores a career-high 55 points as the Oklahoma City Thunder claim their second straight win in double overtime.",
-                "url": "https://www.bbc.com/sport/basketball/articles/cd67jl19ewwo",
-                "urlToImage": "https://picsum.photos/seed/4/400/225",
-                "publishedAt": "2025-10-24T06:16:57Z",
-                "category": "NBA",
-                "content": "Once again the Canadian guard proved crucial, netting nine points in the second overtime as he beat his previous career-best of 54 points. \"This team has two great qualities,\" Gilgeous-Alexander said post-game. \"We're resilient and we compete.\" His performance was a key factor in the Oklahoma City Thunder's thrilling victory over the Indiana Pacers in a Finals rematch, securing their second straight win in double overtime.\n\nThe game was a back-and-forth battle, showcasing the competitive spirit of both teams. Gilgeous-Alexander's ability to perform under pressure, especially in clutch moments, has become a hallmark of his game. His career-high 55 points underscore his growing stature as one of the league's elite scorers and playmakers. The Thunder's resilience was evident as they fought through multiple overtime periods, never giving up despite the immense pressure.\n\nThe win sends a strong message to the rest of the league, demonstrating the Thunder's potential as a serious contender. The synergy between Gilgeous-Alexander and his teammates is clear, and their determination to compete every night is inspiring. This exciting rematch will undoubtedly be remembered as a classic, further fueling the rivalry between these two formidable teams."
-            },
-            {
-                "id": "article-5",
-                "source": "Sports Illustrated",
-                "author": "Stephen Douglas",
-                "title": "Kirk Herbstreit Rips Carson Wentz for Emotional Sideline Behavior During Loss",
-                "description": "Kirk Herbstreit wanted an injured Carson Wentz to act like an alpha and hold his emotion in.",
-                "url": "https://www.si.com/nfl/kirk-herbstreit-rips-carson-wentz-emotional-sideline-behavior-loss",
-                "urlToImage": "https://picsum.photos/seed/5/400/225",
-                "publishedAt": "2025-10-24T04:07:10Z",
-                "category": "NFL",
-                "content": "Carson Wentz started his fourth game of the season for the Vikings on Thursday as the team lost to the Chargers 37-10 on the road. Wentz was sacked five times and hit even more often before he finally exited the game due to injury. His emotional sideline behavior during the loss drew sharp criticism from analyst Kirk Herbstreit, who suggested Wentz should have maintained a more stoic demeanor.\n\nHerbstreit's comments sparked a debate among fans and pundits about player conduct, especially when dealing with injuries and frustrating game situations. While some agreed that a quarterback should project calm leadership, others defended Wentz's right to show emotion, particularly given the physical toll of the game and the team's struggles. The discussion highlights the intense scrutiny professional athletes face.\n\nThe Vikings' challenges this season continue to mount, and the quarterback situation remains a central issue. Wentz's injury adds another layer of complexity to an already difficult campaign. The team will need to regroup and find solutions quickly to salvage their season, as they look forward to the potential return of J.J. McCarthy."
-            },
-            {
-                "id": "article-6",
-                "source": "San Francisco Chronicle",
-                "author": "Susan Slusser",
-                "title": "New Giants manager Tony Vitello raised as St. Louis sports royalty, but ‘he’s for real’",
-                "description": "Tony Vitello comes to the San Francisco Giants with a past that inspires as the son of a legendary coach.",
-                "url": "https://www.sfchronicle.com/sports/giants/article/giants-tony-vitello-for-real-know-21115499.php",
-                "urlToImage": "https://picsum.photos/seed/6/400/225",
-                "publishedAt": "2025-10-24T00:25:41Z",
-                "category": "Baseball",
-                "content": "Tennessee coach Tony Vitello, left, cheers on his players during an NCAA Super Regional game against Southern Mississippi in 2023. After the Giants lured Tony Vitello away from a successful college coaching career, many in the baseball world are buzzing about the impact he could have. Raised as St. Louis sports royalty, the son of a legendary coach, Vitello brings a deep understanding of the game and a competitive fire.\n\n\"The front office didn't do this on a whim,\" a source close to the organization revealed, indicating the thorough vetting process that led to Vitello's appointment. His reputation for player development and motivational leadership precedes him, making him an exciting choice for the Giants as they look to rebuild and compete. Vitello's past success in cultivating talent and fostering a winning culture is seen as a major asset.\n\nFans are optimistic about the new direction, eager to see how Vitello's fresh approach will translate to the major league level. His connection to a strong baseball legacy, combined with his own proven track record, suggests a promising future for the San Francisco Giants. The expectation is that he will infuse the team with energy and a strategic mindset, aiming for long-term success."
-            },
-            {
-                "id": "article-7",
-                "source": "Ctinsider.com",
-                "author": "Maggie Vanoni",
-                "title": "UConn women's basketball regular season opener moved from Germany to U.S. Naval Academy",
-                "description": "UConn women's basketball's 2025-26 season opener against Louisville has been relocated from Germany to the Naval Academy.",
-                "url": "https://www.ctinsider.com/sports/uconn-womens-basketball/article/armed-forces-classic-relocation-germany-navy-21104111.php",
-                "urlToImage": "https://picsum.photos/seed/7/400/225",
-                "publishedAt": "2025-10-23T23:53:34Z",
-                "category": "NCAAB",
-                "content": "UConn women's basketball's 2025-26 season opener against Louisville in the Armed Forces Classic has been relocated from Germany to the U.S. Naval Academy. This change was announced today, citing logistical challenges and an opportunity to honor service members closer to home. Coach Geno Auriemma, pictured looking on during a previous game, acknowledged the disappointment for fans in Germany but expressed enthusiasm for the new venue.\n\n\"While we were excited to play overseas, the chance to play at the Naval Academy and connect with our military personnel here in the U.S. is incredibly meaningful,\" Auriemma stated. The game is part of a larger initiative to support and recognize the armed forces, making the Naval Academy a fitting location for such a high-profile matchup. The atmosphere is expected to be electric, with a strong showing of support from military families and local fans.\n\nBoth UConn and Louisville are powerhouse programs, guaranteeing a competitive and entertaining start to the season. The relocation ensures that a broader American audience can attend, and the televised event will still reach a global audience. This game is not just about basketball; it's a tribute to the dedication and sacrifice of the men and women in uniform."
-            },
-            {
-                "id": "article-8",
-                "source": "NPR",
-                "author": "Alana Wise",
-                "title": "Chess body investigating ex-world champion who accused Daniel Naroditsky of cheating",
-                "description": "U.S. chess grandmaster Daniel Naroditsky died this week at age 29. Former world champion Vladimir Kramnik had accused Naroditsky, among others, of cheating.",
-                "url": "https://www.npr.org/2025/10/23/nx-s1-5584161/chess-fide-investigation-naroditsky-kramnik",
-                "urlToImage": "https://picsum.photos/seed/8/400/225",
-                "publishedAt": "2025-10-23T22:31:27Z",
-                "category": "Chess",
-                "content": "The International Chess Federation (FIDE) is investigating a Russian grandmaster for allegations of cheating he levied at fellow elite players, including 29-year-old U.S. grandmaster and YouTube sensation Daniel Naroditsky. The news comes amidst a somber backdrop, as Naroditsky tragically passed away this week at a young age, making the accusations even more sensitive and complex.\n\nFormer world champion Vladimir Kramnik had publicly accused Naroditsky and others of using illicit assistance during online matches, igniting a significant controversy within the chess community. FIDE's investigation aims to thoroughly examine these claims and ensure the integrity of the sport. The chess world is grappling with the ethical implications of such accusations, especially given the tragic circumstances surrounding Naroditsky.\n\nThe case has brought renewed attention to the challenges of policing online chess and maintaining fair play. While technology offers new avenues for competition, it also presents opportunities for illicit gains. FIDE's findings will be crucial in setting precedents for future investigations and reinforcing the principles of sportsmanship and honesty in chess."
-            },
-            {
-                "id": "article-9",
-                "source": "Fantasypoints.com",
-                "author": null,
-                "title": "Week 8 Fantasy Football Start 'Em, Sit 'Em",
-                "description": "Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.",
-                "url": "https://www.fantasypoints.com/nfl/articles/2025/week-8-fantasy-football-start-em-sit-em",
-                "urlToImage": "https://picsum.photos/seed/9/400/225",
-                "publishedAt": "2025-10-23T15:00:00Z",
-                "category": "Fantasy Football",
-                "content": "Welcome to Week 8 Start 'Em, Sit 'Em. This game-by-game article breaks down every player that is relevant for fantasy football. As always, please use our projections to make your start/sit decisions each and every week. Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.\n\nThis week's edition covers critical matchups, injury updates, and waiver wire recommendations. From high-upside sleepers to players facing tough defenses, we've got you covered. Key decisions around quarterbacks, running backs, wide receivers, and tight ends are analyzed with an eye towards maximizing your points. Don't leave any points on your bench!\n\nOur expert analysis takes into account recent performance, opponent strengths, and historical data to provide you with the most informed advice. Whether you're in a redraft league, dynasty league, or daily fantasy, these insights are designed to give you an edge. Make sure to check back for any last-minute updates before kickoff!"
-            }
-        ];
-
-        // Service Worker Registration (Blob URL)
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'sports-blog-v1';
-                const urlsToCache = [
-                    '/', // Cache the HTML itself
-                    '/index.html', // Also cache explicit index.html
-                    // Add any other static assets if needed, but for a single-file, this is usually enough.
-                    // For example, if you had a specific icon or a tiny JS helper file, you'd list it here.
-                ];
-
-                self.addEventListener('install', event => {
-                    console.log('Service Worker: Installing...');
-                    event.waitUntil(
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                console.log('Service Worker: Caching app shell');
-                                return cache.addAll(urlsToCache);
-                            })
-                    );
-                });
-
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request)
-                            .then(response => {
-                                if (response) {
-                                    console.log('Service Worker: Serving from cache:', event.request.url);
-                                    return response;
-                                }
-                                console.log('Service Worker: Fetching from network:', event.request.url);
-                                return fetch(event.request).then(
-                                    response => {
-                                        if(!response || response.status !== 200 || response.type !== 'basic') {
-                                            return response;
-                                        }
-                                        const responseToCache = response.clone();
-                                        caches.open(CACHE_NAME)
-                                            .then(cache => {
-                                                console.log('Service Worker: Caching new resource:', event.request.url);
-                                                cache.put(event.request, responseToCache);
-                                            });
-                                        return response;
-                                    }
-                                ).catch(error => {
-                                    console.error('Service Worker: Fetch failed:', error);
-                                    // You could return an offline fallback page here
-                                    // For example: return caches.match('/offline.html');
-                                    throw error; // Re-throw to indicate network failure if no cache
-                                });
-                            })
-                    );
-                });
-
-                self.addEventListener('activate', event => {
-                    console.log('Service Worker: Activating...');
-                    const cacheWhitelist = [CACHE_NAME];
-                    event.waitUntil(
-                        caches.keys().then(cacheNames => {
-                            return Promise.all(
-                                cacheNames.map(cacheName => {
-                                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                                        console.log('Service Worker: Deleting old cache:', cacheName);
-                                        return caches.delete(cacheName);
-                                    }
-                                })
-                            );
-                        })
-                    );
-                });
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(swUrl)
-                .then(registration => console.log('Service Worker registered:', registration))
-                .catch(error => console.error('Service Worker registration failed:', error));
-        }
-
-        // --- DOM Elements ---
-        const homeView = document.getElementById('home-view');
-        const categoriesView = document.getElementById('categories-view');
-        const bookmarksViewContent = document.getElementById('bookmarks-view-content');
-
-        const heroSection = document.getElementById('hero-section');
-        const categoriesFilter = document.getElementById('categories-filter');
-        const allCategoriesFilter = document.getElementById('all-categories-filter');
-        const articleFeed = document.getElementById('article-feed');
-        const categoryFilteredFeed = document.getElementById('category-filtered-feed');
-        const bookmarkedArticlesFeed = document.getElementById('bookmarked-articles-feed');
-        const noBookmarksMessage = document.getElementById('no-bookmarks-message');
-
-        const articleDetailOverlay = document.getElementById('article-detail-overlay');
-        const articleDetailTitle = document.getElementById('article-detail-title');
-        const articleDetailImage = document.getElementById('article-detail-image');
-        const articleDetailCategory = document.getElementById('article-detail-category');
-        const articleDetailMeta = document.getElementById('article-detail-meta');
-        const articleDetailBody = document.getElementById('article-detail-body');
-        const relatedArticlesList = document.getElementById('related-articles-list');
-        const closeArticleDetailButton = document.getElementById('close-article-detail');
-        const articleDetailBookmarkButton = document.getElementById('article-detail-bookmark-button');
-        const articleDetailShareButton = document.getElementById('article-detail-share-button');
-
-        const searchButton = document.getElementById('search-button');
-        const searchOverlay = document.getElementById('search-overlay');
-        const closeSearchOverlayButton = document.getElementById('close-search-overlay');
-        const searchInput = document.getElementById('search-input');
-        const searchResultsFeed = document.getElementById('search-results-feed');
-        const noSearchResultsMessage = document.getElementById('no-search-results');
-
-        const navItems = document.querySelectorAll('.nav-item');
-
-        let currentActiveArticleId = null; // Used for bookmarking/sharing from detail view
-
-        // --- Helper Functions ---
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-            const diffMinutes = Math.ceil(diffTime / (1000 * 60));
-
-            if (diffMinutes < 60) return `${diffMinutes}m ago`;
-            if (diffHours < 24) return `${diffHours}h ago`;
-            if (diffDays < 7) return `${diffDays}d ago`;
-
-            return new Intl.DateTimeFormat('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            }).format(date);
-        }
-
-        function calculateReadTime(content) {
-            const wordsPerMinute = 200;
-            const wordCount = content.split(/\s+/).filter(word => word !== '').length;
-            return Math.ceil(wordCount / wordsPerMinute);
-        }
-
-        function getExcerpt(content, maxLength = 150) {
-            if (!content) return '';
-            const strippedContent = content.replace(/\n/g, ' ').replace(/\s\s+/g, ' '); // Remove newlines and extra spaces
-            if (strippedContent.length <= maxLength) {
-                return strippedContent;
-            }
-            return strippedContent.substring(0, strippedContent.lastIndexOf(' ', maxLength)) + '...';
-        }
-
-        function getBookmarkedArticles() {
-            const bookmarks = localStorage.getItem('bookmarkedArticles');
-            return bookmarks ? JSON.parse(bookmarks) : [];
-        }
-
-        function isArticleBookmarked(articleId) {
-            const bookmarks = getBookmarkedArticles();
-            return bookmarks.includes(articleId);
-        }
-
-        function toggleBookmark(articleId) {
-            let bookmarks = getBookmarkedArticles();
-            if (bookmarks.includes(articleId)) {
-                bookmarks = bookmarks.filter(id => id !== articleId);
-            } else {
-                bookmarks.push(articleId);
-            }
-            localStorage.setItem('bookmarkedArticles', JSON.stringify(bookmarks));
-            updateBookmarkIcons(articleId); // Update all relevant icons
-            if (window.location.hash === '#bookmarks') {
-                renderBookmarkedArticles(); // Re-render bookmarks view if active
-            }
-        }
-
-        function updateBookmarkIcons(articleId) {
-            document.querySelectorAll(`.bookmark-icon[data-id="${articleId}"]`).forEach(icon => {
-                if (isArticleBookmarked(articleId)) {
-                    icon.classList.add('bookmarked');
-                    icon.setAttribute('aria-label', 'Remove from bookmarks');
-                } else {
-                    icon.classList.remove('bookmarked');
-                    icon.setAttribute('aria-label', 'Add to bookmarks');
-                }
-            });
-        }
-
-        function generateArticleCard(article, isHero = false) {
-            const card = document.createElement('article');
-            card.className = isHero ? 'hero-article' : 'article-card';
-            card.setAttribute('data-id', article.id);
-            card.setAttribute('role', 'listitem');
-
-            const readTime = calculateReadTime(article.content);
-            const excerpt = getExcerpt(article.description || article.content, isHero ? 200 : 120);
-            const author = article.author || 'Unknown';
-
-            card.innerHTML = `
-                <img src="${article.urlToImage}" alt="${article.title}" class="${isHero ? 'hero-article-image' : 'article-card-image'}" loading="lazy">
-                <div class="${isHero ? 'hero-article-content' : 'article-card-content'}">
-                    <span class="category-pill">${article.category}</span>
-                    <h3 class="${isHero ? 'hero-article-title' : 'article-card-title'}">${article.title}</h3>
-                    <div class="${isHero ? 'hero-article-excerpt' : 'article-card-excerpt'}">${excerpt}</div>
-                    ${!isHero ? `
-                        <div class="article-card-meta">
-                            <span>By ${author}</span>
-                            <span>${formatDate(article.publishedAt)}</span>
-                        </div>
-                        <div class="article-card-actions">
-                            <div class="article-card-read-time">
-                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM12.5 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z"/></svg>
-                                ${readTime} min read
-                            </div>
-                            <div class="article-card-action-buttons">
-                                <button class="bookmark-icon" data-id="${article.id}" aria-label="Add to bookmarks">
-                                    <svg viewBox="0 0 24 24"><path d="M17 3H7C5.9 3 5 3.9 5 5V21L12 18L19 21V5C19 3.9 18.1 3 17 3Z"/></svg>
-                                </button>
-                                <button class="share-icon" data-id="${article.id}" aria-label="Share this article">
-                                    <svg viewBox="0 0 24 24"><path d="M18 16.08C17.24 16.08 16.56 16.38 16.04 16.85L8.91 12.7C8.96 12.47 9 12.24 9 12C9 11.76 8.96 11.53 8.91 11.3L15.96 7.15C16.5 7.63 17.21 7.92 18 7.92C19.66 7.92 21 6.58 21 5C21 3.34 19.66 2 18 2C16.34 2 15 3.34 15 5C15 5.24 15.04 5.47 15.09 5.7L8.04 9.85C7.5 9.37 6.79 9.08 6 9.08C4.34 9.08 3 10.42 3 12C3 13.58 4.34 14.92 6 14.92C6.79 14.92 7.5 14.63 8.04 14.15L15.09 18.3C15.04 18.53 15 18.76 15 19C15 20.66 16.34 22 18 22C19.66 22 21 20.66 21 19C21 17.34 19.66 16.08 18 16.08Z"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-
-            // Attach event listeners for detail view and actions
-            card.querySelector(isHero ? '.hero-article-content' : '.article-card-content').addEventListener('click', (e) => {
-                // Ensure clicks on action buttons don't open the article
-                if (e.target.closest('.bookmark-icon') || e.target.closest('.share-icon')) {
-                    return;
-                }
-                window.location.hash = `#article-${article.id}`;
-            });
-
-            if (!isHero) {
-                card.querySelector('.bookmark-icon').addEventListener('click', () => {
-                    toggleBookmark(article.id);
-                });
-                card.querySelector('.share-icon').addEventListener('click', () => {
-                    shareArticle(article);
-                });
-                updateBookmarkIcons(article.id); // Set initial bookmark state
-            }
-
-            return card;
-        }
-
-        function renderArticles(articles, targetElement, append = false) {
-            if (!append) {
-                targetElement.innerHTML = ''; // Clear existing content
-            }
-            if (articles.length === 0) {
-                // Display no results message if needed, e.g., for search results
-                if (targetElement === searchResultsFeed) {
-                    noSearchResultsMessage.style.display = 'block';
-                } else if (targetElement === bookmarkedArticlesFeed) {
-                    noBookmarksMessage.style.display = 'block';
-                }
-                return;
-            } else {
-                noSearchResultsMessage.style.display = 'none';
-                noBookmarksMessage.style.display = 'none';
-            }
-
-            articles.forEach((article, index) => {
-                // For the main feed, the first article is the hero
-                if (targetElement === articleFeed && index === 0) {
-                    heroSection.innerHTML = ''; // Clear skeleton
-                    heroSection.append(generateArticleCard(article, true));
-                } else {
-                    targetElement.append(generateArticleCard(article));
-                }
-            });
-            hideSkeletons();
-        }
-
-        function hideSkeletons() {
-            document.querySelectorAll('.skeleton-loader, .skeleton-loader-card').forEach(el => el.style.display = 'none');
-        }
-
-        function renderCategories() {
-            const allCategories = ['All', ...new Set(articlesData.map(a => a.category))].sort();
-
-            function createChip(category, targetEl, isActive = false) {
-                const chip = document.createElement('button');
-                chip.className = 'category-chip';
-                if (isActive) chip.classList.add('active');
-                chip.textContent = category;
-                chip.setAttribute('role', 'button');
-                chip.setAttribute('aria-pressed', isActive);
-                chip.setAttribute('aria-label', `Filter by ${category} category`);
-                chip.addEventListener('click', () => {
-                    document.querySelectorAll('.category-chip').forEach(c => {
-                        c.classList.remove('active');
-                        c.setAttribute('aria-pressed', 'false');
-                    });
-                    chip.classList.add('active');
-                    chip.setAttribute('aria-pressed', 'true');
-                    filterArticlesByCategory(category);
-                    if (targetEl === allCategoriesFilter) {
-                         window.location.hash = `#categories?cat=${category}`;
-                    } else {
-                         window.location.hash = `#home`; // stay on home, just filter
-                    }
-                });
-                targetEl.append(chip);
-            }
-
-            // Render for home view's horizontal scroller
-            categoriesFilter.innerHTML = '';
-            allCategories.forEach(cat => createChip(cat, categoriesFilter));
-
-            // Render for categories view's full list
-            allCategoriesFilter.innerHTML = '';
-            allCategories.forEach(cat => createChip(cat, allCategoriesFilter));
-        }
-
-        function filterArticlesByCategory(category) {
-            let filtered = [];
-            if (category === 'All') {
-                filtered = articlesData;
-            } else {
-                filtered = articlesData.filter(article => article.category === category);
-            }
-
-            // If on categories view, update categoryFilteredFeed
-            if (window.location.hash.startsWith('#categories')) {
-                 renderArticles(filtered, categoryFilteredFeed);
-            } else { // If on home view, update articleFeed (excluding hero)
-                const heroArticle = articlesData[0];
-                const mainFeedArticles = filtered.filter(a => a.id !== heroArticle.id);
-                articleFeed.innerHTML = ''; // Clear all cards
-                heroSection.innerHTML = ''; // Clear hero as well
-
-                if (filtered.length > 0) {
-                    heroSection.append(generateArticleCard(filtered[0], true));
-                    renderArticles(filtered.slice(1), articleFeed);
-                } else {
-                    heroSection.innerHTML = '<p class="no-results">No featured article for this category.</p>';
-                }
-            }
-        }
-
-        function showArticleDetail(articleId) {
-            const article = articlesData.find(a => a.id === articleId);
-            if (!article) return;
-
-            currentActiveArticleId = articleId;
-
-            articleDetailTitle.textContent = article.title;
-            articleDetailImage.src = article.urlToImage;
-            articleDetailImage.alt = article.title;
-            articleDetailCategory.textContent = article.category;
-
-            const readTime = calculateReadTime(article.content);
-            const author = article.author || 'Unknown';
-            articleDetailMeta.innerHTML = `
-                <span>By ${author}</span>
-                <span>${formatDate(article.publishedAt)}</span>
-                <span>${readTime} min read</span>
-            `;
-
-            articleDetailBody.innerHTML = article.content.split('\n').map(p => `<p>${p}</p>`).join('');
-            const videoPlaceholder = document.createElement('div');
-            videoPlaceholder.className = 'video-container';
-            videoPlaceholder.innerHTML = `<iframe src="https://www.youtube.com/embed/S_x8QxR5F0U?controls=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            // Only add video for certain articles or as a general placeholder
-            if (article.category === 'UFC' || article.category === 'Formula 1' || article.category === 'NBA') {
-                 articleDetailBody.append(videoPlaceholder);
-                 videoPlaceholder.style.display = 'block';
-            } else {
-                videoPlaceholder.style.display = 'none';
-            }
-
-
-            // Related articles (simple random selection from same category, excluding current)
-            const related = articlesData
-                .filter(a => a.category === article.category && a.id !== article.id)
-                .sort(() => 0.5 - Math.random()) // Randomize
-                .slice(0, 3); // Take up to 3
-
-            renderArticles(related, relatedArticlesList);
-
-
-            updateBookmarkIcons(articleId); // Update bookmark state for detail view button
-            articleDetailOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling body when overlay is active
-        }
-
-        function closeArticleDetail() {
-            articleDetailOverlay.classList.remove('active');
-            document.body.style.overflow = ''; // Restore body scrolling
-            currentActiveArticleId = null;
-            window.location.hash = '#home'; // Navigate back to home or previous view
-        }
-
-        function shareArticle(article) {
-            const shareData = {
-                title: article.title,
-                text: article.description || article.content,
-                url: `${window.location.origin}/#article-${article.id}` // Use hash routing URL
-            };
-
-            if (navigator.share && navigator.canShare(shareData)) {
-                navigator.share(shareData)
-                    .catch((error) => console.error('Error sharing:', error));
-            } else {
-                // Fallback: Copy URL to clipboard
-                navigator.clipboard.writeText(shareData.url)
-                    .then(() => alert('Link copied to clipboard!'))
-                    .catch((error) => console.error('Error copying to clipboard:', error));
-            }
-        }
-
-        function renderBookmarkedArticles() {
-            const bookmarkedIds = getBookmarkedArticles();
-            const bookmarked = articlesData.filter(article => bookmarkedIds.includes(article.id));
-            renderArticles(bookmarked, bookmarkedArticlesFeed);
-        }
-
-        function searchArticles(query) {
-            const lowerCaseQuery = query.toLowerCase();
-            const filtered = articlesData.filter(article =>
-                article.title.toLowerCase().includes(lowerCaseQuery) ||
-                article.content.toLowerCase().includes(lowerCaseQuery) ||
-                article.category.toLowerCase().includes(lowerCaseQuery)
-            );
-            renderArticles(filtered, searchResultsFeed);
-        }
-
-        function handleHashChange() {
-            const hash = window.location.hash;
-
-            // Hide all main content views initially
-            homeView.style.display = 'none';
-            categoriesView.style.display = 'none';
-            bookmarksViewContent.style.display = 'none';
-            articleDetailOverlay.classList.remove('active');
-            searchOverlay.classList.remove('active');
-            document.body.style.overflow = ''; // Ensure body scrolling is restored
-
-            // Deactivate all nav items
-            navItems.forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.category-chip').forEach(c => {
-                c.classList.remove('active');
-                c.setAttribute('aria-pressed', 'false');
-            });
-
-
-            if (hash.startsWith('#article-')) {
-                const articleId = hash.substring(9);
-                showArticleDetail(articleId);
-            } else if (hash.startsWith('#categories')) {
-                categoriesView.style.display = 'block';
-                document.querySelector('a[href="#categories"]').classList.add('active');
-                const urlParams = new URLSearchParams(hash.split('?')[1]);
-                const categoryParam = urlParams.get('cat');
-                if (categoryParam) {
-                    const activeChip = document.querySelector(`#all-categories-filter .category-chip[aria-label="Filter by ${categoryParam} category"]`);
-                    if (activeChip) {
-                        activeChip.classList.add('active');
-                        activeChip.setAttribute('aria-pressed', 'true');
-                    }
-                    filterArticlesByCategory(categoryParam);
-                } else {
-                     document.querySelector(`#all-categories-filter .category-chip[aria-label="Filter by All category"]`).classList.add('active');
-                     filterArticlesByCategory('All');
-                }
-
-            } else if (hash === '#bookmarks') {
-                bookmarksViewContent.style.display = 'block';
-                document.querySelector('a[href="#bookmarks"]').classList.add('active');
-                renderBookmarkedArticles();
-            } else if (hash === '#search') {
-                searchOverlay.classList.add('active');
-                searchInput.focus();
-                searchArticles(searchInput.value); // Show current search results
-                document.body.style.overflow = 'hidden';
-            } else { // Default to home view
-                homeView.style.display = 'block';
-                document.querySelector('a[href="#home"]').classList.add('active');
-                filterArticlesByCategory('All'); // Show all articles initially
-            }
-        }
-
-        // --- Event Listeners ---
-        closeArticleDetailButton.addEventListener('click', closeArticleDetail);
-        searchButton.addEventListener('click', () => {
-            window.location.hash = '#search';
-        });
-        closeSearchOverlayButton.addEventListener('click', () => {
-            window.location.hash = '#home';
-            searchInput.value = '';
-        });
-        searchInput.addEventListener('input', () => {
-            searchArticles(searchInput.value);
-        });
-
-        // Delegate bookmark/share click for the article detail view
-        articleDetailBookmarkButton.addEventListener('click', () => {
-            if (currentActiveArticleId) {
-                toggleBookmark(currentActiveArticleId);
-            }
-        });
-        articleDetailShareButton.addEventListener('click', () => {
-            if (currentActiveArticleId) {
-                const article = articlesData.find(a => a.id === currentActiveArticleId);
-                if (article) shareArticle(article);
-            }
-        });
-
-        window.addEventListener('hashchange', handleHashChange);
-
-        // Initial rendering on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCategories();
-            handleHashChange(); // Process initial hash or default to home
-        });
-    </script>
+    // Initial render of all articles
+    document.addEventListener('DOMContentLoaded', () => {
+      renderArticles(articles);
+    });
+  </script>
 </body>
 </html>
