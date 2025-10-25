@@ -4,79 +4,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0b0b">
-  <title>SportX Live - Latest Sports News</title>
+  <meta name="theme-color" content="#000000">
+  <title>CryptoTrade Live - Latest Trading News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0b0b0b;
-      --bg-card: #1a1a1a;
-      --accent-gold: #ffd700;
+      --bg: #0b0b0b;
+      --card-bg: #1a1a1a;
+      --accent: #ffd700;
       --text-primary: #f5f5f5;
       --text-secondary: #a0a0a0;
-      --shadow-color: rgba(255, 215, 0, 0.2);
       --glow-color: rgba(255, 215, 0, 0.5);
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: var(--bg-dark);
+      background-color: var(--bg);
       color: var(--text-primary);
-      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
       padding-top: 70px; /* Space for sticky header */
-      padding-bottom: 70px; /* Space for sticky footer */
     }
 
-    /* --- Header --- */
-    .header {
+    header {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
+      height: 70px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 1rem;
-      height: 70px;
+      padding: 0 20px;
       background-color: rgba(11, 11, 11, 0.8);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      box-shadow: 0 2px 15px -5px var(--glow-color);
       z-index: 1000;
     }
 
     .logo {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--accent-gold);
+      color: var(--text-primary);
       text-shadow: 0 0 5px var(--glow-color);
     }
 
+    .logo-accent {
+      color: var(--accent);
+    }
+
+    .search-icon {
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      color: var(--accent);
+    }
+    
+    .search-icon:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+        border-radius: 4px;
+    }
+
     .search-container {
-      position: relative;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      padding: 15px 20px;
+      background-color: var(--bg);
+      transform: translateY(-100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 999;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      visibility: hidden;
+    }
+    
+    .search-container.visible {
+      transform: translateY(0);
+      visibility: visible;
     }
 
     #search-input {
-      background-color: #222;
-      border: 1px solid #333;
-      border-radius: 20px;
+      width: 100%;
+      padding: 12px 15px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
       color: var(--text-primary);
-      padding: 0.5rem 2.5rem 0.5rem 1rem;
-      width: 40px;
-      transition: width 0.3s ease-in-out;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
     }
 
     #search-input::placeholder {
@@ -85,305 +111,249 @@
 
     #search-input:focus {
       outline: none;
-      border-color: var(--accent-gold);
-      box-shadow: 0 0 10px var(--shadow-color);
-      width: 150px;
-    }
-    
-    .search-icon {
-        position: absolute;
-        right: 0.7rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-secondary);
-        pointer-events: none;
-    }
-    
-    #search-input:focus + .search-icon {
-        color: var(--accent-gold);
+      box-shadow: 0 0 10px 2px var(--glow-color);
     }
 
-    /* --- News Feed --- */
-    .news-feed {
-      padding: 1rem;
-      display: grid;
-      gap: 1.5rem;
+    main {
+      padding: 20px 15px;
     }
-    
+
+    #news-container {
+      display: grid;
+      gap: 20px;
+    }
+
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .news-card {
-      background-color: var(--bg-card);
-      border-radius: 16px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      border: 1px solid #222;
+      border: 1px solid rgba(255, 215, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       display: flex;
       flex-direction: column;
       animation: fadeIn 0.5s ease-out forwards;
       opacity: 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px var(--glow-color);
+    }
+    
+    .card-image-container {
+        width: 100%;
+        padding-top: 50%; /* 2:1 Aspect Ratio */
+        position: relative;
+        background-color: #333;
     }
 
-    .news-card-image {
+    .card-image {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 200px;
+      height: 100%;
       object-fit: cover;
-      border-bottom: 2px solid var(--accent-gold);
+      border-bottom: 2px solid var(--accent);
     }
 
     .card-content {
-      padding: 1rem;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
-    }
-
-    .card-source {
-      background-color: var(--accent-gold);
-      color: #000;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      align-self: flex-start;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      box-shadow: 0 0 8px var(--glow-color);
     }
 
     .card-title {
       font-size: 1.2rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
+      color: var(--text-primary);
+      margin: 0 0 10px 0;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+    }
+
+    .card-source {
+      font-weight: 600;
+      color: var(--accent);
+      background-color: rgba(255, 215, 0, 0.1);
+      padding: 3px 8px;
+      border-radius: 5px;
     }
 
     .card-description {
-      color: var(--text-secondary);
       font-size: 0.9rem;
-      margin-bottom: 1rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
       flex-grow: 1;
     }
-    
-    .card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: auto;
-    }
 
-    .card-time {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
-    .read-more-btn {
-      background: none;
-      border: 2px solid var(--accent-gold);
-      color: var(--accent-gold);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-weight: 600;
+    .card-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--accent);
+      color: var(--bg);
       text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
       text-align: center;
-      transition: all 0.3s ease;
+      transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
 
-    .read-more-btn:hover, .read-more-btn:focus {
-      background-color: var(--accent-gold);
-      color: var(--bg-dark);
+    .card-button:hover, .card-button:focus-visible {
+      background-color: #fff066;
+      transform: scale(1.05);
       box-shadow: 0 0 15px var(--glow-color);
-      transform: translateY(-2px);
       outline: none;
     }
-
-    /* --- Bottom Navigation --- */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 70px;
-      background-color: rgba(11, 11, 11, 0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-top: 1px solid #222;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: color 0.2s ease, transform 0.2s ease;
-    }
     
-    .nav-item:hover, .nav-item:focus {
-        transform: scale(1.1);
-        outline: none;
-    }
-    
-    .nav-item.active {
-      color: var(--accent-gold);
-    }
-
-    .nav-item svg {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 4px;
-    }
-
-    .nav-text {
-      font-size: 0.7rem;
-    }
-
-    /* Message for empty search */
-    #no-results {
-        text-align: center;
-        padding: 2rem;
-        color: var(--text-secondary);
+    .hidden {
         display: none;
     }
-
   </style>
 </head>
 <body>
 
-  <header class="header">
-    <div class="logo">SportX Live</div>
-    <div class="search-container">
-      <input type="text" id="search-input" placeholder="Search...">
-      <div class="search-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </div>
-    </div>
+  <header>
+    <div class="logo">CryptoTrade<span class="logo-accent">Live</span></div>
+    <svg id="search-icon-btn" class="search-icon" aria-label="Open search bar" role="button" tabindex="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18ZM10,4a6,6,0,1,0,6,6A6.007,6.007,0,0,0,10,4Z"/><path d="M21,22a1,1,0,0,1-.707-0.293l-4-4a1,1,0,0,1,1.414-1.414l4,4A1,1,0,0,1,21,22Z"/></svg>
   </header>
-
-  <main class="news-feed" id="news-feed">
-    <!-- News cards will be injected here by JavaScript -->
-  </main>
   
-  <div id="no-results">
-    <h3>No Articles Found</h3>
-    <p>Try searching for something else.</p>
+  <div class="search-container" id="search-container">
+    <input type="search" id="search-input" placeholder="Filter by title or source...">
   </div>
 
-  <nav class="bottom-nav">
-    <div class="nav-item" role="button" aria-label="Home">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-      <span class="nav-text">Home</span>
+  <main>
+    <div id="news-container">
+      <!-- News cards will be injected here by JavaScript -->
     </div>
-    <div class="nav-item active" role="button" aria-label="News">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-      <span class="nav-text">News</span>
-    </div>
-    <div class="nav-item" role="button" aria-label="Trending">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-      <span class="nav-text">Trending</span>
-    </div>
-    <div class="nav-item" role="button" aria-label="Profile">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      <span class="nav-text">Profile</span>
-    </div>
-  </nav>
-
+  </main>
+  
   <script type="application/json" id="newsData">
-  [{"source":{"id":null,"name":"MLB Trade Rumors"},"author":"Nick Deeds","title":"The Opener: Blue Jays, Dodgers, World Series - MLB Trade Rumors","description":"Here are three things to keep an eye on headed into Game 1 later today: 1. Blue Jays roster decisions:...","url":"https://www.mlbtraderumors.com/2025/10/the-opener-blue-jays-dodgers-world-series.html","urlToImage":"https://cdn.mlbtraderumors.com/files/2025/10/USATSI_23129909-1024x683.jpg","publishedAt":"2025-10-24T13:37:42Z","content":"Here are three things to keep an eye on headed into Game 1 later today:\r\n1. Blue Jays roster decisions:\r\nAs the Blue Jays finalize their World Series roster, the biggest question for the club is what… [+2879 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Josh Alper","title":"Kevin O’Connell: If J.J. McCarthy is healthy, he’ll play - NBC Sports","description":"Thursday night's blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/kevin-oconnell-if-j-j-mccarthy-is-healthy-hell-play","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f2b41b9/2147483647/strip/true/crop/5569x3133+0+0/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2F1f%2F3f%2F0c48b49443bfb260dfd81ddae6fa%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242928223","publishedAt":"2025-10-24T10:51:26Z","content":"Thursday nights blowout loss to the Chargers was the fifth straight game that the Vikings played without quarterback J.J. McCarthy and watching Carson Wentz try to battle through injury throughout th… [+1435 chars]"},{"source":{"id":"talksport","name":"TalkSport"},"author":"Kerrie Jacobs-Bryant","title":"Aaron Rodgers announces shock retirement decision amid Green Bay Packers return - talkSPORT","description":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer.Ahead of the 4-2 Steelers' blockbuster Week 8 clash against h","url":"http://talksport.com/nfl/3673989/aaron-rodgers-retirement-decision-green-bay-packers-pittsburgh-steelers/","urlToImage":"https://talksport.com/wp-content/uploads/sites/5/2025/09/8-pittsburgh-steelers-reacts-throwing-1023401897.jpg?strip=all&quality=100&w=1920&h=1080&crop=1","publishedAt":"2025-10-24T09:39:25Z","content":"Aaron Rodgers may now be a Pittsburgh Steeler, but he will forever be a Green Bay Packer. \r\nAhead of the 4-2 Steelers' blockbuster Week 8 clash against his former team on Sunday Night Football, the 2… [+5337 chars]"},{"source":{"id":null,"name":"NBCSports.com"},"author":"Michael David Smith","title":"Chargers’ Oronde Gadsden II leads all NFL tight ends in receiving yards per game - NBC Sports","description":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didn't know how good a player they had.","url":"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/chargers-oronde-gadsden-ii-leads-all-nfl-tight-ends-in-receiving-yards-per-game","urlToImage":"https://nbcsports.brightspotcdn.com/dims4/default/f0ba22d/2147483647/strip/true/crop/3783x2128+0+197/resize/1440x810!/quality/90/?url=https%3A%2F%2Fnbc-sports-production-nbc-sports.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fb8%2F25%2F560448784f7698971bd7ac623409%2Fhttps-delivery-gettyimages.com%2Fdownloads%2F2242569701","publishedAt":"2025-10-24T09:33:48Z","content":"When the Chargers drafted tight end Oronde Gadsden II in the fifth round of the 2025 NFL draft, they didnt know how good a player they had. They didnt even know after seeing him through the offseason… [+980 chars]"},{"source":{"id":null,"name":"Bloody Elbow"},"author":null,"title":"Tom Aspinall comes in much heavier than Ciryl Gane at UFC 321 weigh-ins while one fighter misses by 3lbs - Bloody Elbow","description":"Two fighters missed the mark ahead of UFC 321 on Saturday night","url":"https://bloodyelbow.com/2025/10/24/tom-aspinall-comes-in-much-heavier-than-ciryl-gane-at-ufc-321-weigh-ins-while-one-fighter-misses-by-3lbs/","urlToImage":"https://bloodyelbow.com/wp-content/uploads/1/2025/10/Jake-Paul-chicken-scaled.jpg","publishedAt":"2025-10-24T08:29:19Z","content":"The weigh-in results are in for the Octagons return to Abu Dhabi on Saturday night.\r\nIn the main event, Tom Aspinall faces Ciryl Gane in the first defense of his undisputed UFC heavyweight title.\r\nTh… [+3384 chars]"},{"source":{"id":null,"name":"BBC News"},"author":"Emily Salley","title":"NBA: Shai Gilgeous-Alexander stars as Oklahoma City Thunder beat Indian Pacers in Finals rematch - BBC","description":"Shai Gilgeous-Alexander scores a career-high 55 points as the Oklahoma City Thunder claim their second straight win in double overtime.","url":"https://www.bbc.com/sport/basketball/articles/cd67jl19ewwo","urlToImage":"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/63bb/live/3ded47c0-b09d-11f0-a866-df0ece153fc7.jpg","publishedAt":"2025-10-24T06:16:57Z","content":"Once again the Canadian guard proved crucial, netting nine points in the second overtime as he beat his previous career-best of 54 points.\r\n\"This team has two great qualities,\" Gilgeous-Alexander sai… [+626 chars]"},{"source":{"id":"espn","name":"ESPN"},"author":"ESPN","title":"Chargers 37-10 Vikings (Oct 23, 2025) Game Recap - ESPN","description":null,"url":"https://www.espn.com/nfl/recap?gameId\\\\u003d401772942","urlToImage":null,"publishedAt":"2025-10-24T04:41:15Z","content":null},{"source":{"id":null,"name":"San Francisco Chronicle"},"author":"Susan Slusser","title":"New Giants manager Tony Vitello raised as St. Louis sports royalty, but ‘he’s for real’ - San Francisco Chronicle","description":"Tony Vitello comes to the San Francisco Giants with a past that inspires as the son of a legendary coach. “The front office didn’t do this on a whim.”","url":"https://www.sfchronicle.com/sports/giants/article/giants-tony-vitello-for-real-know-21115499.php","urlToImage":"https://s.hdnux.com/photos/01/54/72/43/28551367/3/rawImage.jpg","publishedAt":"2025-10-24T00:25:41Z","content":"Tennessee coach Tony Vitello, left, cheers on his players during an NCAA Super Regional game against Southern Mississippi in 2023. \r\nRogelio V. Solis/AP\r\nAfter the Giants lured Tony Vitello away from… [+10470 chars]"},{"source":{"id":null,"name":"BBC News"},"author":null,"title":"How a mafia poker scam allegedly stole millions using X-rays and tech - BBC","description":"Prosecutors said the elaborate plot, which allegedly netted $7m from victims, belonged in a Hollywood film.","url":"https://www.bbc.com/news/articles/cz6nd9wnzn6o","urlToImage":"https://ichef.bbci.co.uk/news/1024/branded_news/aaad/live/9999e380-b0d4-11f0-b2a1-6f537f66f9aa.jpg","publishedAt":"2025-10-23T22:48:22Z","content":"Former NBA player Damon Jones (left) and basketball coach Chauncey Billups were arrested in connection with the scheme\r\nCelebrities, professional sports stars and wealthy gamblers sat at a table hopi… [+5032 chars]"},{"source":{"id":null,"name":"NPR"},"author":"Alana Wise","title":"Chess body investigating ex-world champion who accused Daniel Naroditsky of cheating - NPR","description":"U.S. chess grandmaster Daniel Naroditsky died this week at age 29. Former world champion Vladimir Kramnik had accused Naroditsky, among others, of cheating in the sport.","url":"https://www.npr.org/2025/10/23/nx-s1-5584161/chess-fide-investigation-naroditsky-kramnik","urlToImage":"https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5544x3119+0+0/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F77%2F05%2F9ac37ed540cfb5dbb4bbec807686%2Fgettyimages-2166786414.jpg","publishedAt":"2025-10-23T22:31:27Z","content":"The International Chess Federation is investigating a Russian grandmaster for allegations of cheating he levied at fellow elite players, including 29-year-old U.S. grandmaster and YouTube sensation D… [+3459 chars]"},{"source":{"id":null,"name":"Fantasypoints.com"},"author":null,"title":"Week 8 Fantasy Football Start 'Em, Sit 'Em - Fantasy Points","description":"Graham Barfield dishes out the stats you need to help make your toughest lineup decisions in Week 8 of 2025 fantasy football leagues.","url":"https://www.fantasypoints.com/nfl/articles/2025/week-8-fantasy-football-start-em-sit-em","urlToImage":"https://static.fantasypts.com/photos/b2b69874054d71a709f3f1be9bb8b8c3bcaa7128/cd1e25e964f97312c7f9355f4efab5f014327c06/cover.jpg?size=1200x628&t=1761239146727","publishedAt":"2025-10-23T15:00:00Z","content":"Welcome to Week 8 Start Em, Sit Em.\r\nThis game-by-game article breaks down every player that is relevant for fantasy football. As always, please use our projections to make your start/sit decisions e… [+35187 chars]"}]
+  [{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Crypto.com Files Application for US Bank Charter","description":"","url":"https://biztoc.com/x/77e11ce3042e0a7a","urlToImage":"https://biztoc.com/cdn/950/og.png","publishedAt":"2025-10-24T15:34:31Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Trump end US-Canada trade talks? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will Social Security change … [+686 chars]"},{"source":{"id":null,"name":"TheStreet"},"author":"Anand Sinha","title":"Mysterious trader moves millions ahead of inflation data","description":"Crypto traders are well-known for making smart moves ahead of key macroeconomic announcements. Of late, we have seen some mysterious traders taking short...","url":"https://www.thestreet.com/crypto/fed/crypto-trader-millions-cpi-inflation-data","urlToImage":"https://media.zenfs.com/en/thestreet_881/fb459320efc9278e03a9efc8ca60694f","publishedAt":"2025-10-24T15:32:34Z","content":"Crypto traders are well-known for making smart moves ahead of key macroeconomic announcements. Of late, we have seen some mysterious traders taking short positions ahead of President Donald Trump's k… [+2587 chars]"},{"source":{"id":null,"name":"Thenation.com"},"author":"Jeet Heer","title":"Trump’s Argentina Bailout Is Bad for America but Great for His Hedge Fund Cronies","description":"Jeet Heer\n\n\n\nPropping up Javier Milei’s austerity regime shows that Trump’s true loyalty is to neo-colonial plutocracy.\r\n\n\r\n\n\nThe post Trump’s Argentina Bailout Is Bad for America but Great for His Hedge Fund Cronies appeared first on The Nation.","url":"https://www.thenation.com/article/politics/trump-argentina-bailout/","urlToImage":"https://www.thenation.com/wp-content/uploads/2025/10/GettyImages-2240700386.jpg","publishedAt":"2025-10-24T15:31:21Z","content":"Politics / October 24, 2025\r\nPropping up Javier Mileis austerity regime shows that Trumps true loyalty is to neocolonial plutocracy.\r\nEdit\r\nAd Policy\r\nUS President Donald Trump greets Argentine Presi… [+7978 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":null,"title":"TRUMP PARDONS CZ, BTC BACK OVER $110K, A16Z’s STATE OF CRYPTO 2025","description":"Crypto majors are green and rebounding. BTC is up 1% at $110,800, ETH is up 2% at $3,940, BNB is up 2% at $1,120, and SOL is up 1% at $191. MYX (+14%), VIRTUAL (+13%), ZEC (+11%), and WLFI (+11%) led the top movers. Stocks and crypto flipped green yesterday a…","url":"https://decrypt.co/videos/interviews/9YKUk9do/trump-pardons-cz-btc-back-over-110k-a16zs-state-of-crypto-2025","urlToImage":"https://cdn.jwplayer.com/v2/media/9YKUk9do/poster.jpg","publishedAt":"2025-10-24T15:31:02Z","content":"TRUMP PARDONS CZ, BTC BACK OVER $110K, A16Zs STATE OF CRYPTO 2025\r\nCrypto majors are green and rebounding. BTC is up 1% at $110,800, ETH is up 2% at $3,940, BNB is up 2% at $1,120, and SOL is up 1% a… [+744 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Christian Encila","title":"Shiba Inu Might Be ‘Dead And Sleeping’, But Not For Long, Crypto Expert Says","description":"Shiba Inu (SHIB) continues to trade in a tight band, and that has kept many investors on edge. Based on reports, the token is down 45% year-to-date and 15% over the last 30 days. Related Reading: 16,000 Ancient Bitcoins Just Moved—And It’s Costing Whales Bill…","url":"http://www.newsbtc.com/news/shiba-inu-might-be-dead-and-sleeping-but-not-for-long-crypto-expert-says/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/10/a_510253.jpg?fit=3000%2C2000","publishedAt":"2025-10-24T15:30:20Z","content":"Shiba Inu (SHIB) continues to trade in a tight band, and that has kept many investors on edge. Based on reports, the token is down 45% year-to-date and 15% over the last 30 days.\r\nThe memecoin’s pric… [+2462 chars]"},{"source":{"id":"fox-news","name":"Fox News"},"author":null,"title":"Alleged mob ties in NBA scandal recall La Cosa Nostra’s long shadow over sports","description":"NBA coach Chauncey Billups and player Terry Rozier were arrested in a massive illegal gambling scheme involving organized crime families and rigged poker games, the FBI said Thursday.","url":"https://www.foxnews.com/sports/alleged-mob-ties-nba-scandal-recall-la-cosa-nostras-long-shadow-over-sports","urlToImage":"https://static.foxnews.com/foxnews.com/content/uploads/2025/10/fbi-nba-crime-families-001.jpg","publishedAt":"2025-10-24T15:29:20Z","content":"The Federal Bureau of Investigation (FBI) announced the arrest of 34 individuals, including Portland Trail Blazers head coach Chauncey Billups, Miami Heat guard Terry Rozier, and former NBA guard and… [+5989 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Polymarket plans to roll out POLY token and user airdrop amid surging trading activity","description":"Polymarket's token launch and airdrop could enhance user engagement and solidify its position in the rapidly growing prediction market sector.\nThe post Polymarket plans to roll out POLY token and user airdrop amid surging trading activity appeared first on Cr…","url":"https://cryptobriefing.com/polymarket-poly-token-airdrop-prediction-markets/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24112822/e624fe8b-07e3-4818-b94e-b864d3231a0b-800x420.jpg","publishedAt":"2025-10-24T15:29:18Z","content":"Key Takeaways\r\n<ul><li>Polymarket CMO confirms the introduction of the POLY token for their prediction market platform.</li><li>The company is prioritizing its US market relaunch before proceeding wi… [+389 chars]"},{"source":{"id":"cnn","name":"CNN"},"author":"Allison Morrow","title":"What is Binance, and what CZ’s pardon could mean for US crypto investors | CNN Business","description":"Changpeng Zhao, one of the wealthiest and most influential figures in the cryptocurrency industry, is back in the spotlight this week after securing a pardon from President Donald Trump — a reprieve that renews concerns that those with deep pockets have been …","url":"https://www.cnn.com/2025/10/24/business/binance-zhao-trump-pardon","urlToImage":"https://media.cnn.com/api/v1/images/stellar/prod/2025-08-29t053842z-803086518-rc2sgga4qf6d-rtrmadp-3-asia-crypto.JPG?c=16x9&q=w_800,c_fill","publishedAt":"2025-10-24T15:25:44Z","content":"Changpeng Zhao, one of the wealthiest and most influential figures in the cryptocurrency industry, is back in the spotlight this week after securing a pardon from President Donald Trump a reprieve th… [+5659 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"edition.cnn.com","title":"What is Binance, and what CZ’s pardon could mean for US crypto investors","description":"","url":"https://biztoc.com/x/e4c37a24b15fdd18","urlToImage":"https://biztoc.com/cdn/950/og.png","publishedAt":"2025-10-24T15:23:32Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Trump end US-Canada trade talks? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will Social Security change … [+683 chars]"},{"source":{"id":null,"name":"Mediaite"},"author":"Tommy Christopher","title":"MSNBC’s Jen Psaki Trashes Walking Talking ‘Joke’ Trump Over ‘Laughable’ New Moves","description":"MSNBC host and former press secretary Jen Psaki trashed Trump as a \"joke\" over several \"laughable\" examples of what she called autocratic corruption.\nThe post MSNBC’s Jen Psaki Trashes Walking Talking ‘Joke’ Trump Over ‘Laughable’ New Moves first appeared on …","url":"https://www.mediaite.com/media/tv/msnbcs-jen-psaki-trashes-walking-talking-joke-trump-over-laughable-new-moves/","urlToImage":"https://www.mediaite.com/wp-content/uploads/2025/10/Jen-Psaki-Trashes-Walking-Talking-Joke-Trump-Over-Laughable-New-Moves.jpg","publishedAt":"2025-10-24T15:22:35Z","content":"MSNBC host and former Biden White House press secretary Jen Psaki trashed President Donald Trump as a “joke” over several “laughable” examples of what she called autocratic corruption.Since taking of… [+5367 chars]"},{"source":{"id":null,"name":"BeInCrypto"},"author":"Landon Manning","title":"Crypto.com Files Application for US Bank Charter","description":"Crypto.com seeks OCC National Trust Bank Charter to expand regulated custody and staking services for institutions.","url":"https://beincrypto.com/crypto-com-us-bank-charter-application/","urlToImage":"https://s.yimg.com/ny/api/res/1.2/BQ7I1TfD10nIqlUXcfRf7w--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/beincrypto_us_662/745c8c95ed376631e2d0a84e08e0d020","publishedAt":"2025-10-24T15:22:28Z","content":"Crypto.com (CRO) Price. Photo by BeInCrypto\r\nCrypto.com filed an application with the OCC to receive a National Trust Bank Charter. The exchange doesn't plan to function as a bank; rather, it hopes t… [+2459 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Adewale Olarinde","title":"Fetch.ai and Ocean Protocol move toward resolving $120M FET dispute","description":"Fetch.ai and Ocean Protocol appear close to resolving their dispute over 286M FET tokens, following comments made during an X Space. Markets remain cautious.","url":"https://ambcrypto.com/fetch-ai-and-ocean-protocol-move-toward-resolving-120m-fet-dispute/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/FET-1000x600.png","publishedAt":"2025-10-24T15:20:50Z","content":"Key Takeaways\r\nWhy does this dispute matter?\r\nBecause the return of the 286M FET tokens could remove a major supply-overhang risk and restore trust in the AI-crypto alliance.\r\nWhat changed this week?… [+3010 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Vineer Bhansali, Contributor, \n Vineer Bhansali, Contributor\n https://www.forbes.com/sites/vineerbhansali/","title":"Gold 25000?","description":"Could gold prices keep rallying and get to 25,000 in 10 years?  Using Sornette's \"log-periodic-power-law-singulartiy\" approach it seems they could.","url":"https://www.forbes.com/sites/vineerbhansali/2025/10/24/gold-25000/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fb92c219428f97510ec34f/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T15:17:03Z","content":"Making outlandish claims makes news. I remember in 1999, when the Dow was trading right around 11,000 that the infamous book Dow 36000 by James Glassman and Kevin Hassett came out. Among the dark lor… [+10818 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"bloomberg.com","title":"Crypto Miner Evokes ‘Barbarians at the Gate’ With Huge Junk Deal","description":"","url":"https://biztoc.com/x/9a7d540193e45cb1","urlToImage":"https://biztoc.com/cdn/9a7d540193e45cb1_s.webp","publishedAt":"2025-10-24T15:13:13Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Trump end US-Canada trade talks? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will Social Security change … [+721 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"thehill.com","title":"Trump 'terribly advised' on crypto billionaire pardon: Key supporter","description":"Venture capitalist Joe Lonsdale, a key supporter of President Trump, suggested Thursday that the president was “terribly advised” on his decision to pardon Binance founder Changpeng Zhao. \n“I love President Trump; this is possibly the greatest admin of my lif…","url":"https://biztoc.com/x/5f76170f2ce85678","urlToImage":"https://biztoc.com/cdn/5f76170f2ce85678_s.webp","publishedAt":"2025-10-24T15:12:26Z","content":"Venture capitalist Joe Lonsdale, a key supporter of President Trump, suggested Thursday that the president was terribly advised on his decision to pardon Binance founder Changpeng Zhao. I love Presid… [+135 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Mary Whitfill Roeloffs, Forbes Staff, \n Mary Whitfill Roeloffs, Forbes Staff\n https://www.forbes.com/sites/maryroeloffs/","title":"Beachfront Mansion Could Break Sales Record For Caribbean Island — See Inside","description":"The 17,000-square-foot, beachfront home is currently owned by Duty Free Americas chairman Simon Falic.","url":"https://www.forbes.com/sites/maryroeloffs/2025/10/24/beachfront-mansion-could-break-sales-record-for-caribbean-island---see-inside/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fb93ae04686b21b843e046/0x0.jpg?format=jpg&crop=2098,1181,x0,y104,safe&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T15:06:02Z","content":"An oceanfront compound within the exclusive Ritz-Carlton complex on Dorado Beach in Puerto Rico owned by the duty-free magnate Falic family has hit the market for $65 million, a sale that would break… [+3998 chars]"},{"source":{"id":null,"name":"nj.com"},"author":"Rachel Cohen","title":"Billionaire Trump supporter speaks out against bold pardon: ‘Makes it look like massive fraud’","description":"\"He was recommended by a lot of people,\" Trump said of his newest pardon.","url":"https://www.nj.com/politics/2025/10/billionaire-trump-supporter- speaks-out-against-bold-pardon-makes-it-look-like-massive-fraud.html","urlToImage":"https://s.yimg.com/ny/api/res/1.2/m6dHlIUX6PjR470fbxmkBg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD04MDA-/https://media.zenfs.com/en/nj_com_articles_950/02565638f7b3cc1bfe02da80ab012e78","publishedAt":"2025-10-24T15:05:50Z","content":"President Donald Trump appears to have sparked the ire of venture capitalist Joe Lonsdale.\r\nLonsdale, the co-founder of Palantir Technologies and a vocal supporter of Trump, criticized the presidents… [+2380 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"AMBCrypto Team","title":"ETH Price Prediction: Will Retesting $4.7K Lead to a New High? Investors Double Down on SHIB & $TAP for Gains","description":"Is the Ethereum price still in the red? The bears appear to be having a […]","url":"https://ambcrypto.com/eth-price-prediction-will-retesting-4-7k-lead-to-a-new-high-investors-double-down-on-shib-tap-for-gains/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Screenshot-2025-10-24-190914.png","publishedAt":"2025-10-24T15:05:17Z","content":"Is the Ethereum price still in the red? The bears appear to be having a field day, growing stronger and bolder each passing day. However, experts believe reclaiming $4,700 could drive the price to ne… [+4131 chars]"},{"source":{"id":null,"name":"PCMag.com"},"author":"Alan Henry","title":"ChatGPT in Your Browser? Cool—Until It Remembers Your Doctor’s Name","description":"The future of browsing is here...and it's watching everything you do along the way. Plus more of the biggest stories from the week in cybersecurity, including our countdown of the biggest VPN hacks of all time.\nSecurity and privacy aren’t always the same thin…","url":"https://me.pcmag.com/en/security/33079/chatgpt-in-your-browser-cool-until-it-remembers-your-doctors-name","urlToImage":"https://sm.pcmag.com/t/pcmag_me/news/c/chatgpt-in/chatgpt-in-your-browser-cool-until-it-remembers-your-doctors_huvd.1200.jpg","publishedAt":"2025-10-24T15:03:26Z","content":"Security and privacy arent always the same thing, but theres a reason that people who specialize in one care deeply about the other. Threats to your security are often also threats to your privacy an… [+6206 chars]"},{"source":{"id":null,"name":"PCMag.com"},"author":"Alan Henry","title":"ChatGPT in Your Browser? Cool—Until It Remembers Your Doctor’s Name","description":"The future of browsing is here...and it's watching everything you do along the way. Plus more of the biggest stories from the week in cybersecurity, including our countdown of the biggest VPN hacks of all time.\nSecurity and privacy aren’t always the same thin…","url":"https://uk.pcmag.com/security/160893/chatgpt-in-your-browser-cool-until-it-remembers-your-doctors-name","urlToImage":"https://sm.pcmag.com/t/pcmag_uk/news/c/chatgpt-in/chatgpt-in-your-browser-cool-until-it-remembers-your-doctors_9g33.1200.jpg","publishedAt":"2025-10-24T15:03:26Z","content":"Security and privacy arent always the same thing, but theres a reason that people who specialize in one care deeply about the other. Threats to your security are often also threats to your privacy an… [+6206 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Ripple completes Hidden Road acquisition, becoming first crypto firm to own global multi-asset prime broker","description":"Ripple's acquisition of Hidden Road positions it to enhance institutional digital asset services, potentially reshaping global financial markets.\nThe post Ripple completes Hidden Road acquisition, becoming first crypto firm to own global multi-asset prime bro…","url":"https://cryptobriefing.com/ripple-acquires-hidden-road-launches-ripple-prime/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24110051/f5f3fbee-5985-4a62-8006-71ed1106bdbf-800x420.jpg","publishedAt":"2025-10-24T15:01:26Z","content":"Key Takeaways\r\n<ul><li>Ripple becomes the first crypto firm to own a global multi-asset prime broker by acquiring Hidden Road.</li><li>Hidden Road has been rebranded as Ripple Prime, aiming to enhanc… [+488 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"Oluwapelumi Adejumo","title":"How retail altcoin traders lost $800 billion betting against Bitcoin","description":"After two years of waiting for an “altcoin season” that never came, retail crypto traders have missed out on roughly $800 billion in potential gains by betting against Bitcoin’s dominance. A new report from 10x Research shows that altcoins have lagged Bitcoin…","url":"https://cryptoslate.com/how-retail-altcoin-traders-lost-800-billion-betting-against-bitcoin/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/retail-alts-bitcoin-.jpg","publishedAt":"2025-10-24T15:00:42Z","content":"After two years of waiting for an “altcoin season” that never came, retail crypto traders have missed out on roughly $800 billion in potential gains by betting against Bitcoins dominance.\r\nA new repo… [+5987 chars]"},{"source":{"id":null,"name":"Celebitchy.com"},"author":"Kaiser","title":"The demolition of the White House East Wing was completed ahead of schedule","description":"The thing about Donald Trump’s authoritarian regime is that there’s something horrific happening at every level of urgency. Like, I want to focus on Trump’s literal demolition of the White House East Wing, but something else that just happened yesterday is Tr…","url":"https://www.celebitchy.com/946954/the_demolition_of_the_white_house_east_wing_was_completed_ahead_of_schedule/","urlToImage":null,"publishedAt":"2025-10-24T15:00:04Z","content":"The thing about Donald Trumps authoritarian regime is that theres something horrific happening at every level of urgency. Like, I want to focus on Trumps literal demolition of the White House East Wi… [+7434 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"CoinShares International Limited","title":"CoinShares Announces Change to Financial Calendar as Part of its US Transaction","description":"24 October 2025 | SAINT HELIER, Jersey | CoinShares International Limited (\"CoinShares\" or \"the Group\") (Nasdaq Stockholm: CS; US OTCQX: CNSRF), the leading European asset manager specialising in digital assets, announces a change to its financial calendar fo…","url":"https://www.globenewswire.com/news-release/2025/10/24/3172944/0/en/CoinShares-Announces-Change-to-Financial-Calendar-as-Part-of-its-US-Transaction.html","urlToImage":"https://ml-eu.globenewswire.com/Resource/Download/8ff8acfa-148b-402b-b289-7bf6973541be","publishedAt":"2025-10-24T15:00:00Z","content":"24 October 2025 | SAINT HELIER, Jersey | CoinShares International Limited (\"CoinShares\" or \"the Group\") (Nasdaq Stockholm: CS; US OTCQX: CNSRF), the leading European asset manager specialising in dig… [+4074 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Bittam ltd","title":"Bittam Redefines Crypto Trading — Trade Smarter with 200× Leverage, Zero Slippage, No Fees, and Up to $3,000 in Rewards","description":"NEW YORK, Oct. 24, 2025 (GLOBE NEWSWIRE) -- In the fiercely competitive cryptocurrency market, choosing a truly fair, secure, and low-cost trading platform is the key to long-term profitability. Bittam Exchange\r\n, backed by strong technology and global regula…","url":"https://www.globenewswire.com/news-release/2025/10/24/3172941/0/en/Bittam-Redefines-Crypto-Trading-Trade-Smarter-with-200-Leverage-Zero-Slippage-No-Fees-and-Up-to-3-000-in-Rewards.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/6693023f-7ea6-4032-b960-c190d52846a1","publishedAt":"2025-10-24T15:00:00Z","content":"NEW YORK, Oct. 24, 2025 (GLOBE NEWSWIRE) -- In the fiercely competitive cryptocurrency market, choosing a truly fair, secure, and low-cost trading platform is the key to long-term profitability. Bitt… [+8495 chars]"},{"source":{"id":null,"name":"pymnts.com"},"author":"PYMNTS","title":"JPMorgan Chase to Allow Institutional Clients to Use Bitcoin and Ether as Collateral","description":"JPMorgan Chase reportedly plans to allow its institutional clients around the world to use their Bitcoin and Ether holdings as collateral for loans. The program is set to be offered by the end of the year, Bloomberg reported Friday (Oct. 24), citing unnamed s…","url":"https://www.pymnts.com/cryptocurrency/2025/jpmorgan-chase-allow-institutional-clients-use-bitcoin-ether-collateral/","urlToImage":"https://www.pymnts.com/wp-content/uploads/2025/07/JPMorgan-Chase.jpg","publishedAt":"2025-10-24T14:58:56Z","content":"JPMorgan Chase reportedly plans to allow its institutional clients around the world to use their Bitcoin and Ether holdings as collateral for loans.The program is set to be offered by the end of the … [+2178 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"youtube.com","title":"Corporate Bitcoin And Crypto Hoarding: The $150 Billion Treasury Trend","description":"This week on Beyond The Billions, Forbes Deputy Editors Giacomo Tognini and Nina Bambysheva discuss the rise of Digital ...","url":"https://biztoc.com/x/c7f41295e9e18d61","urlToImage":"https://biztoc.com/cdn/c7f41295e9e18d61_s.webp","publishedAt":"2025-10-24T14:58:22Z","content":"This week on Beyond The Billions, Forbes Deputy Editors Giacomo Tognini and Nina Bambysheva discuss the rise of Digital ...\r\nThis story appeared on youtube.com, 2025-10-24 14:00:41."},{"source":{"id":null,"name":"Biztoc.com"},"author":"zerohedge.com","title":"After A Decade Of Bitching About Bitcoin... JPMorgan Reportedly Plans To Allow Crypto As Collateral","description":"After A Decade Of Bitching About Bitcoin... JPMorgan Reportedly Plans To Allow Crypto As Collateral\n \nJPMorgan CEO Jamie Dimon has been nothing if not consistent in his views on cryptocurrencies over the past decade:\n \nJan 2025: DIMON SAYS BITCOIN HAS NO INTR…","url":"https://biztoc.com/x/74797a541455be0f","urlToImage":"https://biztoc.com/cdn/74797a541455be0f_s.webp","publishedAt":"2025-10-24T14:50:21Z","content":"After A Decade Of Bitching About Bitcoin... JPMorgan Reportedly Plans To Allow Crypto As Collateral\r\nJPMorgan CEO Jamie Dimon has been nothing if not consistent in his views on cryptocurrencies over … [+130 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"blockworks.co","title":"Sky pivots beyond treasuries as yields dip, staking overhaul looms","description":"With 10Y Treasury yields falling below 4%, Spark is moving $100M into Superstate’s crypto carry fund","url":"https://biztoc.com/x/f3f7bfc668ce92e6","urlToImage":"https://biztoc.com/cdn/950/og.png","publishedAt":"2025-10-24T14:50:19Z","content":"With 10Y Treasury yields falling below 4%, Spark is moving $100M into Superstates crypto carry fund\r\nThis story appeared on blockworks.co, 2025-10-24 14:20:24."},{"source":{"id":null,"name":"ZyCrypto"},"author":"Brenda Ngari","title":"Solo Bitcoin Miner Gets Lucky, Bags $347,000 In Rare BTC Block Win","description":"A lucky individual Bitcoin miner beat monumental odds to successfully solve a block worth over $347,000 on the world’s most competitive crypto network. On Thursday, the miner processed block 920,440 through the Public Pool Bitcoin mining pool, earning a total…","url":"https://zycrypto.com/solo-bitcoin-miner-gets-lucky-bags-347000-in-rare-btc-block-win/","urlToImage":"https://zycrypto.com/wp-content/uploads/2024/06/Bitcoin-Miner-Reserves-Plummet-to-Multi-Year-Lows-—-Will-This-Trigger-The-Much-Expected-Price-Rally.jpg","publishedAt":"2025-10-24T14:48:43Z","content":"A lucky individual Bitcoin miner beat monumental odds to successfully solve a block worth over $347,000 on the world’s most competitive crypto network.\r\nOn Thursday, the miner processed block 920,440… [+1618 chars]"},{"source":{"id":null,"name":"The New Republic"},"author":"Michael Tomasky","title":"Trump Wrecks America. His “Patriotic” Fans Cheer. Is There Any Bottom?","description":"I was going to write one more liberal column expressing outrage about what Donald Trump has done to the White House this week, but then I thought: Why? What would be the point? The people who would agree with me would agree with me, and the people who wouldn’…","url":"https://newrepublic.com/post/202227/trump-corruption-wrecks-america-patriotic-fans-cheer-fascism","urlToImage":"https://images.newrepublic.com/0864677feb4f273e40804d7d669d70b47fdeb14d.jpeg?w=1200&h=630&crop=faces&fit=crop&fm=jpg","publishedAt":"2025-10-24T14:40:04Z","content":"This is certainly an only in America story, but I do not mean that in the normal, heroic sense. I mean it in the creepy, corporate, its-all-about-profit sense. CBS began life in 1927 as a radio netwo… [+1531 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Talha Arshad","title":"The Big XRP Dump? — Co-founder Accused of Profiteering from Massive XRP Sales","description":"Ripple co-founder Chris Larsen is back in the news after selling another large portion of his considerable XRP holdings.","url":"https://zycrypto.com/the-big-xrp-dump-co-founder-accused-of-profiteering-from-massive-xrp-sales/","urlToImage":"https://zycrypto.com/wp-content/uploads/2024/04/Ripples-XRP-Price-to-20-—-Devs-Unveil-Super-Bullish-Proposal-That-Could-Massively-Advance-XRPL.jpeg","publishedAt":"2025-10-24T14:39:47Z","content":"Ripple co-founder Chris Larsen is back in the news after selling another large portion of his considerable XRP holdings. According to recent estimates, the former CEO of Ripple has netted a massive $… [+2461 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"coindesk.com","title":"Crypto Exchange Gemini Gets Price Target Cut at Citi, While Bullish Earns Hike","description":"","url":"https://biztoc.com/x/a8f0e4ff46aa9422","urlToImage":"https://biztoc.com/cdn/a8f0e4ff46aa9422_s.webp","publishedAt":"2025-10-24T14:39:24Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Trump end US-Canada trade talks? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will Social Security change … [+721 chars]"},{"source":{"id":null,"name":"SiliconANGLE News"},"author":"Robert Hof","title":"For better or worse, it’s still full speed ahead for AI factories","description":"Despite a rising drumbeat of worries about an AI bubble, AI clouds and factories keep growing like crazy. Anthropic and Google announced a multibillion-dollar cloud deal, “neocloud” Crusoe raised $1.3 billion and Uniphore raised $26o million. In addition, Ope…","url":"https://siliconangle.com/2025/10/24/better-worse-still-full-speed-ahead-ai-factories/","urlToImage":"https://d15shllkswkct0.cloudfront.net/wp-content/blogs.dir/1/files/2025/10/aifactoriesatnight.png","publishedAt":"2025-10-24T14:36:35Z","content":"Despite a rising drumbeat of worries about an AI bubble, AI clouds and factories keep growing like crazy. Anthropic and Google announced a multibillion-dollar cloud deal, “neocloud” Crusoe raised $1.… [+13738 chars]"},{"source":{"id":null,"name":"Thefly.com"},"author":null,"title":"Crypto Currents: Coinbase acquires capital raising platform Echo","description":"See the rest of the story here.\n\nthefly.com provides the latest financial news as it breaks. Known as a leader in market intelligence, The Fly's real-time, streaming news feed keeps individual investors, professional money managers, active traders, and corpor…","url":"https://thefly.com/permalinks/entry.php/id4220734/BTC-USD;DOGE-USD;XRP-USD;LTC-USD;ETH-USD;SOL-USD;BNB-USD;COIN;CLSK;GLXY;WULF;BTDR;IREN;RIOT;HUT;HIVE;WYFI;BITF;APLD;CAN;CORZ;CRWV;GOOGL;ABTC;SBET;BMNR;FGNX;MARA;MSTR;BLSH;JPM;BTBT;GREE;CRCL-Crypto-Currents-Coinbase-acquires-capital-raising-platform-Echo","urlToImage":"https://image.thefly.com/catalog/202203/img_1332.jpg","publishedAt":"2025-10-24T14:35:10Z","content":"News and insights, exclusive to thefly.com\r\nView all On The Fly Stories »\r\nEarnings calls, analyst events, roadshows and more\r\nThis week’s upcoming IPOs and secondary offerings\r\n<table><tr><th>Mon</t… [+2151 chars]"},{"source":{"id":null,"name":"Memeorandum.com"},"author":null,"title":"Trump Crypto Partner Suspends CEO With No Explanation After Stock Falls 74% (Zach Everson/Forbes)","description":"Zach Everson / Forbes:\nTrump Crypto Partner Suspends CEO With No Explanation After Stock Falls 74%  —  Topline  —  Alt5 Sigma, which bet its future on a Trump family crypto venture and has since seen its stock price plummet 74%, suspended its CEO last week wi…","url":"https://www.memeorandum.com/251024/p58","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fae50022b42dbb17ca578e/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T14:35:01Z","content":"memeorandum is an auto-generated summary of the stories that US political commentators are discussing online right now.\r\nUnlike sister sites Techmeme and Mediagazer, it is not a human-edited news out… [+72 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Trefis Team, Contributor, \n Trefis Team, Contributor\n https://www.forbes.com/sites/greatspeculations/people/trefis/","title":"Markets Underestimating Light & Wonder Stock’s Potential?","description":"The stock is presently trading approximately 32% lower than its 1-year peak, and is also trading at a PS multiple that is below the average from the past 3 years.","url":"https://www.forbes.com/sites/greatspeculations/2025/10/24/markets-underestimating-light--wonder-stocks-potential/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fb2c587d4b118c407b7927/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T14:31:49Z","content":"Here is our perspective on why Light &amp; Wonder (LNW)\r\n stock merits attention as a value investment. It is presently trading approximately 32% lower than its 1-year peak and is also trading at a P… [+3701 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Pump.fun acquires trading terminal Padre","description":"Pump.fun's acquisition of Padre could significantly enhance multi-chain trading capabilities, potentially attracting a broader user base.\nThe post Pump.fun acquires trading terminal Padre appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/pump-fun-acquires-padre-trading-terminal-multi-chain-expansion/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24103039/ff68e204-0521-4808-b2da-6e04f529ebe4-800x420.jpg","publishedAt":"2025-10-24T14:31:17Z","content":"Key Takeaways\r\n<ul><li>Pump.fun, a Solana-focused meme coin platform, has acquired Padre, a multi-blockchain trading terminal.</li><li>Padre offers features such as multi-wallet strategies, price ale… [+533 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"Will Canny, AI Boost","title":"Crypto Exchange Gemini Gets Price Target Cut at Citi, While Bullish Earns Hike","description":"Gemini’s trading growth is slowing despite strong card sign-ups and app downloads, said Citigroup, while Bullish momentum is accelerating.","url":"https://www.coindesk.com/markets/2025/10/24/crypto-exchange-gemini-gets-price-target-cut-at-citi-while-bullish-earns-hike","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/7adeb92e931ebab798e9acb4e29213a5bc3dadfd-1500x1039.jpg?auto=format&w=960&h=540&crop=focalpoint&fit=clip&q=75&fm=jpg","publishedAt":"2025-10-24T14:31:13Z","content":"Crypto exchange Gemini (GEMI) is still a waiting game, said Wall Street bank Citigroup.\r\nLed by analyst Peter Christiansen, the bank's analyst team reiterated its neutral and high-risk call on GEMI, … [+1274 chars]"},{"source":{"id":null,"name":"Bitcoinist"},"author":"Christian Encila","title":"Tesla Rides Bitcoin Rally To $80 Million Profit In Q3","description":"Tesla booked an $80 million gain on its bitcoin holdings in the third quarter of 2025, a move that lifted the value of its crypto stash but did not change the company’s cash from selling the coins. According to reports, the firm still held 11,509 BTC at the e…","url":"https://bitcoinist.com/tesla-rides-bitcoin-rally-to-80-million-profit-in-q3/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2025/10/a_0143f5.jpg","publishedAt":"2025-10-24T14:30:44Z","content":"Tesla booked an $80 million gain on its bitcoin holdings in the third quarter of 2025, a move that lifted the value of its crypto stash but did not change the companys cash from selling the coins. Ac… [+2890 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Morning Minute: a16z’s 'State of Crypto 2025' Highlights Growth & Key Trends","description":"Morning Minute is a daily newsletter written by Tyler Warner. The analysis and opinions expressed are his own and do not necessarily reflect those of Decrypt. Subscribe to the Morning Minute on Substack.\nGM!\nToday’s top news:\n-\nCrypto majors rebound another 1…","url":"https://biztoc.com/x/b96fb6c22975704d","urlToImage":"https://biztoc.com/cdn/b96fb6c22975704d_s.webp","publishedAt":"2025-10-24T14:29:32Z","content":"Morning Minute is a daily newsletter written by Tyler Warner. The analysis and opinions expressed are his own and do not necessarily reflect those of Decrypt. Subscribe to the Morning Minute on Subst… [+144 chars]"},{"source":{"id":null,"name":"Bitcoinist"},"author":"Bogdan Patru","title":"XRP Futures Surge at CME: Is a Price Breakout Looming for Top Altcoins?","description":"What to Know: 1️⃣ Bitcoin Hyper ($HYPER) merges Bitcoin’s security with Solana’s speed through a Canonical Bridge and Solana Virtual Machine (SVM) integration. 2️⃣ The project’s presale has surpassed $24M, signaling strong investor confidence ahead of its Lay…","url":"https://bitcoinist.com/xrp-futures-surge-at-cme-is-a-price-breakout-looming-for-top-altcoins/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2025/10/xrp-futures-surge-at-cme-is-a-price-breakout-looming-for-top-altcoins.jpg","publishedAt":"2025-10-24T14:28:33Z","content":"What to Know:\r\n<ul><li>1 Bitcoin Hyper ($HYPER) merges Bitcoins security with Solanas speed through a Canonical Bridge and Solana Virtual Machine (SVM) integration.</li><li>2 The projects presale has… [+4536 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"coindesk.com","title":"Crypto Markets Today: BTC Reclaims $110K as Softer CPI Boosts Market Sentiment, Altcoins Lag","description":"","url":"https://biztoc.com/x/164824078d08f1d5","urlToImage":"https://biztoc.com/cdn/164824078d08f1d5_s.webp","publishedAt":"2025-10-24T14:28:28Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Trump end US-Canada trade talks? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will Social Security change … [+736 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Brian Njuguna","title":"Solana Eyes $300 Rocket as Hong Kong Greenlights First SOL Spot ETF","description":"After weeks of choppy trading within a falling channel, SOL is hovering around $190, constrained by lower highs and weak rebounds.","url":"https://zycrypto.com/solana-eyes-300-rocket-as-hong-kong-greenlights-first-sol-spot-etf/","urlToImage":"https://zycrypto.com/wp-content/uploads/2024/02/Solana-Suffers-Major-Network-Outage-Sending-SOL-Plunging-4.jpg","publishedAt":"2025-10-24T14:22:38Z","content":"Market analyst Lingrid notes that Solana is approaching a crucial inflection point. After weeks of choppy trading within a falling channel, SOL is hovering around $190, constrained by lower highs and… [+1880 chars]"},{"source":{"id":null,"name":"Common Dreams"},"author":"Jake Johnson","title":"Who's Financing Trump's Gilded Ballroom? Weapons Makers, Tech Giants, Private Equity, and More","description":"Amazon, Apple, Lockheed Martin, Google, Altria, and Union Pacific Railroad are among the dozens of corporations bankrolling US President Donald Trump's ongoing effort to replace the East Wing of the White House—which is now reduced to rubble—with a gaudy, 90,…","url":"https://www.commondreams.org/news/corporations-funding-trump-ballroom","urlToImage":"https://www.commondreams.org/media-library/image.jpg?id=61906688&width=1200&height=600&coordinates=0%2C322%2C0%2C323","publishedAt":"2025-10-24T14:19:51Z","content":"Amazon, Apple, Lockheed Martin, Google, Altria, and Union Pacific Railroad are among the dozens of corporations bankrolling US President Donald Trump's ongoing effort to replace the East Wing of the … [+2367 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Smart traders are buying ahead of Trump–Xi meeting","description":"Digital assets pushed higher Friday after the White House said Trump will meet Xi on Oct. 30 on the sidelines of the APEC leaders’ summit in South Korea.\nFor crypto traders, that reads like a potential reset after weeks of tariff brinkmanship and fresh export…","url":"https://biztoc.com/x/f9f2f83d3ce92bb8","urlToImage":"https://biztoc.com/cdn/f9f2f83d3ce92bb8_s.webp","publishedAt":"2025-10-24T14:18:22Z","content":"Digital assets pushed higher Friday after the White House said Trump will meet Xi on Oct. 30 on the sidelines of the APEC leaders summit in South Korea.For crypto traders, that reads like a potential… [+149 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by William Suberg","title":"Bitcoin spikes to $112K on soft US CPI data as S&P 500 hits record high","description":"Bitcoin flipped volatile as CPI data came in lower than expected, but failed to follow stocks as they hit fresh all-time highs on Fed rate-cut optimism.","url":"https://cointelegraph.com/news/bitcoin-spikes-112k-soft-us-cpi-data-sp-500-hits-record-high","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-04/0196220c-4884-7057-adde-98a3d2ba18c7","publishedAt":"2025-10-24T14:17:21Z","content":"Key points:\r\n<ul><li>Bitcoin price action whipsaws around a cooler-than-expected CPI print.\r\n</li><li>Optimism on risk assets increases, with the Federal Reserve seen continuing interest-rate cuts th… [+3023 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"Jacob Joseph, Oliver Knight","title":"Crypto Markets Today: BTC Reclaims $110K as Softer CPI Boosts Market Sentiment, Altcoins Lag","description":"A cooler inflation print reignited crypto risk appetite, lifting bitcoin above $110,000 while altcoins continued to underperform.","url":"https://www.coindesk.com/markets/2025/10/24/crypto-markets-today-btc-reclaims-usd110k-as-softer-cpi-boosts-market-sentiment-altcoins-lag","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/9db110182f9733ea754c6a9cbd935ad51195b2b4-1920x1080.jpg?auto=format","publishedAt":"2025-10-24T14:17:07Z","content":"The crypto market was buoyed by a softer than expected CPI print, with bitcoin BTC\r\n$110,038.10 rising back above $110,000 as ether ETH\r\n$3,901.32 moves back towards $4,000.\r\nPositive investor sentim… [+2603 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Peter Brandt","title":"Peter Brandt Projects 50% Bitcoin Decline If Price Pattern Remains Unchanged","description":"Professional trader Peter Brandt noted similarities between Bitcoin’s price charts and those of the soybean market in the 1970s.","url":"https://zycrypto.com/peter-brandt-projects-50-bitcoin-decline-if-price-pattern-remains-unchanged/","urlToImage":"https://zycrypto.com/wp-content/uploads/2021/01/Bitcoin-Momentarily-Drops-Below-30K.jpg","publishedAt":"2025-10-24T14:14:11Z","content":"Professional trader Peter Brandt noted similarities between Bitcoins price charts and those of the soybean market in the 1970s. \r\nThis signals potential volatility in the asset class, as most coins c… [+2213 chars]"},{"source":{"id":"techradar","name":"TechRadar"},"author":"Sead Fadilpašić","title":"North Korean hackers target European defense firms with dream job scam","description":"Lazarus is after drone know-how and has infiltrated three firms.","url":"https://www.techradar.com/pro/security/north-korean-hackers-target-european-defense-firms-with-dream-job-scam","urlToImage":"https://cdn.mos.cms.futurecdn.net/S22junUm8pBsVgLeFMaicP-961-80.jpg","publishedAt":"2025-10-24T14:14:00Z","content":"<ul><li>Lazarus Group used fake job offers to infect Southeastern European drone firms with malware</li><li>Attackers stole proprietary UAV data and deployed a RAT for full system control</li><li>Tar… [+3245 chars]"},{"source":{"id":"al-jazeera-english","name":"Al Jazeera English"},"author":"Alex Kozul-Wright","title":"Is Trump’s pardon of Binance boss Changpeng Zhao a conflict of interest?","description":"Zhao is a convicted criminal who founded the world's biggest cryptocurrency exchange.","url":"https://www.aljazeera.com/news/2025/10/24/is-trumps-pardon-of-binance-boss-changpeng-zhao-a-conflict-of-interest","urlToImage":"https://www.aljazeera.com/wp-content/uploads/2025/01/AP24316659779468-1737411241.jpg?resize=1920%2C1440","publishedAt":"2025-10-24T14:11:36Z","content":"US President Donald Trump has pardoned Binance founder Changpeng Zhao, creator of the worlds largest cryptocurrency exchange, who went to prison last year for failing to prevent criminals from using … [+7300 chars]"},{"source":{"id":null,"name":"Coinjournal.net"},"author":"Diya Poddar","title":"Thailand raids Worldcoin-linked site as regulators intensify crypto scrutiny","description":"Thailand’s SEC raids site tied to World’s WLD exchange over alleged unlicensed operations. Regulators in Germany, Kenya, Brazil, and Indonesia also probe World’s biometric crypto model. Global scrutiny grows over iris-scan data use as the World faces new comp…","url":"https://coinjournal.net/news/thailand-raids-worldcoin-linked-site-as-regulators-intensify-crypto-scrutiny/","urlToImage":"https://coinjournal.net/wp-content/uploads/2025/10/20251024_1858_Thailand-Crypto-Site-Raid_simple_compose_01k8b6cd8ae6ns8ja3bj4q2amv.png","publishedAt":"2025-10-24T14:09:23Z","content":"<ul><li>Thailand’s SEC raids site tied to World’s WLD exchange over alleged unlicensed operations.</li><li>Regulators in Germany, Kenya, Brazil, and Indonesia also probe World’s biometric crypto mode… [+4284 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Aster DEX plans to allocate up to 80% of S3 fees for ASTER buybacks","description":"Aster DEX's buyback strategy could stabilize $ASTER's value, potentially boosting investor confidence amid volatile market conditions.\nThe post Aster DEX plans to allocate up to 80% of S3 fees for ASTER buybacks appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/aster-dex-allocates-80-percent-s3-fees-aster-buyback/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24100456/9f65526d-396a-4bcd-ae3e-43e318e8bec0-800x420.jpg","publishedAt":"2025-10-24T14:06:39Z","content":"Key Takeaways\r\n<ul><li>Aster DEX will allocate up to 80% of fees from Stage 3 ('Dawn' phase) for $ASTER token buybacks.</li><li>Stage 3 introduces advanced scoring systems for traders, incentivizing … [+533 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"'Pet Rock' No More: JPMorgan To Accept Bitcoin, Ethereum As Collateral","description":"JPMorgan Chase & Co. (NYSE:JPM) will allow institutional clients to use Bitcoin (CRYPTO: BTC) and Ethereum (CRYPTO: ETH) as collateral for loans, marking a major shift in how Wall Street's largest bank integrates digital assets into its core lending operation…","url":"https://biztoc.com/x/ec7a2c59c3df582e","urlToImage":"https://biztoc.com/cdn/ec7a2c59c3df582e_s.webp","publishedAt":"2025-10-24T14:06:22Z","content":"JPMorgan Chase &amp; Co. (NYSE:JPM) will allow institutional clients to use Bitcoin (CRYPTO: BTC) and Ethereum (CRYPTO: ETH) as collateral for loans, marking a major shift in how Wall Street's larges… [+137 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"theblock.co","title":"‘UK expansion was never an if, but a when’: Bitpanda sets sights on becoming Britain’s leading crypto platform","description":"The Vienna-based crypto broker aims to make the country one of its largest markets within two years amid growing regulatory clarity.","url":"https://biztoc.com/x/2ec6fdb83fba679d","urlToImage":"https://biztoc.com/cdn/2ec6fdb83fba679d_s.webp","publishedAt":"2025-10-24T14:06:03Z","content":"The Vienna-based crypto broker aims to make the country one of its largest markets within two years amid growing regulatory clarity.\r\nThis story appeared on theblock.co, 2025-10-24 13:58:42."},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Splendor","title":"Splendor ($SPLD) Begins Trading on LBank Following Network Launch","description":"Splendor ($SPLD) Begins Trading on LBank Following Network Launch......","url":"https://www.globenewswire.com/news-release/2025/10/24/3172915/0/en/Splendor-SPLD-Begins-Trading-on-LBank-Following-Network-Launch.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/4ac37d4b-06f7-48ee-a430-9ca750b82cfb","publishedAt":"2025-10-24T14:05:00Z","content":"Splendor (SPLD) begins trading on LBank, marking the next phase of its blockchain for autonomous AI and decentralized data transactions.\r\nSplendor Labs (Crypto Currency:$SPLD)\r\nPANAMA CITY, Panama, O… [+1616 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Vystar Corp.","title":"Incubator Stock Review Initiates Coverage on Vystar","description":"Worcester, MA, Oct. 24, 2025 (GLOBE NEWSWIRE) -- Vystar® Corporation (OTCQB: VYST) Vystar announced today the Internet and Incubator Stock Review has initiated coverage.","url":"https://www.globenewswire.com/news-release/2025/10/24/3172914/0/en/Incubator-Stock-Review-Initiates-Coverage-on-Vystar.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/08188699-078a-4d6e-ae46-c56120bb0435","publishedAt":"2025-10-24T14:05:00Z","content":"Worcester, MA, Oct. 24, 2025 (GLOBE NEWSWIRE) -- Vystar® Corporation (OTCQB: VYST) Vystar announced today the Internet and Incubator Stock Review has initiated coverage.\r\n\"We followed the team at Vys… [+10229 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Tyler Warner","title":"Morning Minute: a16z’s 'State of Crypto 2025' Highlights Growth & Key Trends","description":"Crypto is growing significantly in user base and market cap—find out what key trends have emerged over the past year, according to a16z.","url":"https://decrypt.co/345835/morning-minute-a16zs-state-of-crypto-2025-highlights-growth-key-trends","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/05/crypto-trading-decrypt-style-02-gID_7.png","publishedAt":"2025-10-24T14:02:49Z","content":"Morning Minute is a daily newsletter written by Tyler Warner. The analysis and opinions expressed are his own and do not necessarily reflect those of Decrypt. Subscribe to the Morning Minute on Subst… [+6104 chars]"},{"source":{"id":null,"name":"XDA Developers"},"author":"Chandraveer Mathur","title":"My 5 favorite open-source projects that just work every single time","description":"Ol' reliable tools you can count on","url":"https://www.xda-developers.com/my-favorite-open-source-projects-just-work/","urlToImage":"https://static0.xdaimages.com/wordpress/wp-content/uploads/wm/2025/10/powertoys-on-windows-11.jpg?w=1600&h=900&fit=crop","publishedAt":"2025-10-24T14:00:19Z","content":"Weve all felt the sting of signing up for a service and eventually wishing we could pay up front instead of bleeding a subscription fee every month. You're constantly pouring money into it, but you n… [+8299 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Scott Matherson","title":"XRP Price At $1,000, Solana To $1,000, And Cardano At $100? Bull Run Predictions Catch Attention","description":"Crypto analyst Remi has made his bull run predictions for coins like XRP, Solana, and Cardano. Despite the price targets being ambitious, the analyst described them as “semi-conservative,” suggesting the coins could rally much higher.  XRP And Solana To $1,00…","url":"http://www.newsbtc.com/analysis/xrp/xrp-solana-price-at-1000/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/10/XRP-from-Pxfuel.jpg?fit=850%2C638","publishedAt":"2025-10-24T14:00:04Z","content":"Crypto analyst Remi has made his bull run predictions for coins like XRP, Solana, and Cardano. Despite the price targets being ambitious, the analyst described them as semi-conservative, suggesting t… [+2525 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Bexback co., LTD","title":"No KYC. 100x Leverage. $100 Welcome Bonus. Crypto Futures Trading Made Easy on BexBack.","description":"SINGAPORE, Oct. 24, 2025 (GLOBE NEWSWIRE) -- With Bitcoin's price fluctuating below $110,000, many analysts predict a prolonged period of high volatility in the crypto market. Holding spot positions may struggle to generate short-term profits in such conditio…","url":"https://www.globenewswire.com/news-release/2025/10/24/3172891/0/en/No-KYC-100x-Leverage-100-Welcome-Bonus-Crypto-Futures-Trading-Made-Easy-on-BexBack.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/f47f4d3f-3b6c-4732-930a-6dec4386cb9c","publishedAt":"2025-10-24T14:00:00Z","content":"SINGAPORE, Oct. 24, 2025 (GLOBE NEWSWIRE) -- With Bitcoin's price fluctuating below $110,000, many analysts predict a prolonged period of high volatility in the crypto market. Holding spot positions … [+6573 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Brenda Ngari","title":"Bitcoin From Rare Satoshi Era Moves After Over 14 Years Of Dormancy","description":"An early crypto miner holding 4,000 Bitcoin today moved a portion of their funds after more than 14 years of leaving the holdings untouched.","url":"https://zycrypto.com/bitcoin-from-rare-satoshi-era-moves-after-over-14-years-of-dormancy/","urlToImage":"https://zycrypto.com/wp-content/uploads/2023/06/Satoshi-Era-Bitcoin-Whale-Moves-1.2-Million-Worth-Of-BTC-After-13-Years.jpg","publishedAt":"2025-10-24T13:59:04Z","content":"An early crypto miner holding 4,000 Bitcoin (BTC) today moved a portion of their funds after more than 14 years of leaving the holdings untouched, blockchain data shows, joining the rare instances wh… [+1781 chars]"},{"source":{"id":null,"name":"Nakedcapitalism.com"},"author":"Yves Smith","title":"Exposing the Hidden US History Fueling Tariffs, Shutdowns, and National Breakdown","description":"Political slugfests and current controversies show how flattering tales from US history undermine the pursuit of its citizens' interests.","url":"https://www.nakedcapitalism.com/2025/10/exposing-the-hidden-us-history-fueling-tariffs-shutdowns-and-national-breakdown.html","urlToImage":null,"publishedAt":"2025-10-24T13:55:31Z","content":"Yves here. Most countries and peoples engage in flattering myth-making. But the exceptional US may be exceptional here in the degree to which we whitewash our history and the consequences of acing on… [+18337 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Ethereum Taps $4,000 As Analyst Predicts 'Final Rally' Ahead Of 2026 Downturn","description":"Ethereum (CRYPTO: ETH) is trading around $4,000 as analyst Benjamin Cowen expects a final push toward new all-time highs before a potential 2026 market downturn, \nWhat Happened: In his latest podcast, Cowen explained that Ethereum's current price action is in…","url":"https://biztoc.com/x/8d2fd990dd7a155c","urlToImage":"https://biztoc.com/cdn/8d2fd990dd7a155c_s.webp","publishedAt":"2025-10-24T13:55:07Z","content":"Ethereum (CRYPTO: ETH) is trading around $4,000 as analyst Benjamin Cowen expects a final push toward new all-time highs before a potential 2026 market downturn, What Happened: In his latest podcast,… [+139 chars]"},{"source":{"id":null,"name":"New York Post"},"author":"Ariel Zilber","title":"‘Sex warfare’: China, Russia send hot women to seduce US tech execs, steal secrets: report","description":"Industry insiders told The Times of London that they have been approached by would-be honeypots.","url":"https://nypost.com/2025/10/24/business/china-russia-sending-attractive-women-to-seduce-us-tech-execs-report/","urlToImage":"https://nypost.com/wp-content/uploads/sites/2/2025/10/newspress-collage-rhbnndbz7-1761313919548.jpg?quality=75&strip=all&1761299571&w=1200","publishedAt":"2025-10-24T13:54:28Z","content":"China and Russia have deployed attractive women to the United States to seduce unwitting Silicon Valley tech executives as part of a “sex warfare” operation aimed at stealing American technology secr… [+4797 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Trefis Team, Contributor, \n Trefis Team, Contributor\n https://www.forbes.com/sites/greatspeculations/people/trefis/","title":"Hewlett Packard Or Dell: Which Stock Has More Upside?","description":"Although Dell Technologies has experienced a 17% increase in the past month, its competitor Hewlett Packard Enterprise might be a more favorable option.","url":"https://www.forbes.com/sites/greatspeculations/2025/10/24/hewlett-packard--or-dell-which-stock-has-more-upside/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fb845a0df5a5d1f7c4e8d5/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T13:52:40Z","content":"Photo by Cheng Xin/Getty Images\r\nGetty Images\r\nAlthough Dell Technologies has experienced a 17% increase in the past month, its competitor Hewlett Packard Enterprise might be a more favorable option.… [+2571 chars]"},{"source":{"id":null,"name":"TheStreet"},"author":"Mehab Qureshi","title":"Smart traders are buying ahead of Trump–Xi meeting","description":"Digital assets pushed higher Friday after the White House said Trump will meet Xi on Oct. 30 on the sidelines of the APEC leaders’ summit in South Korea. For...","url":"https://www.thestreet.com/crypto/business/smart-traders-buying-ahead-of-trump-xi-meeting","urlToImage":"https://media.zenfs.com/en/thestreet_881/71935ac90c36916b219844ca39de770d","publishedAt":"2025-10-24T13:48:50Z","content":"Digital assets pushed higher Friday after the White House said Trump will meet Xi on Oct. 30 on the sidelines of the APEC leaders summit in South Korea.\r\nFor crypto traders, that reads like a potenti… [+4622 chars]"},{"source":{"id":null,"name":"Mediaite"},"author":"Tommy Christopher","title":"CNN’s Kaitlan Collins Calls BS on Trump Over Wild Confrontation at White House About Pardon","description":"Kaitlan Collins called BS hours after confronting Trump at the White House over his pardon of Binance founder Changpeng Zhao.\nThe post CNN’s Kaitlan Collins Calls BS on Trump Over Wild Confrontation at White House About Pardon first appeared on Mediaite.","url":"https://www.mediaite.com/media/news/cnns-kaitlan-collins-calls-bs-on-trump-over-wild-confrontation-at-white-house-about-pardon/","urlToImage":"https://www.mediaite.com/wp-content/uploads/2025/10/CNN-s-Kaitlan-Collins-Calls-BS-On-Trump-Over-Wild-Confrontation-At-White-House-About-Pardon.jpg","publishedAt":"2025-10-24T13:47:54Z","content":"CNN anchor Kaitlan Collins called BS hours after confronting President Donald Trump at the White House over his pardon of Binance founder Changpeng Zhao which earned her another attack from the presi… [+4796 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Nancy Lubale","title":"Can Ethereum reclaim $4K? ‘Smart trader’ whale raises ETH long to $131M","description":"Ethereum bulls pushed the price above $4,000 as traders monitored a smart trader’s activity and projected higher ETH prices.","url":"https://cointelegraph.com/news/can-ethereum-reclaim-4k-smart-trader-eth-long-bet-131m","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/019a1657-e6f1-751d-9b12-04f8473d5384","publishedAt":"2025-10-24T13:47:28Z","content":"Key takeaways:\r\n<ul><li>Ethers price tests $4,000 as a highly successful trader expects further gains in the ETH price.\r\n</li><li>Traders say ETH is poised for an upside move, citing strong technical… [+3835 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Trefis Team, Contributor, \n Trefis Team, Contributor\n https://www.forbes.com/sites/greatspeculations/people/trefis/","title":"Super Micro Computer Stock At Support Zone – Bargain Or Trap?","description":"Super Micro Computer stock deserves a place on your watchlist. It is presently trading within the price points from which it has significantly rebounded in the past.","url":"https://www.forbes.com/sites/greatspeculations/2025/10/24/super-micro-computer-stock-at-support-zone--bargain-or-trap/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fb81bdfb98c4262f37dd41/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T13:42:02Z","content":"Photo by Jaque Silva/NurPhoto via Getty Images\r\nNurPhoto via Getty Images\r\nSuper Micro Computer (SMCI)\r\n stock deserves a place on your watchlist. Here's why it is presently trading within the suppor… [+3089 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Brenda Ngari","title":"TradFi Giant JPMorgan To Let Institutional Clients Pledge Bitcoin And Ether As Collateral For Loans","description":"JPMorgan Chase & Co. is reportedly working to allow its institutional clients to use Bitcoin (BTC) and Ether (ETH) as collateral for loans by the end of this year.","url":"https://zycrypto.com/tradfi-giant-jpmorgan-to-let-institutional-clients-pledge-bitcoin-and-ether-as-collateral-for-loans/","urlToImage":"https://zycrypto.com/wp-content/uploads/2025/02/Bitcoin-and-Ethereum-Whales-Are-Dumping-Coins-at-A-Loss-Will-Support-Levels-Hold.jpg","publishedAt":"2025-10-24T13:35:48Z","content":"JPMorgan Chase &amp; Co. is reportedly working to allow its institutional clients to use Bitcoin (BTC) and Ether (ETH) as collateral for loans by the end of this year.\r\nThe decision marks a notable s… [+1769 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Zach Everson, Forbes Staff, \n Zach Everson, Forbes Staff\n https://www.forbes.com/sites/zacheverson/","title":"Trump Crypto Partner Suspends CEO With No Explanation After Stock Falls 74%","description":"Alt5 Sigma suspended Peter Tassiopoulos just two months after the company announced a $1.5 billion deal involving the Trump-backed World Liberty Financial.","url":"https://www.forbes.com/sites/zacheverson/2025/10/24/trump-crypto-partner-suspends-ceo-with-no-explanation-after-stock-falls-74/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fae50022b42dbb17ca578e/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T13:35:23Z","content":"Alt5 Sigma, which bet its future on a Trump family crypto venture and has since seen its stock price plummet 74%, suspended its CEO last week with pay but without a public explanation, according to a… [+5585 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Brenda Ngari","title":"Congresswoman Maxine Waters Lambastes President Trump’s Pardon Of Binance’s CZ","description":"US President Donald Trump’s recent pardon of Binance founder Changpeng “CZ” Zhao has grabbed headlines.","url":"https://zycrypto.com/congresswoman-maxine-waters-lambastes-president-trumps-pardon-of-binances-cz/","urlToImage":"https://zycrypto.com/wp-content/uploads/2024/07/SEC-Revises-Binance-Lawsuit-Solana-Cardano-And-Polygon-No-Longer-Considered-Securities.jpg","publishedAt":"2025-10-24T13:32:02Z","content":"US President Donald Trumps recent pardon of Binance founder Changpeng CZ Zhao has grabbed headlines. While some pro-crypto commentators hail the presidential pardon as a way to clear CZs record and a… [+1965 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Saad Naja","title":"AI gives retail investors a way out of the diversification trap","description":"Diversification keeps retail investors’ experiences mediocre, while elites concentrate wealth through conviction bets. AI agents democratize asymmetric investing strategies.","url":"https://cointelegraph.com/news/ai-retail-investors-a-way-out-of-the-diversification-trap","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/0199c328-a03c-774e-a060-6d45c5b87082","publishedAt":"2025-10-24T13:30:00Z","content":"Opinion by: Saad Naja, CEO of PiP World\r\nFor decades, retail investors have been sold a lie: diversify, track the benchmark, play it safe. That lie has only one outcome: permanent mediocrity. Diversi… [+4187 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"Will Canny, AI Boost","title":"JPMorgan Upgrades Coinbase, Sees Potential $34B Opportunity in Base Token","description":"Analysts from the banking giant upgraded Coinbase to overweight from neutral and raised its price target on the stock to $404 from $342.","url":"https://www.coindesk.com/markets/2025/10/24/jpmorgan-upgrades-coinbase-sees-potential-usd34b-opportunity-in-base-token","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/e7cba0b23a0129275c92f036e0de39926924a27c-1920x1080.jpg?auto=format&w=960&h=540&crop=focalpoint&fit=clip&q=75&fm=jpg","publishedAt":"2025-10-24T13:29:00Z","content":"Wall Street bank JPMorgan (JPM) upgraded Coinbase (COIN) to \"overweight\" from \"neutral\" and raised its price target to $404, citing new monetization opportunities and reduced risks that make the cryp… [+1541 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Adrian Zmudzinski","title":"Valve’s Counter-Strike 2 update crashes $5.8B economy, reviving NFT debate","description":"Counter-Strike 2’s latest update vaporized roughly $2 billion in skin value from its $5.8 billion market, reigniting debate over developer power in virtual economies.","url":"https://cointelegraph.com/news/counter-strike-s-cosmetic-market-collapse-shows-use-case-for-nfts-in-gaming","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-03/01956a8f-a12d-76ce-ba0d-6d28fce58c82","publishedAt":"2025-10-24T13:28:43Z","content":"The multibillion-dollar market for cosmetic items in the popular esports first-person shooter game Counter-Strike 2 crashed following an update to its mechanics.\r\nAccording to an Oct. 8 report by Esp… [+4340 chars]"},{"source":{"id":"the-times-of-india","name":"The Times of India"},"author":"ETtech","title":"Starlink's India gateway; Deepinder Goyal's longevity bet","description":"Elon Musk's Starlink is gearing up to launch satellite broadband services nationwide. This and more in today's ETtech Top 5.","url":"https://economictimes.indiatimes.com/tech/newsletters/tech-top-5/starlinks-india-gateway-deepinder-goyals-longevity-bet/articleshow/124786662.cms","urlToImage":"https://img.etimg.com/thumb/msid-124786662,width-1070,height-580,imgsize-38628,overlay-ettech/editionshow.jpg","publishedAt":"2025-10-24T13:27:48Z","content":"Elon Musk's Starlink is gearing up to launch satellite broadband services nationwide. This and more in today's ETtech Top 5.Also in the letter: Countdown to ET Startup Awards 2025Anthropic deepens Go… [+6712 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"CD Analytics, Francisco Rodrigues","title":"BNB Jumps, Sees 35% Volume Spike After Trump Pardons Binance Founder CZ","description":"Trading volume for BNB increased nearly 35% above its seven-day average, with market analysts suggesting the price movement reflects long-term accumulation.","url":"https://www.coindesk.com/markets/2025/10/24/bnb-jumps-sees-35-volume-spike-after-trump-pardons-binance-founder-cz","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/5b0469580264a313062518c9d63e4ec93a8eb3ed-700x430.png?auto=format&w=960&h=540&crop=focalpoint&fit=clip&q=75&fm=jpg","publishedAt":"2025-10-24T13:25:43Z","content":"Binance Coin BNB\r\n$1,118.24 gained 3.3% in the last 24-hour period to trade at $1,126, outpacing broader crypto markets afterU.S. President Donald Trump issued a pardon for Changpeng Zhao, co-founder… [+1787 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"theblock.co","title":"Coinbase, Ripple among crypto titans donating to Trump’s new White House ballroom","description":"Crypto heavyweights — including Ripple and Coinbase — are among a list of donors contributing to the new White House ballroom.","url":"https://biztoc.com/x/cd0fd529ab03a4bd","urlToImage":"https://biztoc.com/cdn/cd0fd529ab03a4bd_s.webp","publishedAt":"2025-10-24T13:22:00Z","content":"Crypto heavyweights including Ripple and Coinbase are among a list of donors contributing to the new White House ballroom.\r\nThis story appeared on theblock.co, 2025-10-24 13:18:01."},{"source":{"id":null,"name":"Forbes"},"author":"Trefis Team, Contributor, \n Trefis Team, Contributor\n https://www.forbes.com/sites/greatspeculations/people/trefis/","title":"3 Forces That Could Shake Tesla Stock","description":"Tesla stock has dropped more than 30% within a period of under 2 months 8 times across different years, erasing billions in market value in a single correction.","url":"https://www.forbes.com/sites/greatspeculations/2025/10/24/3-forces-that-could-shake-tesla-stock/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/68fb7cf1a3bc0e4a9a67f243/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-24T13:21:14Z","content":"Tesla (TSLA)\r\n has faced setbacks in the past. Its stock has dropped more than 30% within a period of under 2 months 8 times across different years, erasing billions in market value and negating sign… [+3763 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Elena Bistreanu","title":"Bitcoin Hits $111K After $20B Liquidation Bloodbath – Why Traders Are Eyeing Bitcoin Hyper Next","description":"What to Know: ➡️ Bitcoin reclaimed $111K following violent whipsaw action that liquidated over $20B in leveraged positions. ➡️ The volatility highlighted Bitcoin’s ongoing scalability challenges and painfully slow transaction speeds. ➡️ Bitcoin Hyper ($HYPER)…","url":"http://www.newsbtc.com/news/bitcoin-reclaims-111k-traders-rally-top-altcoins-bitcoin-hyper/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/10/bitcoin-reclaims-111k-traders-rally-top-altcoins-bitcoin-hyper.jpg","publishedAt":"2025-10-24T13:20:23Z","content":"What to Know:Bitcoin reclaimed $111K following violent whipsaw action that liquidated over $20B in leveraged positions.The volatility highlighted Bitcoins ongoing scalability challenges and painfully… [+4637 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Crypto.com joins Ripple and Coinbase in bid to secure US banking license","description":"Crypto firms seeking federal charters may accelerate integration with traditional banking, potentially reshaping financial services landscape.\nThe post Crypto.com joins Ripple and Coinbase in bid to secure US banking license appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/cryptocom-national-trust-bank-charter-filing/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24091846/89a4b107-16a4-4548-8bae-baa3d88a0a43-800x420.jpg","publishedAt":"2025-10-24T13:19:42Z","content":"Key Takeaways\r\n<ul><li>Crypto.com has filed for a national trust bank charter in the US.</li><li>This move would allow Crypto.com to offer trust and custody services nationwide under federal regulati… [+488 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Helen Partz","title":"Bitcoin-only app Relai gets EU green light under MiCA","description":"Swiss Bitcoin-only investment app Relai has obtained a MiCA license in France, enabling it to support SEPA payments and larger Bitcoin trades.","url":"https://cointelegraph.com/news/swiss-bitcoin-only-app-relai-gets-mica-license-france","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-05/0196f1d6-6426-7960-bc83-9085c8119cbe","publishedAt":"2025-10-24T13:15:21Z","content":"Swiss Bitcoin-only investment app Relai is the latest crypto asset service provider (CASP) to receive approval under the European Unions crypto regulatory framework.\r\nFrances financial markets regula… [+1923 chars]"},{"source":{"id":null,"name":"The New Republic"},"author":"Timothy Noah","title":"Trump’s Pardon of His Crypto Pal Is a New Height of Corruption","description":"I often think of Donald Trump not as a president or even as a human being but rather as a social science experiment in how much out-in-the-open corruption the American public will tolerate before it calls foul.Does Trump collecting $2 billion from the United …","url":"https://newrepublic.com/article/202209/trump-pardon-changpeng-zhao-crypto","urlToImage":"https://images.newrepublic.com/d38b3b87baaac50d50e30b2d930e07ab41bd2fb4.jpeg?w=1200&h=630&crop=faces&fit=crop&fm=jpg","publishedAt":"2025-10-24T13:13:06Z","content":"After leaving prison, Zhao set about securing a presidential pardon so Binances owner could once again be Binances chief executive. To achieve this, Zhao hired a friend of Don Jr.s named Ches McDowel… [+1053 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"coindesk.com","title":"Crypto Regulators Must Adapt Quickly to Stay Globally Competitive","description":"","url":"https://biztoc.com/x/3fd1fdbf936ae821","urlToImage":"https://biztoc.com/cdn/3fd1fdbf936ae821_s.webp","publishedAt":"2025-10-24T13:10:37Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Trump end all trade talks with Canada? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will new US sanctions … [+752 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"UXUY Limited","title":"0xKevin: The Inspiration Behind UXUY from BNB’s All-Time High","description":"Bitcoin is accelerating, decentralization is advancing faster, on-chain BUILD is accelerating, and UXUY is accelerating too… Bitcoin is accelerating, decentralization is advancing faster, on-chain BUILD is accelerating, and UXUY is accelerating too…","url":"https://www.globenewswire.com/news-release/2025/10/24/3172858/0/en/0xKevin-The-Inspiration-Behind-UXUY-from-BNB-s-All-Time-High.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/2cb3337e-c707-45db-ae8e-c6951420acf7","publishedAt":"2025-10-24T13:07:00Z","content":"Singapore, Oct. 24, 2025 (GLOBE NEWSWIRE) -- Over the past three months, the entire BNB Chain ecosystem and even the broader crypto market has been swept up in a wave of excitement. Beyond the Chines… [+5970 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Zoltan Vardai","title":"JPMorgan reportedly plans to let clients borrow against their Bitcoin and Ether","description":"JPMorgan is reportedly exploring the use of Bitcoin and Ether as collateral assets for loans offered to its institutional clients.","url":"https://cointelegraph.com/news/jpmorgan-bitcoin-ether-collateral-institutional-report","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-06/01977a9e-b342-7d66-ad11-55702e427fbf","publishedAt":"2025-10-24T13:05:51Z","content":"Investment banking giant JPMorgan Chase is reportedly planning to let clients use Bitcoin and Ether as collateral for loans, signaling Wall Streets continued move toward embracing digital assets.\r\nTh… [+1951 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Bitcoin briefly surges past $112,000 following 3% inflation report","description":"Bitcoin's sensitivity to inflation data underscores its role as a speculative asset, influencing investor strategies amid policy shifts.\nThe post Bitcoin briefly surges past $112,000 following 3% inflation report appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/bitcoin-surges-112000-inflation-report/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24090126/004a0964-44fd-484b-a072-a417b42f26b5-800x420.jpg","publishedAt":"2025-10-24T13:02:36Z","content":"Key Takeaways\r\n<ul><li>Bitcoin's price exceeded $112,000 after a 3% inflation report, reflecting positive market sentiment.</li><li>Softer inflation data was interpreted as bullish for risk assets li… [+655 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"AMBCrypto Team","title":"Which Crypto To Buy Today For Long-Term: MUTM is Set to Outperform PEPE","description":"If you’re weighing which crypto to buy today for long-term growth, two very different paths […]","url":"https://ambcrypto.com/which-crypto-to-buy-today-for-long-term-mutm-is-set-to-outperform-pepe/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Screenshot-2025-10-24-145432.png","publishedAt":"2025-10-24T13:00:56Z","content":"If youre weighing which crypto to buy today for long-term growth, two very different paths are on the table. Pepecoin (PEPE) commands a giant following and deep liquidity, but its upside is tied to m… [+4605 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"Gino Matos","title":"What Trezor’s new “quantum-ready” hardware wallet really means for Bitcoin","description":"Trezor just unveiled Safe 7 and set a Nov. 23, 2025 ship date with the company is marketing the device as “quantum-ready.” However, the label refers to the wallet’s ability to verify future firmware and device attestation using post-quantum cryptography once …","url":"https://cryptoslate.com/what-trezors-new-quantum-ready-hardware-wallet-really-means-for-bitcoin/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/trezor-quantum.jpg","publishedAt":"2025-10-24T13:00:33Z","content":"Trezor just unveiled Safe 7 and set a Nov. 23, 2025 ship date with the company is marketing the device as quantum-ready.\r\nHowever, the label refers to the wallets ability to verify future firmware an… [+8934 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"Kenneth Farrugia","title":"Crypto Regulators Must Adapt Quickly to Stay Globally Competitive","description":"MiCA has given Europe a uniquely strong position to establish the regulatory gold standard for crypto, says Malta Financial Services Authority CEO Kenneth Farrugia, but regulators must work quickly and collaboratively to preserve the region’s advantage.","url":"https://www.coindesk.com/opinion/2025/10/22/crypto-regulators-must-adapt-quickly-to-stay-globally-competitive","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/4b853fc829070009b1c30d6f2163ee9dbda1d6be-1920x1080.jpg?auto=format&w=960&h=540&crop=focalpoint&fit=clip&q=75&fm=jpg","publishedAt":"2025-10-24T13:00:00Z","content":"Crypto assets have emerged as one of the fastest-growing sectors in global finance, presenting substantial opportunities for retail and institutional investors alike. With revenues in Europe projecte… [+6320 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Yohan Yun","title":"Bitcoin treasuries can earn more Bitcoin, says Willem Schroé","description":"Corporate Bitcoin reserves now rival ETFs, and Botanix Labs founder Willem Schroé wants to turn those dormant holdings into active, yield-generating assets.","url":"https://cointelegraph.com/news/bitcoin-treasuries-earn-more-bitcoin-willem-schroe-botanix","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-07/019824b4-2e97-7904-b41c-a4ceef6df2e5","publishedAt":"2025-10-24T12:59:11Z","content":"Publicly listed companies are increasingly rebranding as Bitcoin (BTC) treasuries, with holdings now nearing 1.05 million BTC.\r\nPrivate companies have also piled in by adding another 279,185 BTC acro… [+6447 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"André Beganski","title":"Bitcoin and Ethereum Rise as Delayed Report Shows Inflation Cooled in September","description":"Bitcoin rises 2% as U.S. inflation cools to 3% in September, slightly below economists' 3.1% forecast, boosting crypto markets ahead of Fed meeting.","url":"https://decrypt.co/345837/bitcoin-ethereum-rise-september-inflation","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/09/Bitcoin-decrypt-style-21-gID_7.png","publishedAt":"2025-10-24T12:58:11Z","content":"In brief\r\n<ul><li>Consumer prices rose 3% in the 12 months through September.</li><li>Fridays CPI report was delayed by an ongoing government shutdown.</li><li>The Federal Reserve is expected to cut … [+2801 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"US CPI year-over-year growth in September lower than estimates at 3%","description":"Lower-than-expected CPI growth may ease Fed policy, boosting market confidence and supporting economic stability efforts.\nThe post US CPI year-over-year growth in September lower than estimates at 3% appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/us-cpi-growth-september-2024-lower-than-estimates/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/24085404/af6b35b6-3533-4a44-adb9-c0151482ba5e-800x420.jpg","publishedAt":"2025-10-24T12:54:35Z","content":"Key Takeaways\r\n<ul><li>US CPI rose 3% year-over-year in September, lower than estimates.</li><li>Inflation shows signs of further cooling, easing pressure on consumers.</li></ul>\r\nShare this article\r… [+575 chars]"},{"source":{"id":"financial-post","name":"Financial Post"},"author":"GlobeNewswire","title":"BTCC Exchange Announces Spooktacular Halloween Night of Fortune Campaign with Bitcoin, Gold Bars, and iPhone 17 Pro Max Prizes","description":"A Media Snippet accompanying this announcement is available by clicking on this link. VILNIUS, Lithuania, Oct. 24, 2025 (GLOBE NEWSWIRE) — BTCC, the world’s longest-serving cryptocurrency exchange, has unveiled its Halloween futures trading campaign featuring…","url":"https://financialpost.com/globe-newswire/btcc-exchange-announces-spooktacular-halloween-night-of-fortune-campaign-with-bitcoin-gold-bars-and-iphone-17-pro-max-prizes","urlToImage":null,"publishedAt":"2025-10-24T12:47:40Z","content":"THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY\r\nSubscribe now to read the latest news in your city and across Canada.\r\n<ul><li>Exclusive articles from Barbara Shecter, Joe O'Connor, Gabriel Friedman, … [+4642 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"BTCC LIMITED","title":"BTCC Exchange Announces Spooktacular Halloween Night of Fortune Campaign with Bitcoin, Gold Bars, and iPhone 17 Pro Max Prizes","description":"BTCC Exchange unveils its Halloween futures trading campaign featuring premium prizes including 1 BTC, 100g gold bars, and iPhone 17 Pro Max. ......","url":"https://www.globenewswire.com/news-release/2025/10/24/3172816/0/en/BTCC-Exchange-Announces-Spooktacular-Halloween-Night-of-Fortune-Campaign-with-Bitcoin-Gold-Bars-and-iPhone-17-Pro-Max-Prizes.html","urlToImage":"https://ml-eu.globenewswire.com/Resource/Download/06dab19f-2ab8-4aab-ac4c-1e9e0efd47ce","publishedAt":"2025-10-24T12:46:00Z","content":"A Media Snippet accompanying this announcement is available by clicking on this link.\r\nVILNIUS, Lithuania, Oct. 24, 2025 (GLOBE NEWSWIRE) -- BTCC\r\n, the world's longest-serving cryptocurrency exchang… [+2433 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Berry","title":"Berry Launches AI-Driven Crypto Platform to Help Users Track BTC and XRP Market Trends","description":"The blockchain-based platform combines real-time analytics, news aggregation, and an engagement-reward model to enhance digital-finance literacy. The blockchain-based platform combines real-time analytics, news aggregation, and an engagement-reward model to e…","url":"https://www.globenewswire.com/news-release/2025/10/24/3172811/0/en/Berry-Launches-AI-Driven-Crypto-Platform-to-Help-Users-Track-BTC-and-XRP-Market-Trends.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/0c71ca29-f50b-43df-baf3-e4140fa7a2be","publishedAt":"2025-10-24T12:43:00Z","content":"San Francisco, CA, Oct. 24, 2025 (GLOBE NEWSWIRE) -- As digital-asset markets accelerate, a new generation of users is looking for smarter and faster ways to stay informed. Berry, a blockchain-powere… [+2592 chars]"},{"source":{"id":null,"name":"Israelnationalnews.com"},"author":"Prof. Robert Scott Kellner","title":"The Chen Zhi Crypto Fraud: A blow to antisemitic myths","description":"The Chen Zhi scandal shows that Jews are far from causing the worldwide financial corruption and scams they are accused of masterminding. Opinion.","url":"https://www.israelnationalnews.com/news/416767","urlToImage":"https://2.a7.org/files/pictures/000/1201827.jpg","publishedAt":"2025-10-24T12:38:27Z","content":"In the midst of an epidemic of antisemitism in the US and the world, the recent indictment of the Cambodian tycoon Chen Zhi for massive cryptocurrency fraud is a striking reminder-for those who need … [+4623 chars]"},{"source":{"id":null,"name":"Project Syndicate"},"author":"Kenneth Rogoff","title":"The Perils of Economic Centrism in a Polarized World","description":"Few ideas in economics have been as misrepresented as the link between debt and growth. More than a decade ago, a prominent analysis was falsely cast as a call for austerity when, in fact, it showed something far more mundane: countries burdened by heavy debt…","url":"https://www.project-syndicate.org/commentary/loneliness-of-the-centrist-economist-by-kenneth-rogoff-2025-10","urlToImage":"https://webapi.project-syndicate.org/library/658ab4fb43db287afac61d9976fd324d.2-1-super.1.jpg","publishedAt":"2025-10-24T12:34:53Z","content":"Few ideas in economics have been as misrepresented as the link between debt and growth. More than a decade ago, a prominent analysis was falsely cast as a call for austerity when, in fact, it showed … [+6202 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Sandra White","title":"Ethereum Price Prediction: Analyst Forecasts What Will Happen In The Last Quarter Of The Year","description":"The crypto market continues to watch the Ethereum price closely as the year moves toward its final months. Analyst Bobby A shared his personal view about how he sees Ethereum performing through the last quarter. He said his forecast is only a loose guide, not…","url":"http://www.newsbtc.com/news/ethereum/ethereum-price-prediction-year/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/09/Ethereum-Price-Squeezes-Tight.jpg?fit=1792%2C1024","publishedAt":"2025-10-24T12:30:29Z","content":"The crypto market continues to watch the Ethereum price closely as the year moves toward its final months. Analyst Bobby A shared his personal view about how he sees Ethereum performing through the l… [+2664 chars]"}]
   </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const newsDataElement = document.getElementById('newsData');
-      const newsFeed = document.getElementById('news-feed');
+      const newsData = JSON.parse(document.getElementById('newsData').textContent);
+      const newsContainer = document.getElementById('news-container');
       const searchInput = document.getElementById('search-input');
-      const noResults = document.getElementById('no-results');
+      const searchIconBtn = document.getElementById('search-icon-btn');
+      const searchContainer = document.getElementById('search-container');
       
-      let allArticles = [];
-      try {
-        allArticles = JSON.parse(newsDataElement.textContent);
-      } catch (error) {
-        console.error("Error parsing news data:", error);
-        newsFeed.innerHTML = "<p>Failed to load news articles.</p>";
-        return;
-      }
-      
-      const timeAgo = (dateString) => {
-          const date = new Date(dateString);
-          const now = new Date();
-          const seconds = Math.floor((now - date) / 1000);
-          
-          let interval = seconds / 31536000;
-          if (interval > 1) return Math.floor(interval) + "y ago";
-          
-          interval = seconds / 2592000;
-          if (interval > 1) return Math.floor(interval) + "mo ago";
-          
-          interval = seconds / 86400;
-          if (interval > 1) return Math.floor(interval) + "d ago";
-          
-          interval = seconds / 3600;
-          if (interval > 1) return Math.floor(interval) + "h ago";
-          
-          interval = seconds / 60;
-          if (interval > 1) return Math.floor(interval) + "m ago";
+      const placeholderImage = 'https://via.placeholder.com/800x400?text=Crypto+News';
 
-          return "Just now";
+      const timeAgo = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.round(Math.abs(now - date) / 1000);
+        
+        const intervals = {
+          year: 31536000,
+          month: 2592000,
+          week: 604800,
+          day: 86400,
+          hour: 3600,
+          minute: 60,
+          second: 1
+        };
+
+        let counter;
+        for (const key in intervals) {
+          counter = Math.floor(seconds / intervals[key]);
+          if (counter > 0) {
+            if (counter === 1) {
+              return `${counter} ${key} ago`;
+            } else {
+              return `${counter} ${key}s ago`;
+            }
+          }
+        }
+        return 'Just now';
       };
 
       const renderArticles = (articles) => {
-        newsFeed.innerHTML = '';
+        newsContainer.innerHTML = '';
         if (articles.length === 0) {
-            noResults.style.display = 'block';
-        } else {
-            noResults.style.display = 'none';
+          newsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No articles found.</p>';
+          return;
         }
 
-        articles.forEach((article, index) => {
-          const { title, description, source, url, urlToImage, publishedAt } = article;
-          const placeholderImage = 'https://via.placeholder.com/800x400/1a1a1a/ffd700?text=Sports+News';
-          const imageUrl = urlToImage || placeholderImage;
-          const sourceName = source.name || 'Unknown Source';
-          const shortDescription = description ? description.substring(0, 100) + '...' : 'No description available.';
+        articles.forEach(article => {
+          if (!article.title || article.title === '[Removed]') return;
 
-          const card = `
-            <article class="news-card" style="animation-delay: ${index * 100}ms;">
-              <img src="${imageUrl}" alt="" class="news-card-image" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImage}';">
-              <div class="card-content">
+          const card = document.createElement('div');
+          card.className = 'news-card';
+          
+          const descriptionText = article.description ? article.description.substring(0, 150) + (article.description.length > 150 ? '...' : '') : 'No description available.';
+          const sourceName = article.source && article.source.name ? article.source.name : 'Unknown Source';
+
+          card.innerHTML = `
+            <div class="card-image-container">
+              <img src="${article.urlToImage || placeholderImage}" alt="${article.title || 'News article image'}" class="card-image" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImage}';">
+            </div>
+            <div class="card-content">
+              <h2 class="card-title">${article.title}</h2>
+              <div class="card-meta">
                 <span class="card-source">${sourceName}</span>
-                <h2 class="card-title">${title}</h2>
-                <p class="card-description">${shortDescription}</p>
-                <div class="card-footer">
-                    <span class="card-time">${timeAgo(publishedAt)}</span>
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
-                </div>
+                <span class="card-time">${timeAgo(article.publishedAt)}</span>
               </div>
-            </article>
+              <p class="card-description">${descriptionText}</p>
+              <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="card-button">Read More</a>
+            </div>
           `;
-          newsFeed.insertAdjacentHTML('beforeend', card);
+          newsContainer.appendChild(card);
         });
       };
-
-      const filterArticles = () => {
-        const query = searchInput.value.toLowerCase().trim();
-        const filteredArticles = allArticles.filter(article => 
-          (article.title && article.title.toLowerCase().includes(query)) ||
-          (article.source.name && article.source.name.toLowerCase().includes(query))
-        );
-        renderArticles(filteredArticles);
+      
+      const handleSearch = () => {
+          const query = searchInput.value.toLowerCase();
+          const filteredArticles = newsData.filter(article => {
+              const title = (article.title || '').toLowerCase();
+              const source = (article.source && article.source.name || '').toLowerCase();
+              return title.includes(query) || source.includes(query);
+          });
+          renderArticles(filteredArticles);
       };
       
-      searchInput.addEventListener('input', filterArticles);
+      const toggleSearch = () => {
+          searchContainer.classList.toggle('visible');
+          if (searchContainer.classList.contains('visible')) {
+            searchInput.focus();
+          }
+      };
+
+      searchIconBtn.addEventListener('click', toggleSearch);
+      searchIconBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleSearch();
+        }
+      });
+      searchInput.addEventListener('input', handleSearch);
 
       // Initial render
-      renderArticles(allArticles);
+      renderArticles(newsData);
     });
   </script>
 
