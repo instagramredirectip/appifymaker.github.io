@@ -1,22 +1,22 @@
-```html
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0b0b">
+  <meta name="theme-color" content="#000000">
   <title>SportX Live - Latest Sports News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0b0b0b;
-      --card-bg: #1a1a1a;
-      --accent-gold: #ffd700;
-      --text-light: #f5f5f5;
-      --text-muted: #a0a0a0;
-      --glow-color: rgba(255, 215, 0, 0.4);
+      --bg: #0b0b0b;
+      --card-bg: #1c1c1e;
+      --accent: #ffd700;
+      --accent-glow: rgba(255, 215, 0, 0.4);
+      --text: #f5f5f5;
+      --text-muted: #8e8e93;
+      --border-color: #3a3a3c;
     }
 
     * {
@@ -25,102 +25,99 @@
       padding: 0;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      overscroll-behavior-y: contain;
       padding-top: 70px;
       padding-bottom: 70px;
     }
 
-    /* --- Top Bar --- */
-    .top-bar {
+    /* --- Header --- */
+    .header {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
+      width: 100%;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 10px 15px;
-      background-color: rgba(11, 11, 11, 0.85);
+      align-items: center;
+      padding: 1rem;
+      background-color: rgba(11, 11, 11, 0.8);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      z-index: 1000;
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
+      transition: background-color 0.3s ease;
     }
 
-    .logo {
+    .header-title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--accent-gold);
-      text-shadow: 0 0 8px var(--glow-color);
+      color: var(--accent);
+      text-shadow: 0 0 8px var(--accent-glow);
     }
 
     .search-container {
-        position: relative;
-        display: flex;
-        align-items: center;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #search-icon {
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      stroke: var(--accent);
+      transition: transform 0.3s ease;
     }
 
-    .search-icon {
-        position: absolute;
-        left: 10px;
-        width: 20px;
-        height: 20px;
-        stroke: var(--text-muted);
+    #search-icon:hover {
+        transform: scale(1.1);
     }
 
     #search-input {
-        background-color: var(--card-bg);
-        border: 1px solid #333;
-        border-radius: 20px;
-        padding: 8px 15px 8px 40px;
-        color: var(--text-light);
-        font-size: 0.9rem;
-        width: 150px;
-        transition: all 0.3s ease;
+      width: 0;
+      padding: 8px 0;
+      border: none;
+      border-bottom: 2px solid var(--accent);
+      background: transparent;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: width 0.4s ease-in-out;
+      opacity: 0;
     }
 
-    #search-input::placeholder {
-        color: var(--text-muted);
+    #search-input.active {
+      width: 150px;
+      opacity: 1;
+      padding: 8px 10px;
     }
 
-    #search-input:focus {
-        outline: none;
-        width: 200px;
-        border-color: var(--accent-gold);
-        box-shadow: 0 0 10px var(--glow-color);
-    }
 
-    /* --- News Feed --- */
-    main {
-      padding: 15px;
+    /* --- Main Content --- */
+    .news-feed {
       display: grid;
-      gap: 20px;
+      gap: 1rem;
+      padding: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    .card {
+    .news-card {
       background-color: var(--card-bg);
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      display: flex;
-      flex-direction: column;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       opacity: 0;
       transform: translateY(20px);
       animation: fadeIn 0.6s ease-out forwards;
-      border: 1px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
     }
-    
-    .card:nth-child(2) { animation-delay: 0.1s; }
-    .card:nth-child(3) { animation-delay: 0.2s; }
-    .card:nth-child(4) { animation-delay: 0.3s; }
-
 
     @keyframes fadeIn {
       to {
@@ -129,82 +126,75 @@
       }
     }
 
-    .card-image {
+    .news-card__image {
       width: 100%;
-      aspect-ratio: 16 / 9;
+      height: 200px;
       object-fit: cover;
-      display: block;
+      border-bottom: 2px solid var(--accent);
     }
 
-    .card-content {
-      padding: 15px;
+    .news-card__content {
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
     }
 
-    .card-source {
-      background-color: var(--accent-gold);
-      color: var(--bg-dark);
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
+    .news-card__title {
+      font-size: 1.2rem;
       font-weight: 600;
-      align-self: flex-start;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+    
+    .news-card__meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
     }
 
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 8px;
+    .news-card__source {
+        font-weight: 600;
+        background-color: rgba(255, 215, 0, 0.1);
+        color: var(--accent);
+        padding: 4px 8px;
+        border-radius: 20px;
     }
 
-    .card-description {
+    .news-card__description {
       font-size: 0.9rem;
       color: var(--text-muted);
       line-height: 1.5;
       flex-grow: 1;
-      margin-bottom: 15px;
+      margin-bottom: 1rem;
     }
 
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-    }
-
-    .card-time {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .read-more-btn {
-      background-color: transparent;
-      color: var(--accent-gold);
-      border: 1px solid var(--accent-gold);
-      padding: 8px 16px;
-      border-radius: 20px;
+    .news-card__button {
+      display: inline-block;
+      align-self: flex-start;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.8rem;
-      transition: all 0.3s ease;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .read-more-btn:hover, .read-more-btn:focus-visible {
-      background-color: var(--accent-gold);
-      color: var(--bg-dark);
-      box-shadow: 0 0 10px var(--glow-color);
-      transform: translateY(-2px);
+    .news-card__button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px var(--accent-glow);
     }
-
-    .no-results {
+    
+    #no-results {
         text-align: center;
+        padding: 2rem;
+        font-size: 1.2rem;
         color: var(--text-muted);
-        padding: 40px 0;
     }
 
     /* --- Bottom Navigation --- */
@@ -212,74 +202,103 @@
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
+      width: 100%;
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 10px 0;
-      height: 60px;
-      background-color: rgba(11, 11, 11, 0.85);
+      padding: 0.5rem 0;
+      background-color: rgba(11, 11, 11, 0.8);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      z-index: 1000;
-      border-top: 1px solid #2a2a2a;
+      border-top: 1px solid var(--border-color);
+      z-index: 100;
     }
 
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 4px;
       color: var(--text-muted);
       cursor: pointer;
-      transition: color 0.3s ease;
+      transition: color 0.2s ease;
     }
 
-    .nav-item svg {
-      width: 24px;
-      height: 24px;
-      stroke-width: 2;
-    }
-    
     .nav-item.active {
-      color: var(--accent-gold);
+      color: var(--accent);
     }
     
     .nav-item.active svg {
-        filter: drop-shadow(0 0 5px var(--glow-color));
+      stroke: var(--accent);
+      filter: drop-shadow(0 0 5px var(--accent-glow));
+    }
+    
+    .nav-item svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--text-muted);
+      stroke-width: 1.5;
+      transition: stroke 0.2s ease, filter 0.2s ease;
     }
 
-    .nav-item:hover {
-        color: var(--accent-gold);
+    .nav-item span {
+      font-size: 0.7rem;
     }
-
+    
+    .nav-item:hover svg {
+      stroke: var(--accent);
+    }
+    
+    .nav-item:hover span {
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
 
-  <header class="top-bar">
-    <h1 class="logo">SportX Live</h1>
+  <header class="header">
+    <h1 class="header-title">SportX Live</h1>
     <div class="search-container">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="search-input" placeholder="Search...">
+       <input type="search" id="search-input" placeholder="Search news...">
+       <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+       </svg>
     </div>
   </header>
 
-  <main id="news-feed">
-    <!-- News articles will be injected here -->
+  <main class="news-feed" id="news-feed-container">
+    <!-- News articles will be injected here by JavaScript -->
   </main>
 
   <nav class="bottom-nav">
     <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Home</span>
     </div>
     <div class="nav-item active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 0-2 2"></path><path d="M16 2v20"></path><path d="M12 2v20"></path></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+        <path d="M16 8a6 6 0 0 0-12 0"></path>
+      </svg>
+      <span>News</span>
     </div>
     <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
+      <span>Trending</span>
     </div>
     <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Profile</span>
     </div>
   </nav>
 
@@ -289,17 +308,20 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const newsData = JSON.parse(document.getElementById('newsData').textContent);
-      const newsFeed = document.getElementById('news-feed');
+      const newsDataElement = document.getElementById('newsData');
+      const allArticles = JSON.parse(newsDataElement.textContent);
+      const newsFeedContainer = document.getElementById('news-feed-container');
       const searchInput = document.getElementById('search-input');
-      const placeholderImage = 'https://via.placeholder.com/800x400?text=Sports+News';
+      const searchIcon = document.getElementById('search-icon');
+      
+      const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/800x400/1c1c1e/ffd700?text=SportX+Live';
 
       function formatTimeAgo(dateString) {
         if (!dateString) return '';
         const now = new Date();
-        const articleDate = new Date(dateString);
-        const seconds = Math.floor((now - articleDate) / 1000);
-        
+        const past = new Date(dateString);
+        const seconds = Math.floor((now - past) / 1000);
+
         let interval = seconds / 31536000;
         if (interval > 1) return Math.floor(interval) + "y ago";
         interval = seconds / 2592000;
@@ -310,55 +332,66 @@
         if (interval > 1) return Math.floor(interval) + "h ago";
         interval = seconds / 60;
         if (interval > 1) return Math.floor(interval) + "m ago";
-        return Math.floor(seconds) + "s ago";
+        return "Just now";
       }
 
-      function renderArticles(articles) {
-        if (!newsFeed) return;
+      function renderArticles(articlesToRender) {
+        newsFeedContainer.innerHTML = ''; // Clear existing articles
         
-        if (articles.length === 0) {
-            newsFeed.innerHTML = `<p class="no-results">No articles matching your search.</p>`;
+        if (articlesToRender.length === 0) {
+            newsFeedContainer.innerHTML = '<p id="no-results">No articles found. Try a different search.</p>';
             return;
         }
 
-        newsFeed.innerHTML = articles.map(article => {
-          const title = article.title || 'No Title Available';
-          const description = article.description || 'No description available.';
-          const sourceName = article.source?.name || 'Unknown Source';
-          const imageUrl = article.urlToImage || placeholderImage;
-          const articleUrl = article.url || '#';
+        articlesToRender.forEach((article, index) => {
+          const { title, description, url, urlToImage, publishedAt, source } = article;
 
-          return `
-            <article class="card">
-              <img src="${imageUrl}" alt="${title}" loading="lazy" class="card-image" onerror="this.onerror=null;this.src='${placeholderImage}';">
-              <div class="card-content">
-                <span class="card-source">${sourceName}</span>
-                <h2 class="card-title">${title}</h2>
-                <p class="card-description">${description}</p>
-                <div class="card-footer">
-                  <span class="card-time">${formatTimeAgo(article.publishedAt)}</span>
-                  <a href="${articleUrl}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
-                </div>
+          const card = document.createElement('article');
+          card.className = 'news-card';
+          card.style.animationDelay = `${index * 100}ms`;
+
+          const imageUrl = urlToImage || PLACEHOLDER_IMAGE;
+          const sourceName = source.name || 'Unknown Source';
+          const timeAgo = formatTimeAgo(publishedAt);
+          const shortDescription = description ? description.substring(0, 120) + '...' : 'No description available.';
+
+          card.innerHTML = `
+            <img src="${imageUrl}" alt="${title}" class="news-card__image" loading="lazy" onerror="this.src='${PLACEHOLDER_IMAGE}'">
+            <div class="news-card__content">
+              <div class="news-card__meta">
+                <span class="news-card__source">${sourceName}</span>
+                <time datetime="${publishedAt}">${timeAgo}</time>
               </div>
-            </article>
+              <h2 class="news-card__title">${title}</h2>
+              <p class="news-card__description">${shortDescription}</p>
+              <a href="${url}" target="_blank" rel="noopener noreferrer" class="news-card__button">Read More</a>
+            </div>
           `;
-        }).join('');
+          newsFeedContainer.appendChild(card);
+        });
       }
 
+      // Search functionality
+      searchIcon.addEventListener('click', () => {
+        searchInput.classList.toggle('active');
+        if (searchInput.classList.contains('active')) {
+          searchInput.focus();
+        }
+      });
+      
       searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase().trim();
-        const filteredArticles = newsData.filter(article => {
-          const titleMatch = article.title && article.title.toLowerCase().includes(searchTerm);
-          const sourceMatch = article.source?.name && article.source.name.toLowerCase().includes(searchTerm);
-          return titleMatch || sourceMatch;
+        const query = e.target.value.toLowerCase().trim();
+        const filteredArticles = allArticles.filter(article => {
+            const titleMatch = article.title?.toLowerCase().includes(query);
+            const sourceMatch = article.source?.name?.toLowerCase().includes(query);
+            return titleMatch || sourceMatch;
         });
         renderArticles(filteredArticles);
       });
       
       // Initial render
-      renderArticles(newsData);
+      renderArticles(allArticles);
     });
   </script>
 </body>
 </html>
-```
