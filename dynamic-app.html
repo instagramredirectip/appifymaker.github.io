@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0b0b0b">
   <title>SportX Live - Latest Sports News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,81 +13,185 @@
       --bg: #0b0b0b;
       --card-bg: #1a1a1a;
       --accent: #ffd700;
-      --accent-glow: rgba(255, 215, 0, 0.5);
+      --accent-dark: #d4b500;
       --text: #f5f5f5;
-      --text-muted: #999;
-      --shadow: rgba(0, 0, 0, 0.4);
+      --text-muted: #a0a0a0;
+      --shadow-color: rgba(255, 215, 0, 0.1);
+      --glow-color: rgba(255, 215, 0, 0.5);
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      padding-top: 70px;
-      padding-bottom: 70px;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 70px 0 80px 0;
+      overflow-x: hidden;
     }
 
-    /* --- Layout --- */
+    /* --- Header --- */
     .app-header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 0 1rem;
-      height: 70px;
+      justify-content: space-between;
+      padding: 12px 16px;
       background-color: rgba(11, 11, 11, 0.8);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--card-bg);
+      border-bottom: 1px solid #222;
       z-index: 1000;
     }
 
-    .app-title {
+    .app-header h1 {
+      margin: 0;
       font-size: 1.5rem;
       font-weight: 700;
+      color: var(--text);
+      letter-spacing: 1px;
+    }
+
+    .app-header h1 span {
       color: var(--accent);
-      text-shadow: 0 0 8px var(--accent-glow);
+      text-shadow: 0 0 5px var(--glow-color);
     }
     
     .search-container {
-      display: flex;
-      align-items: center;
+      position: relative;
+    }
+
+    .search-container input {
       background-color: var(--card-bg);
+      border: 1px solid #333;
       border-radius: 20px;
-      padding: 0.3rem 0.8rem;
-    }
-
-    #search-input {
-      background: transparent;
-      border: none;
       color: var(--text);
-      font-family: inherit;
-      outline: none;
-      width: 100px;
-      transition: width 0.3s ease-in-out;
-    }
-
-    #search-input:focus {
+      padding: 8px 16px 8px 36px;
       width: 150px;
-    }
-
-    .search-icon {
-      width: 24px;
-      height: 24px;
-      stroke: var(--accent);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
     }
     
+    .search-container input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--glow-color);
+      width: 180px;
+    }
+
+    .search-container .icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    /* --- News Feed --- */
+    .news-feed {
+      display: grid;
+      gap: 20px;
+      padding: 16px;
+    }
+
+    .article-card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .article-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-content .source {
+      background-color: var(--accent);
+      color: var(--bg);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      align-self: flex-start;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .card-content h2 {
+      font-size: 1.2rem;
+      margin: 0 0 8px 0;
+      line-height: 1.4;
+    }
+
+    .card-content p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0 0 16px 0;
+      flex-grow: 1;
+    }
+    
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .card-footer .time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .read-more-btn {
+      background-color: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 8px transparent;
+    }
+
+    .read-more-btn:hover, .read-more-btn:focus {
+      background-color: var(--accent-dark);
+      box-shadow: 0 0 12px var(--glow-color);
+      transform: translateY(-2px);
+    }
+
+    /* --- Bottom Navigation --- */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -96,11 +200,11 @@
       display: flex;
       justify-content: space-around;
       align-items: center;
-      height: 70px;
       background-color: rgba(11, 11, 11, 0.8);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border-top: 1px solid var(--card-bg);
+      border-top: 1px solid #222;
+      padding: 8px 0;
       z-index: 1000;
     }
 
@@ -110,185 +214,85 @@
       align-items: center;
       color: var(--text-muted);
       cursor: pointer;
-      transition: color 0.2s, transform 0.2s;
+      transition: color 0.3s ease;
     }
-    
-    .nav-item.active {
+
+    .nav-item.active, .nav-item:hover {
       color: var(--accent);
-      transform: scale(1.1);
     }
     
+    .nav-item.active svg {
+      filter: drop-shadow(0 0 4px var(--glow-color));
+    }
+
     .nav-item svg {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
     }
-    
+
     .nav-item span {
-        font-size: 0.7rem;
-    }
-
-    main {
-      padding: 1rem;
-    }
-
-    #articles-container {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    /* --- Article Card --- */
-    .news-card {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px var(--shadow);
-      border: 1px solid #2a2a2a;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeIn 0.5s ease-out forwards;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .news-card-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-bottom: 2px solid var(--accent);
-    }
-
-    .card-content {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .card-source {
-      background-color: var(--accent);
-      color: #000;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      align-self: flex-start;
-      margin-bottom: 0.5rem;
-    }
-
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
-    }
-
-    .card-description {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      flex-grow: 1;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-    }
-
-    .card-time {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .read-more-btn {
-      background-color: transparent;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+      font-size: 0.7rem;
     }
     
-    .read-more-btn:hover, .read-more-btn:focus {
-      background-color: var(--accent);
-      color: var(--bg);
-      box-shadow: 0 0 15px var(--accent-glow);
-      outline: none;
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-dark);
     }
 
-    /* --- Animation --- */
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    /* Responsive for larger screens */
-    @media (min-width: 768px) {
-        body {
-            padding-top: 80px;
-        }
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        #articles-container {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        #search-input:focus {
-            width: 250px;
-        }
-    }
-    
-    @media (min-width: 1024px) {
-        #articles-container {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
   </style>
 </head>
 <body>
 
   <header class="app-header">
-    <h1 class="app-title">SportX Live</h1>
+    <h1>Sport<span>X</span> Live</h1>
     <div class="search-container">
-      <input type="text" id="search-input" placeholder="Search news...">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-      </svg>
+        <span class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+        </span>
+      <input type="text" id="searchInput" placeholder="Search news..." aria-label="Search news articles">
     </div>
   </header>
 
-  <main>
-    <div id="articles-container">
-      <!-- News cards will be injected here by JavaScript -->
-    </div>
-  </main>
+  <main id="news-feed" class="news-feed"></main>
 
   <nav class="bottom-nav">
     <div class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" /></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+      </svg>
       <span>Home</span>
     </div>
     <div class="nav-item active">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5" /></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-11A1.5 1.5 0 0 0 13.5 1h-11zM2 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11z"/>
+        <path d="M4.5 3a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7zM4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8zm0 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5z"/>
+      </svg>
       <span>News</span>
     </div>
     <div class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+        <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+      </svg>
       <span>Trending</span>
     </div>
     <div class="nav-item">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+      </svg>
       <span>Profile</span>
     </div>
   </nav>
@@ -299,76 +303,93 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const newsContainer = document.getElementById('articles-container');
-      const searchInput = document.getElementById('search-input');
-      const jsonData = JSON.parse(document.getElementById('newsData').textContent);
+      const newsDataContainer = document.getElementById('newsData');
+      const newsFeed = document.getElementById('news-feed');
+      const searchInput = document.getElementById('searchInput');
+      const placeholderImg = 'https://via.placeholder.com/800x400?text=Sports+News';
 
-      const formatTimeAgo = (dateString) => {
-        const now = new Date();
-        const articleDate = new Date(dateString);
-        const seconds = Math.floor((now - articleDate) / 1000);
-
-        let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + "y ago";
-        interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + "mo ago";
-        interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + "d ago";
-        interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + "h ago";
-        interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + "m ago";
-        return Math.floor(seconds) + "s ago";
-      };
+      let allArticles = [];
+      try {
+        allArticles = JSON.parse(newsDataContainer.textContent);
+      } catch (error) {
+        console.error('Error parsing news data:', error);
+        newsFeed.innerHTML = '<p>Could not load news articles.</p>';
+        return;
+      }
       
+      const formatTimeAgo = (dateString) => {
+          if (!dateString) return '';
+          const now = new Date();
+          const past = new Date(dateString);
+          const seconds = Math.floor((now - past) / 1000);
+
+          let interval = seconds / 31536000;
+          if (interval > 1) return Math.floor(interval) + "y ago";
+          interval = seconds / 2592000;
+          if (interval > 1) return Math.floor(interval) + "mo ago";
+          interval = seconds / 86400;
+          if (interval > 1) return Math.floor(interval) + "d ago";
+          interval = seconds / 3600;
+          if (interval > 1) return Math.floor(interval) + "h ago";
+          interval = seconds / 60;
+          if (interval > 1) return Math.floor(interval) + "m ago";
+          return Math.floor(seconds) + "s ago";
+      };
+
       const renderArticles = (articles) => {
-        newsContainer.innerHTML = '';
+        newsFeed.innerHTML = '';
         if (articles.length === 0) {
-            newsContainer.innerHTML = '<p>No articles found.</p>';
-            return;
+          newsFeed.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No articles found.</p>';
+          return;
         }
 
         articles.forEach((article, index) => {
-          if (!article.title || article.title === '[Removed]') return;
+          const { title, description, url, urlToImage, publishedAt, source } = article;
 
-          const placeholderImage = 'https://via.placeholder.com/800x400/1a1a1a/ffd700?text=Sports+News';
-          const imageUrl = article.urlToImage || placeholderImage;
-          const description = article.description || 'No description available.';
+          const imageUrl = urlToImage || placeholderImg;
+          const articleTitle = title || 'Untitled Article';
+          const articleSource = source.name || 'Unknown Source';
+          const shortDescription = description ? (description.length > 120 ? description.substring(0, 120) + '...' : description) : 'No description available.';
 
           const card = document.createElement('article');
-          card.className = 'news-card';
-          card.style.animationDelay = `${index * 100}ms`;
+          card.className = 'article-card';
+          card.style.animationDelay = `${index * 50}ms`;
 
           card.innerHTML = `
-            <img src="${imageUrl}" alt="" class="news-card-image" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImage}';">
+            <img src="${imageUrl}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImg}';">
             <div class="card-content">
-              <span class="card-source">${article.source.name}</span>
-              <h2 class="card-title">${article.title}</h2>
-              <p class="card-description">${description}</p>
+              <span class="source">${articleSource}</span>
+              <h2>${articleTitle}</h2>
+              <p>${shortDescription}</p>
               <div class="card-footer">
-                <span class="card-time">${formatTimeAgo(article.publishedAt)}</span>
-                <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
+                <span class="time">${formatTimeAgo(publishedAt)}</span>
+                <a href="${url}" target="_blank" rel="noopener noreferrer" class="read-more-btn" aria-label="Read more about ${articleTitle}">Read More</a>
               </div>
             </div>
           `;
-          newsContainer.appendChild(card);
+          newsFeed.appendChild(card);
         });
       };
 
       const filterArticles = () => {
-        const query = searchInput.value.toLowerCase();
-        const filteredArticles = jsonData.filter(article => {
-            const title = article.title?.toLowerCase() || '';
-            const source = article.source?.name?.toLowerCase() || '';
-            return title.includes(query) || source.includes(query);
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        if (!searchTerm) {
+          renderArticles(allArticles);
+          return;
+        }
+
+        const filtered = allArticles.filter(article => {
+          const titleMatch = article.title && article.title.toLowerCase().includes(searchTerm);
+          const sourceMatch = article.source && article.source.name && article.source.name.toLowerCase().includes(searchTerm);
+          return titleMatch || sourceMatch;
         });
-        renderArticles(filteredArticles);
+        renderArticles(filtered);
       };
-      
+
       searchInput.addEventListener('input', filterArticles);
 
       // Initial render
-      renderArticles(jsonData);
+      renderArticles(allArticles);
     });
   </script>
 
