@@ -1,0 +1,350 @@
+```html
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg-color: #0b0b0b;
+    --text-color: #e0e0e0;
+    --accent-color: #ffd700;
+    --card-bg: #1a1a1a;
+    --card-border: #2c2c2c;
+    --glow-color: rgba(255, 215, 0, 0.5);
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(11, 11, 11, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .sticky-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px var(--glow-color);
+  }
+  
+  .search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #search-icon {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    fill: var(--text-color);
+    transition: fill 0.3s ease;
+  }
+  
+  #search-icon:hover {
+    fill: var(--accent-color);
+  }
+  
+  #search-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--card-border);
+    color: var(--text-color);
+    font-size: 1rem;
+    padding: 5px;
+    width: 0;
+    opacity: 0;
+    transition: width 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+  }
+
+  #search-input:focus {
+    outline: none;
+    border-bottom-color: var(--accent-color);
+  }
+  
+  .sticky-header.search-active #search-input {
+    width: 200px;
+    opacity: 1;
+    padding: 5px 10px;
+  }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  
+  .intro-summary {
+    font-size: 1.1rem;
+    color: #b0b0b0;
+    margin-bottom: 2.5rem;
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-color);
+    line-height: 1.7;
+  }
+
+  #news-feed {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .news-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s forwards;
+    position: relative;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 15px var(--glow-color);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .card-content {
+    padding: 1.25rem;
+  }
+
+  .card-content h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #999;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .card-meta .source {
+    font-weight: 600;
+    color: var(--accent-color);
+  }
+
+  .card-description {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    opacity: 0;
+  }
+  
+  .news-card.expanded .card-description {
+    max-height: 1000px; /* Large enough to not clip content */
+    margin-top: 1rem;
+    opacity: 1;
+  }
+
+  .card-description p {
+    margin: 0 0 1rem 0;
+    color: #c0c0c0;
+    font-size: 1rem;
+  }
+
+  .read-more-btn {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .read-more-btn:hover {
+    background-color: #fff;
+    transform: scale(1.05);
+  }
+  
+  @media (max-width: 768px) {
+    .sticky-header h1 {
+        font-size: 1.2rem;
+    }
+    .sticky-header.search-active #search-input {
+        width: 150px;
+    }
+    main {
+        padding: 1rem;
+    }
+    .card-content h3 {
+        font-size: 1.2rem;
+    }
+    .card-image {
+        height: 200px;
+    }
+  }
+</style>
+
+<header class="sticky-header">
+  <h1>World Scale News</h1>
+  <div class="search-container">
+    <input type="search" id="search-input" placeholder="Search articles...">
+    <svg id="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+  </div>
+</header>
+
+<main>
+  <p class="intro-summary">
+    Today's crypto market is a dynamic mix of regulatory shifts and technological convergence. Key developments include prediction market giant Polymarket's regulated US comeback and Truth Social's entry into the space, signaling mainstream adoption. Meanwhile, the synergy between crypto and AI intensifies, with Bitcoin miners like CleanSpark pivoting to power AI data centers and presales like Blazpay leveraging AI. Investors are closely watching for potential market bubbles and the upcoming Fed rate decision, which could significantly impact Bitcoin and Ethereum prices. Institutional interest remains strong, highlighted by Securitize's $1.25 billion SPAC deal, reinforcing the ongoing integration of digital assets into traditional finance.
+  </p>
+  <section id="news-feed"></section>
+</main>
+
+<script type="application/json" id="newsData">
+[{"source":{"id":null,"name":"Nodejs.org"},"author":null,"title":"Node.js v25.1.0 (Current)","description":"Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts.","url":"https://nodejs.org/en/blog/release/v25.1.0","urlToImage":"https://nodejs.org/en/next-data/og/release/Node.js%20%E2%80%94%20Node.js%20v25.1.0%20(Current)","publishedAt":"2025-10-28T19:21:59Z","content":"Antoine du Hamel\r\nNode.js v25.1.0 (Current)\r\n<ul><li>[4395fe14b9] - (SEMVER-MINOR)http: add optimizeEmptyRequests server option (Rafael Gonzaga) #59778</li><li>[2e55c6ad04] - (SEMVER-MINOR)sqlite: al… [+12306 chars]"},{"source":{"id":null,"name":"Foreign Policy"},"author":"Ravi Agrawal","title":"Is the AI Economy a Bubble?","description":"Economist Jared Bernstein warns that revenues simply aren’t catching up with sky-high valuations.","url":"http://foreignpolicy.com/2025/10/28/ai-economy-boom-bubble/","urlToImage":"https://foreignpolicy.com/wp-content/uploads/2025/10/ai-bubble-GettyImages-2228470943_f65bb4.jpg?w=1000","publishedAt":"2025-10-28T19:17:28Z","content":"Is the artificial intelligence boom a bubble? There are growing reasons to argue it is: Valuations of AI companies dwarf their revenues, the cost of investment in chips and data centers remains exorb… [+22845 chars]"},{"source":{"id":"the-times-of-india","name":"The Times of India"},"author":"Advaita Suresh","title":"Crypto betting giant Polymarket set for explosive US comeback with major sports push in weeks","description":"Polymarket, a prominent blockchain-based prediction platform, is getting ready for a regulated return to the U.S. market following years of operating offshore. By getting QCX, a CFTC-licensed exchange and clearinghouse, for $112 million, the company currently…","url":"https://economictimes.indiatimes.com/news/international/us/crypto-betting-giant-polymarket-set-for-explosive-us-comeback-with-major-sports-push-in-weeks/articleshow/124881850.cms","urlToImage":"https://img.etimg.com/thumb/msid-124881850,width-1200,height-630,imgsize-35690,overlay-economictimes/articleshow.jpg","publishedAt":"2025-10-28T19:14:19Z","content":"The blockchain-based prediction market environment is going through a significant transformation as clearer guidelines and developing consumer interest converge to change digital trading. Leading thi… [+5227 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"Liam 'Akiba' Wright","title":"NFTs are coming back but Blue Chip projects are on life support","description":"NFT trading activity showed signs of life in Q3 2025, breaking a long stretch of decline that defined the post-hype years. After two years of contraction and shifting narratives, on-chain markets found a new footing, not in blue-chip collectibles or speculati…","url":"https://cryptoslate.com/nfts-are-coming-back-but-blue-chip-projects-are-on-life-support/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/nft-dead_.jpg","publishedAt":"2025-10-28T19:00:18Z","content":"NFT trading activity showed signs of life in Q3 2025, breaking a long stretch of decline that defined the post-hype years.\r\nAfter two years of contraction and shifting narratives, on-chain markets fo… [+10246 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"blazpay","title":"Blazpay’s AI Crypto Presale Nears Final Countdown: Less Than 5 Days Before Phase 3 Price Surge","description":"PANAMA CITY, Oct. 28, 2025 (GLOBE NEWSWIRE) -- The clock is ticking as Blazpay’s AI Crypto Presale\r\n races toward its Phase 3 launch in less than 5 days, giving investors their last opportunity to buy below the seed price of $0.008. Currently priced at $0.007…","url":"https://www.globenewswire.com/news-release/2025/10/28/3175874/0/en/Blazpay-s-AI-Crypto-Presale-Nears-Final-Countdown-Less-Than-5-Days-Before-Phase-3-Price-Surge.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/5c8c611a-e128-4f8a-9e7b-c374d611ba6f","publishedAt":"2025-10-28T19:00:00Z","content":"PANAMA CITY, Oct. 28, 2025 (GLOBE NEWSWIRE) -- The clock is ticking as Blazpays AI Crypto Presale\r\n races toward its Phase 3 launch in less than 5 days, giving investors their last opportunity to buy… [+7605 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"cnbc.com","title":"Why bitcoin miner CleanSpark beat Microsoft for Wyoming AI data center deal, and what it means for crypto mining's future","description":"CleanSpark, a Las Vegas-based bitcoin miner, is getting into the booming AI data center business, and rivaling big tech's power ambitions.","url":"https://biztoc.com/x/2e705f65a9f152f3","urlToImage":"https://biztoc.com/cdn/950/og.png","publishedAt":"2025-10-28T18:55:20Z","content":"CleanSpark, a Las Vegas-based bitcoin miner, is getting into the booming AI data center business, and rivaling big tech's power ambitions.\r\nThis story appeared on cnbc.com, 2025-10-28 18:45:06."},{"source":{"id":null,"name":"Coinjournal.net"},"author":"Benson Toti","title":"Securitize to go public via $1.25 billion SPAC deal","description":"Securitize will become a public company in a merger deal with Cantor Equity Partners II. The tokenization platform is eyeing a $1.25 billion valuation via the SPAC deal. BlackRock is among top asset managers to use Securitize to bring assets onchain. Securiti…","url":"https://coinjournal.net/news/securitize-to-go-public-via-1-25-billion-spac-deal/","urlToImage":"https://coinjournal.net/wp-content/uploads/2025/10/securitize-wall-street.png","publishedAt":"2025-10-28T18:53:41Z","content":"<ul><li>Securitize will become a public company in a merger deal with Cantor Equity Partners II.</li><li>The tokenization platform is eyeing a $1.25 billion valuation via the SPAC deal.</li><li>Black… [+3417 chars]"},{"source":{"id":"wired","name":"Wired"},"author":"Joel Khalili","title":"Donald Trump's Truth Social Is Launching a Polymarket Competitor","description":"As crypto-based prediction services attract a flood of attention and capital, the US president’s social media platform has announced plans to muscle in.","url":"https://www.wired.com/story/trump-truth-social-launches-prediction-market/","urlToImage":"https://media.wired.com/photos/6900edef7aae27c1fefa79c9/191:100/w_1280,c_limit/Truth-Social-Crypto-Betting-Business-2191665596.jpg","publishedAt":"2025-10-28T18:51:45Z","content":"If you had to point to one reason [crypto prediction markets] are able to come back to the US, you have to point to the Trump administration, says Zach Hamilton, founder of crypto startup Sarcophagus… [+2084 chars]"},{"source":{"id":"financial-post","name":"Financial Post"},"author":"Business Wire","title":"Global Hedge Fund Selects Behavox Pathfinder Policy Manager for Enterprise-Wide Deployment","description":"LONDON & MONTREAL — Behavox, the AI company that transforms data into insights that safeguard and enhance businesses, today announced that a global hedge fund has chosen Behavox Pathfinder Policy Manager for an enterprise-wide deployment. The hedge fund selec…","url":"https://financialpost.com/pmn/business-wire-news-releases-pmn/global-hedge-fund-selects-behavox-pathfinder-policy-manager-for-enterprise-wide-deployment","urlToImage":null,"publishedAt":"2025-10-28T18:49:30Z","content":"LONDON &amp; MONTREAL Behavox, the AI company that transforms data into insights that safeguard and enhance businesses, today announced that a global hedge fund has chosen Behavox Pathfinder Policy M… [+5839 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Stacy Elliott","title":"What Bitcoin, Ethereum Traders Should Watch Ahead of Fed Rate Decision","description":"Fed rate cut almost certain Wednesday—but ending QT could be the real Bitcoin catalyst as inflation tolerance rises.","url":"https://decrypt.co/346448/bitcoin-ethereum-traders-fed-rate-decision","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/07/Bitcoin-decrypt-style-25-gID_7.png","publishedAt":"2025-10-28T18:49:03Z","content":"In brief\r\n<ul><li>The Federal Reserve is almost certain to cut interest rates Wednesday, with traders predicting a 97.8% chance of a 25-basis point cut, though the impact on crypto markets remains un… [+4465 chars]"}]
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const newsData = JSON.parse(document.getElementById('newsData').textContent);
+    const newsFeed = document.getElementById('news-feed');
+    const searchInput = document.getElementById('search-input');
+    const searchIcon = document.getElementById('search-icon');
+    const header = document.querySelector('.sticky-header');
+    
+    const articles = newsData.slice(0, 10);
+
+    const timeAgo = (dateString) => {
+        const now = new Date();
+        const past = new Date(dateString);
+        const seconds = Math.floor((now - past) / 1000);
+        
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + "y ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + "mo ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + "d ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return Math.floor(seconds) + "s ago";
+    };
+    
+    const generateAISummary = (index) => {
+        const summaries = [
+            "This technical update to Node.js, the backbone for many Web3 applications, introduces key enhancements for server efficiency. For crypto developers and node operators, these improvements can lead to more robust and performant decentralized applications and blockchain infrastructure, reinforcing the stability of the underlying technology stack.",
+            "This analysis delves into the sustainability of the AI market's growth, questioning if current sky-high valuations are justified by revenue. For crypto and tech investors, this serves as a crucial caution, drawing parallels to previous market bubbles and highlighting the importance of fundamental analysis when evaluating projects at the intersection of AI and blockchain.",
+            "Prediction market leader Polymarket is making a landmark return to the US, focusing on the massive sports betting industry. This move signals a new era of regulated crypto products, potentially driving mainstream adoption and providing new, decentralized avenues for trading on real-world events. Keywords: Crypto Betting, Blockchain, Prediction Market, Regulation, CFTC.",
+            "The NFT market is showing signs of a revival, though the trend is shifting away from established Blue Chip projects. This report explores where new capital is flowing, suggesting that utility-based NFTs and emerging digital asset classes are capturing trader interest, signaling a maturation of the market beyond speculative collectibles.",
+            "Blazpay's AI-driven crypto presale is attracting significant investor attention as it enters its final stages before a price increase. This event highlights the growing trend of combining artificial intelligence with cryptocurrency to create innovative trading signals and payment platforms, offering early investors a potential high-reward opportunity in the altcoin market.",
+            "In a strategic pivot, Bitcoin miner CleanSpark has outmaneuvered tech giants like Microsoft to secure an AI data center deal. This story reveals a powerful new trend: leveraging crypto mining's energy infrastructure to power the AI revolution, creating a symbiotic relationship that could redefine the future profitability and utility of the Bitcoin mining industry.",
+            "Asset tokenization platform Securitize, backed by investment giant BlackRock, is set to go public with a staggering $1.25 billion valuation via a SPAC deal. This development is a major milestone for institutional crypto adoption, demonstrating Wall Street's growing confidence in bringing real-world assets on-chain, which could unlock trillions in liquidity for the digital asset market.",
+            "Donald Trump's media company is entering the crypto space by launching a prediction market on Truth Social, directly competing with platforms like Polymarket. This move underscores the increasing convergence of politics, social media, and crypto, potentially introducing blockchain-based betting to a vast new user base and influencing the PolitiFi token market.",
+            "A major global hedge fund has adopted Behavox's AI-powered compliance platform, showcasing how artificial intelligence is becoming essential for modern trading operations. This integration is crucial for risk management and regulatory adherence in high-frequency trading environments, a trend that is increasingly relevant as crypto markets become more institutionalized.",
+            "Crypto traders are on high alert as the Federal Reserve prepares for its next interest rate decision. This analysis breaks down the potential market scenarios for Bitcoin and Ethereum, explaining how a rate cut could either fuel a new rally by increasing liquidity or have a muted effect if already priced in by the market. Keywords: Bitcoin, Ethereum, Fed Rate, Trading Signals, Market Trends."
+        ];
+        return summaries[index] || "This article covers the latest trends in the crypto and trading markets, offering valuable insights for investors.";
+    };
+
+    const renderArticles = (articlesToRender) => {
+        newsFeed.innerHTML = '';
+        if (articlesToRender.length === 0) {
+            newsFeed.innerHTML = '<p style="text-align: center; color: var(--text-color);">No articles found matching your search.</p>';
+            return;
+        }
+        articlesToRender.forEach((article, index) => {
+            const placeholderImg = 'https://via.placeholder.com/800x400?text=Crypto+News';
+            const card = document.createElement('article');
+            card.className = 'news-card';
+            card.style.animationDelay = `${index * 100}ms`;
+
+            const author = article.author ? `by ${article.author}` : '';
+            
+            card.innerHTML = `
+                <img src="${article.urlToImage || placeholderImg}" alt="${article.title}" class="card-image" onerror="this.src='${placeholderImg}'">
+                <div class="card-content">
+                    <h3>${article.title}</h3>
+                    <div class="card-meta">
+                        <span class="source">${article.source.name} ${author}</span>
+                        <time datetime="${article.publishedAt}">${timeAgo(article.publishedAt)}</time>
+                    </div>
+                    <div class="card-description">
+                        <p>${generateAISummary(articles.indexOf(article))}</p>
+                        <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
+                    </div>
+                </div>
+            `;
+            newsFeed.appendChild(card);
+        });
+    };
+    
+    newsFeed.addEventListener('click', (e) => {
+        const card = e.target.closest('.news-card');
+        if (card && !e.target.closest('.read-more-btn')) {
+            card.classList.toggle('expanded');
+        }
+    });
+    
+    searchIcon.addEventListener('click', () => {
+        header.classList.toggle('search-active');
+        if(header.classList.contains('search-active')) {
+            searchInput.focus();
+        }
+    });
+
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredArticles = articles.filter(article => 
+            article.title.toLowerCase().includes(searchTerm) || 
+            article.source.name.toLowerCase().includes(searchTerm)
+        );
+        renderArticles(filteredArticles);
+    });
+
+    renderArticles(articles);
+});
+</script>
+</body>
+```
