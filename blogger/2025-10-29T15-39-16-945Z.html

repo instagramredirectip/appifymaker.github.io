@@ -1,0 +1,414 @@
+```html
+<body>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    :root {
+      --bg-color: #0b0b0b;
+      --card-bg: #1a1a1a;
+      --accent-color: #ffd700;
+      --text-color: #f0f0f0;
+      --text-muted-color: #a0a0a0;
+      --border-color: #2c2c2c;
+      --glow-color: rgba(255, 215, 0, 0.5);
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Poppins', sans-serif, system-ui;
+      margin: 0;
+      padding-top: 80px; /* Space for the sticky header */
+    }
+
+    /* --- Header & Search --- */
+    .sticky-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 5%;
+      background-color: rgba(11, 11, 11, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin: 0;
+    }
+
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      color: var(--text-color);
+      transition: color 0.3s ease;
+    }
+    
+    .search-icon:hover {
+        color: var(--accent-color);
+    }
+
+    #search-input {
+      width: 0;
+      padding: 8px 0;
+      border: none;
+      border-bottom: 2px solid var(--accent-color);
+      background: transparent;
+      color: var(--text-color);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.4s ease;
+      opacity: 0;
+      visibility: hidden;
+      margin-left: 10px;
+    }
+
+    #search-input.active {
+      width: 200px;
+      padding: 8px 10px;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* --- Main Content & Intro --- */
+    main {
+      padding: 20px 5%;
+    }
+
+    .intro-summary {
+        background-color: var(--card-bg);
+        border-left: 4px solid var(--accent-color);
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    .intro-summary p {
+        margin: 0;
+    }
+
+    /* --- News Feed & Cards --- */
+    #news-feed {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+
+    .news-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px var(--glow-color), 0 0 5px var(--bg-color);
+    }
+    
+    .news-card.hidden {
+      display: none;
+    }
+
+    .card-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0 0 10px 0;
+      line-height: 1.3;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted-color);
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .card-source {
+        font-weight: 600;
+        color: var(--accent-color);
+    }
+
+    .expandable-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    
+    .expandable-content p {
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .news-card.expanded .expandable-content {
+      max-height: 1000px; /* Large enough to fit content */
+      margin-top: 20px;
+    }
+
+    .read-more-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    
+    .news-card.expanded .read-more-btn {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0px);
+        transition: visibility 0s, opacity 0.5s 0.2s ease, transform 0.5s 0.2s ease;
+    }
+
+    .read-more-btn:hover {
+      background-color: #fff;
+      transform: scale(1.05);
+    }
+
+    /* --- Responsive Design --- */
+    @media (max-width: 992px) {
+      #search-input.active {
+        width: 150px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header-title {
+        font-size: 1.2rem;
+      }
+      .card-title {
+        font-size: 1.2rem;
+      }
+      main {
+        padding: 20px 4%;
+      }
+      .sticky-header {
+        padding: 15px 4%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding-top: 70px;
+      }
+      .sticky-header {
+        padding: 10px 4%;
+      }
+      .header-title {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #search-input.active {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: calc(100vw - 8%);
+        margin-left: 0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-top: 5px;
+      }
+    }
+  </style>
+
+  <!-- 
+  SEO META FOR BLOGGER TEMPLATE <HEAD> SECTION
+  The following title and meta tags are generated based on the latest news.
+  Copy and paste these into your Blogger theme's <head> section for optimal SEO.
+  
+  <title>World Scale News: Latest US Crypto News on Bitcoin, Ethereum & Altcoin ETFs</title>
+  <meta name="description" content="Get the latest US crypto and trading news. Updates on Bitcoin price trends, Ethereum whale activity, new Solana & Litecoin ETFs, BlackRock's market dominance, and regulatory shifts." />
+  <meta name="keywords" content="Crypto News, Bitcoin, Ethereum, Altcoins, Trading Signals, Market Price, Crypto ETFs, Solana, BlackRock, Ripple XRP, US Crypto, Blockchain" />
+  -->
+
+  <header class="sticky-header">
+    <h1 class="header-title">World Scale News</h1>
+    <div class="search-container">
+      <svg class="search-icon" id="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+      </svg>
+      <input type="text" id="search-input" placeholder="Search articles...">
+    </div>
+  </header>
+
+  <main>
+    <section class="intro-summary">
+      <p>The crypto market is currently buzzing with significant institutional movements and infrastructural advancements. Key highlights include the UK's welcoming stance on crypto with a major firm targeting a London Stock Exchange listing, the launch of new Altcoin ETFs for assets like Solana and Litecoin on the NYSE, and BlackRock's continued dominance in the Bitcoin ETF space. Alongside these developments, major whale activity in Bitcoin and Ethereum signals strong market confidence, while regulatory frameworks for seizing and managing crypto assets are also being solidified, indicating a maturing ecosystem. Stay tuned for the latest trading signals and price trends.</p>
+    </section>
+
+    <section id="news-feed"></section>
+  </main>
+
+  <script type="application/json" id="newsData">
+    [{"source":{"id":null,"name":"Cryptonews"},"author":"Hassan Shittu","title":"UK Opens Arms to Crypto as KR1 Targets London Stock Exchange Listing","description":"British blockchain investment firm KR1 has announced plans to move its stock listing from the Aquis Stock Exchange to the main market of the London Stock...","url":"https://cryptonews.com/news/uk-opens-arms-to-crypto-as-kr1-targets-london-stock-exchange-listing/","urlToImage":"https://media.zenfs.com/en/cryptonews_us_711/d974cfbdbea2b5f2545407515187ccf5","publishedAt":"2025-10-28T15:34:34Z","content":"British blockchain investment firm KR1 has announced plans to move its stock listing from the Aquis Stock Exchange to the main market of the London Stock Exchange (LSE), a move seen as a major step f… [+4666 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Bitget Limited","title":"Bitget Wallet Integrates HyperEVM, Connecting Millions to Hyperliquid's $5 Billion Onchain Ecosystem","description":"Bitget Wallet, a leading self-custodial crypto wallet, has announced full integration with HyperEVM — the Ethereum-compatible smart-contract layer that......","url":"https://www.globenewswire.com/news-release/2025/10/28/3175689/0/en/Bitget-Wallet-Integrates-HyperEVM-Connecting-Millions-to-Hyperliquid-s-5-Billion-Onchain-Ecosystem.html","urlToImage":"https://ml-eu.globenewswire.com/Resource/Download/884a5b94-e5cc-41c1-b760-3db20a32ae5e","publishedAt":"2025-10-28T15:25:00Z","content":"SAN SALVADOR, El Salvador, Oct. 28, 2025 (GLOBE NEWSWIRE) -- Bitget Wallet\r\n, a leading self-custodial crypto wallet, has announced full integration with HyperEVM the Ethereum-compatible smart-contra… [+3420 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"How This Bitcoin, Ethereum Whale Made $14M With A 100% Hit Rate","description":"An accurate crypto whale has doubled down on their Bitcoin (CRYPTO: BTC) and Ethereum (CRYPTO: ETH) long positions, despite sitting on eight figures in profit.\nWhat Happened: The trader, who has been consistently profitable since Oct. 14, initially opened pos…","url":"https://biztoc.com/x/0ca45a01f15b9b95","urlToImage":"https://biztoc.com/cdn/0ca45a01f15b9b95_s.webp","publishedAt":"2025-10-28T15:24:51Z","content":"An accurate crypto whale has doubled down on their Bitcoin (CRYPTO: BTC) and Ethereum (CRYPTO: ETH) long positions, despite sitting on eight figures in profit.What Happened: The trader, who has been … [+142 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Guest Author","title":"Who Is Antony Turner? The Story Behind the Visionary CEO of BlockDAG","description":"In the crowded world of blockchain startups, few leaders stand out like Antony Turner, the driving force behind BlockDAG Network, a project that has raised over $430 million, attracted more than 312,000 holders, and become one of the most talked-about crypto …","url":"https://zycrypto.com/who-is-antony-turner-the-story-behind-the-visionary-ceo-of-blockdag/","urlToImage":"https://zycrypto.com/wp-content/uploads/2025/10/Who-Is-Antony-Turner-The-Story-Behind-the-Visionary-CEO-of-BlockDAG.jpg","publishedAt":"2025-10-28T15:24:29Z","content":"Disclaimer: The below article is sponsored, and the views in it do not represent those of ZyCrypto. Readers should conduct independent research before taking any actions related to the project mentio… [+6224 chars]"},{"source":{"id":null,"name":"BeInCrypto"},"author":"Harsh Notariya","title":"BlackRock Holds the Line as Bitcoin ETFs Reveal Fragile Foundations | US Crypto News","description":"What is the biggest crypto news today? Bitcoin ETF boom built on one giant. So then what happens if BlackRock steps back?","url":"https://beincrypto.com/blackrock-bitcoin-etf-dominance-us-crypto-news/","urlToImage":"https://media.zenfs.com/en/beincrypto_us_662/e1801acac66ca638a746cc2ba3a9545d","publishedAt":"2025-10-28T15:20:36Z","content":"Blackrock's Bitcoin ETFs have become 2025s biggest investment success story. Photo by BeInCrypto\r\nWelcome to the US Crypto News Morning Briefingyour essential rundown of the most important developmen… [+4569 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Asset Reality","title":"Asset Reality and Operation Shamrock Form Strategic Alliance to Build Law Enforcement Infrastructure to Seize & Manage Crypto Assets","description":"Asset Reality and Operation Shamrock ally to close the crypto crime enforcement gap and build infrastructure to seize, manage and return assets to victims.","url":"https://www.globenewswire.com/news-release/2025/10/28/3175685/0/en/Asset-Reality-and-Operation-Shamrock-Form-Strategic-Alliance-to-Build-Law-Enforcement-Infrastructure-to-Seize-Manage-Crypto-Assets.html","urlToImage":"https://ml-eu.globenewswire.com/Resource/Download/7372cb6b-c9c7-4b90-a402-01a6d94f9db4","publishedAt":"2025-10-28T15:20:00Z","content":"LONDON, Oct. 28, 2025 (GLOBE NEWSWIRE) -- Against the backdrop of new international guidance on improving asset recovery from the Financial Action Task Force (FATF), Asset Reality and Operation Shamr… [+5038 chars]"},{"source":{"id":"fortune","name":"Fortune"},"author":"Ben Weiss","title":"International laws need to be updated for a ‘machine-governed economic system,’ says CEO of stablecoin giant Circle","description":"Jeremy Allaire said at Fortune Global Forum that the rise of technologies like AI and crypto will prompt governments to craft new legislation for corporations over the next 10 years.","url":"https://fortune.com/2025/10/28/circle-jeremy-allaire-ai-stablecoins-crypto-machine-governed-economy-system/","urlToImage":"https://fortune.com/img-assets/wp-content/uploads/2025/10/54883032044_079c58b0c3_o-e1761602122474.jpg?resize=1200,600","publishedAt":"2025-10-28T15:06:52Z","content":"As companies adopt new technologies like crypto and AI, governments worldwide will need to revamp their existing laws to account for companies that will become more reliant on machines and less relia… [+2412 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Sam Bourgi","title":"OpenAI restructures as public benefit corporation, Microsoft secures 27% stake","description":"The move formalizes OpenAI’s ties with Microsoft, granting the tech giant long-term access to its AI models while locking in a $250 billion Azure commitment.","url":"https://cointelegraph.com/news/openai-public-benefit-corporation-microsoft-stake-135b-azure-deal","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-09/01993f40-8f08-7995-9f1a-c3e7447d47bc","publishedAt":"2025-10-28T15:12:50Z","content":"OpenAI, the developer behind ChatGPT, has converted its organizational structure into a public benefit corporation, a shift designed to give the company greater flexibility to raise capital as it sca… [+2028 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Brenda Ngari","title":"Ripple-Tied Treasury Firm Evernorth Accumulates $1 Billion Worth Of XRP Ahead Of Nasdaq Debut","description":"Evernorth Holdings, a newly formed digital asset treasury firm, has reportedly snatched up $1 billion worth of XRP tokens as part of its strategy to establish an XRP-based treasury. Evernorth Hits 95% Of XRP Target According to data tracked by blockchain anal…","url":"https://zycrypto.com/ripple-tied-treasury-firm-evernorth-accumulates-1-billion-worth-of-xrp-ahead-of-nasdaq-debut/","urlToImage":"https://zycrypto.com/wp-content/uploads/2023/07/Arrington-Capital-XRP-based-hedge-fund.jpg","publishedAt":"2025-10-28T15:04:00Z","content":"Evernorth Holdings, a newly formed digital asset treasury firm, has reportedly snatched up $1 billion worth of XRP tokens as part of its strategy to establish an XRP-based treasury.\r\nAccording to dat… [+1824 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Samyukhtha L KM","title":"Solana, Litecoin, Hedera ETFs go live on NYSE – A first without SEC review!","description":"New SEC rules allow launches without individual reviews, making crypto investments quicker.","url":"https://ambcrypto.com/solana-litecoin-hedera-etfs-go-live-on-nyse-a-first-without-sec-review/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Samyukhtha-78-1000x600.webp","publishedAt":"2025-10-28T15:00:35Z","content":"Key takeaways\r\nWhat altcoin ETFs are launching on the NYSE?\r\nSolana, Litecoin, and Hedera ETFs are set to start trading.\r\nHow are these ETFs able to launch during the SEC shutdown?\r\nNew SEC generic l… [+2576 chars]"}]
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const newsFeed = document.getElementById('news-feed');
+      const newsDataEl = document.getElementById('newsData');
+      const searchInput = document.getElementById('search-input');
+      const searchIcon = document.getElementById('search-icon');
+      const placeholderImage = 'https://via.placeholder.com/800x400?text=Crypto+News';
+
+      // --- AI-Generated SEO Summaries ---
+      const articleSummaries = [
+        "In a significant move for UK crypto adoption, blockchain investment leader KR1 is advancing from the Aquis Stock Exchange to the prestigious London Stock Exchange. This strategic upgrade highlights the growing acceptance of digital assets within mainstream finance, potentially unlocking new waves of institutional capital. This development is a bullish signal for the UK's crypto market, reflecting a favorable regulatory environment and increasing investor confidence in blockchain technology and trading.",
+        "Bitget Wallet has announced a pivotal integration with HyperEVM, bridging its vast user base to Hyperliquid's burgeoning $5 billion on-chain ecosystem. This collaboration significantly enhances DeFi interoperability and user access to high-performance trading platforms. For traders, this means seamless interaction with advanced Ethereum-compatible smart contracts, potentially driving new trends and liquidity in the altcoin market.",
+        "A prominent crypto whale has demonstrated exceptional trading acumen, securing $14 million in profit from Bitcoin and Ethereum positions with a perfect success rate. By doubling down on their long positions, this influential market participant signals strong bullish sentiment for both leading cryptocurrencies. This activity serves as a key market indicator, highlighting potent trading signals and the potential for significant price movements in BTC and ETH.",
+        "This article delves into the profile of Antony Turner, the visionary CEO steering the BlockDAG Network. With the project raising over $430 million, BlockDAG is emerging as a formidable player in the crypto space. Understanding the leadership behind such a rapidly growing project provides critical insight into its market strategy, technological innovation, and long-term potential for investors tracking new trends in altcoins and blockchain infrastructure.",
+        "BlackRock's iShares Bitcoin Trust (IBIT) continues to be the linchpin of the 2025 Bitcoin ETF boom, showcasing the fragile reliance of the current market on a single institutional giant. This analysis explores the profound impact of BlackRock's dominance on Bitcoin's price stability and market sentiment. It raises crucial questions about market diversification and the potential risks if institutional inflows from this single source were to slow, a key consideration for all crypto investors.",
+        "A strategic alliance between Asset Reality and Operation Shamrock aims to revolutionize law enforcement's ability to handle crypto-related crime. By developing robust infrastructure to seize, manage, and return illicitly obtained digital assets, this partnership addresses a critical gap in the crypto ecosystem. This move enhances security and trust in the market, a vital step for mainstream adoption and for protecting investors from fraud.",
+        "Jeremy Allaire, the CEO of stablecoin issuer Circle, advocates for a fundamental update to international laws to accommodate a future 'machine-governed economic system' driven by crypto and AI. His insights underscore the need for new regulatory frameworks that can govern decentralized and automated finance. This forward-looking perspective is crucial for understanding long-term trends in digital asset regulation and the evolving intersection of technology and global economics.",
+        "In a landmark move, OpenAI has restructured into a public benefit corporation, cementing its relationship with Microsoft, which now holds a 27% stake. This deal includes a massive $250 billion commitment for Microsoft's Azure cloud services. The formalization of this tech giant partnership has broad implications for the AI sector, which is increasingly intertwined with financial markets and blockchain technology, influencing future innovation and investment trends.",
+        "Evernorth Holdings, a treasury firm with ties to Ripple, is making headlines with its substantial accumulation of $1 billion in XRP tokens. This strategic move, occurring ahead of a potential Nasdaq debut, signals deep confidence in XRP's utility and future price potential. For traders, this large-scale accumulation is a powerful bullish indicator, suggesting institutional preparation for increased adoption and potential market upside for the altcoin.",
+        "In a groundbreaking development for the crypto market, ETFs for major altcoins including Solana (SOL), Litecoin (LTC), and Hedera (HBAR) have gone live on the New York Stock Exchange (NYSE). Notably, these products launched without individual SEC review, leveraging new generic listing rules. This event marks a significant milestone in making diverse crypto investments more accessible to mainstream investors and could trigger a new wave of capital into the altcoin market."
+      ];
+      
+      const articles = JSON.parse(newsDataEl.textContent).slice(0, 10);
+      
+      const formatTimeAgo = (dateString) => {
+        const now = new Date();
+        const past = new Date(dateString);
+        const seconds = Math.floor((now - past) / 1000);
+        
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + "y ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + "mo ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + "d ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return Math.floor(seconds) + "s ago";
+      };
+
+      const renderArticles = (articleList) => {
+        newsFeed.innerHTML = '';
+        if (articleList.length === 0) {
+            newsFeed.innerHTML = '<p>No articles found.</p>';
+            return;
+        }
+        
+        articleList.forEach((article, index) => {
+          const { title, url, urlToImage, publishedAt, source, author, description } = article;
+          const authorName = author || 'N/A';
+          const sourceName = source.name || 'Unknown Source';
+
+          const card = document.createElement('article');
+          card.className = 'news-card';
+          card.style.animationDelay = `${index * 0.1}s`;
+          
+          card.innerHTML = `
+            <img class="card-image" src="${urlToImage || placeholderImage}" alt="${title.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImage}';">
+            <div class="card-content">
+              <div class="card-meta">
+                <span class="card-source">${sourceName}</span>
+                <time datetime="${publishedAt}">${formatTimeAgo(publishedAt)}</time>
+              </div>
+              <h3 class="card-title">${title}</h3>
+              <div class="expandable-content">
+                <p>${description || 'No description available.'}</p>
+                <strong>SEO-Optimized Summary:</strong>
+                <p>${articleSummaries[index] || 'Summary not available.'}</p>
+                <a href="${url}" class="read-more-btn" target="_blank" rel="noopener noreferrer">Read More</a>
+              </div>
+            </div>
+          `;
+          newsFeed.appendChild(card);
+        });
+      };
+
+      // --- Event Listeners ---
+      newsFeed.addEventListener('click', (e) => {
+        const card = e.target.closest('.news-card');
+        if (card && !e.target.closest('.read-more-btn')) {
+          card.classList.toggle('expanded');
+        }
+      });
+      
+      searchIcon.addEventListener('click', () => {
+        searchInput.classList.toggle('active');
+        searchInput.focus();
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        const allCards = document.querySelectorAll('.news-card');
+
+        allCards.forEach(card => {
+          const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+          const source = card.querySelector('.card-source')?.textContent.toLowerCase() || '';
+          
+          if (title.includes(searchTerm) || source.includes(searchTerm)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+      
+      // Initial render
+      renderArticles(articles);
+    });
+  </script>
+</body>
+```
