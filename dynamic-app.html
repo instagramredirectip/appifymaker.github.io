@@ -1,354 +1,348 @@
-```body
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-:root {
-  --bg-color: #0b0b0b;
-  --card-bg: #1a1a1a;
-  --text-color: #e0e0e0;
-  --accent-color: #ffd700;
-  --accent-glow: rgba(255, 215, 0, 0.5);
-  --border-color: #333;
-  --font-family: 'Poppins', sans-serif;
-}
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: var(--font-family);
-  margin: 0;
-  padding-top: 80px; /* Space for the sticky header */
-}
-.sticky-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(11, 11, 11, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 5%;
-  border-bottom: 1px solid var(--border-color);
-  z-index: 1000;
-  box-sizing: border-box;
-}
-.header-title {
-  font-size: 1.8em;
-  font-weight: 700;
-  color: var(--accent-color);
-  text-shadow: 0 0 5px var(--accent-glow);
-  margin: 0;
-}
-.search-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.search-icon {
-  cursor: pointer;
-  width: 28px;
-  height: 28px;
-  fill: var(--text-color);
-  transition: fill 0.3s ease;
-}
-.search-icon:hover {
-  fill: var(--accent-color);
-}
-#search-input {
-  width: 0;
-  padding: 8px 0;
-  border: none;
-  border-bottom: 2px solid var(--accent-color);
-  background: transparent;
-  color: white;
-  outline: none;
-  font-size: 1em;
-  transition: width 0.4s ease-in-out, padding 0.4s ease-in-out;
-  margin-left: 10px;
-}
-#search-input.active {
-  width: 200px;
-  padding: 8px 10px;
-}
-main {
-  padding: 20px 5%;
-  max-width: 900px;
-  margin: 0 auto;
-}
-.intro-section h1 {
-    font-size: 2.2rem;
-    color: var(--text-color);
-    margin-bottom: 15px;
-    line-height: 1.3;
-    text-align: center;
-}
-.intro-section p {
-    font-size: 1.1rem;
-    color: var(--text-color);
-    line-height: 1.7;
-    text-align: center;
-    margin-bottom: 40px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 30px;
-}
-.news-feed {
-  display: grid;
-  gap: 25px;
-}
-.news-card {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeIn 0.6s forwards;
-}
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.news-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px var(--accent-glow);
-  border-color: var(--accent-color);
-}
-.news-image {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-  display: block;
-}
-.card-content {
-  padding: 20px;
-}
-.card-content h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.4em;
-  line-height: 1.4;
-  color: #fff;
-}
-.card-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85em;
-  color: #aaa;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.card-meta .source {
-  font-weight: 600;
-  color: var(--accent-color);
-}
-.article-description {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.7s cubic-bezier(0.25, 0.1, 0.25, 1.0), padding 0.7s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-  padding: 0 20px;
-}
-.news-card.expanded .article-description {
-  max-height: 2000px; /* Large enough for content */
-  padding: 0 20px 20px 20px;
-}
-.article-description p {
-  margin: 0 0 20px 0;
-  line-height: 1.8;
-  font-size: 1rem;
-  color: #ccc;
-  text-align: justify;
-}
-.read-more-btn {
-  display: inline-block;
-  background-color: var(--accent-color);
-  color: #000;
-  padding: 10px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-.read-more-btn:hover {
-  background-color: #fff;
-  transform: scale(1.05);
-}
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .sticky-header {
-    padding: 15px 15px;
-  }
-  .header-title {
-    font-size: 1.5em;
-  }
-  main {
-    padding: 15px;
-  }
-  .intro-section h1 {
-    font-size: 1.8rem;
-  }
-   .intro-section p {
-    font-size: 1rem;
-  }
-  .card-content h3 {
-    font-size: 1.2em;
-  }
-  .news-image {
-      height: 200px;
-  }
-  #search-input.active {
-      width: 150px;
-  }
-}
-</style>
-
 <body>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary-green: #27ae60;
+      --dark-green: #1e8449;
+      --light-gray: #f5f7f6;
+      --medium-gray: #9aa8a3;
+      --text-color: #333;
+      --bg-color: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding-top: 70px; /* Space for the fixed header */
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    .sticky-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5vw;
+      height: 70px;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--light-gray);
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .site-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-green);
+    }
+
+    .site-title span {
+      font-weight: 400;
+      color: var(--dark-green);
+    }
+    
+    .search-container {
+        position: relative;
+    }
+
+    .search-icon {
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      fill: var(--dark-green);
+      transition: transform 0.2s ease;
+    }
+    .search-icon:hover {
+        transform: scale(1.1);
+    }
+
+    #search-input {
+      position: absolute;
+      top: 110%;
+      right: 0;
+      width: 250px;
+      padding: 10px 15px;
+      border: 1px solid var(--light-gray);
+      border-radius: 20px;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+      opacity: 0;
+      transform: translateY(-10px);
+      visibility: hidden;
+    }
+
+    #search-input.visible {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    main {
+      padding: 2rem 5vw;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .intro-summary {
+        background-color: var(--light-gray);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        font-size: 1.05rem;
+        color: #555;
+        border-left: 5px solid var(--primary-green);
+    }
+
+    #news-feed {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .news-card {
+      background-color: var(--bg-color);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.6s forwards;
+    }
+
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(39, 174, 96, 0.15);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .card-content h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.4rem;
+      color: var(--text-color);
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--medium-gray);
+      margin-top: 1rem;
+    }
+    
+    .card-meta .source {
+        font-weight: 600;
+        color: var(--dark-green);
+    }
+
+    .card-description {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+      color: #555;
+      font-size: 1rem;
+    }
+    
+    .card-description p {
+        margin: 0;
+        padding-top: 1rem;
+        border-top: 1px solid var(--light-gray);
+    }
+    
+    .news-card.expanded .card-description {
+      max-height: 1000px; /* Large enough for content */
+      margin-top: 1.5rem;
+    }
+    
+    .read-more-btn {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 10px 20px;
+        background-color: var(--primary-green);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 500;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .read-more-btn:hover {
+        background-color: var(--dark-green);
+        transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (min-width: 768px) {
+      #news-feed {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .card-image {
+        height: 200px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      #news-feed {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+
   <header class="sticky-header">
-    <h2 class="header-title">World Scale News</h2>
+    <div class="site-title">Panda<span>Lime</span>.com</div>
     <div class="search-container">
-      <svg class="search-icon" id="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-      <input type="text" id="search-input" placeholder="Search articles...">
+        <svg id="search-toggle" class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search articles...">
     </div>
   </header>
 
   <main>
-    <section class="intro-section">
-        <h1>Crypto News Today: Digital Euro Launch Set for 2029, Trump's Controversial Crypto Pardons, and Germany Eyes Bitcoin as Strategic Asset</h1>
-        <p>The crypto market is buzzing with significant institutional and regulatory developments. The European Central Bank has set a tentative 2029 launch for the digital euro, signaling a major step towards mainstream CBDC adoption. Politically, President Trump's recent pardon of a major crypto figure is sparking intense debate on ethics and corruption. Meanwhile, Germany's opposition party is pushing for Bitcoin to be treated as a strategic national asset, a move that could reshape European crypto policy. On the investment front, new exchange-traded products (ETPs) for assets like Bittensor (TAO) are emerging, and major firms like Wealthsimple are securing massive funding rounds, highlighting sustained investor confidence in the digital asset space. This confluence of government-level strategy, political influence, and financial innovation points towards a dynamic and rapidly maturing market for Bitcoin, Ethereum, and various Altcoins.</p>
+    <section class="intro-summary">
+      <p>The US crypto market is currently buzzing with significant developments. Solana (SOL) is gaining major traction following a landmark partnership with Western Union for a new stablecoin, intensifying the "Solana vs. XRP" debate. Meanwhile, Bitcoin (BTC) is showing signs of renewed retail interest, with FOMO returning after a recent price dip. The altcoin space remains vibrant, driven by presale successes like AlphaPepe ($ALPE) and speculative excitement around potential tier-1 exchange listings for tokens such as Digitap ($TAP). This dynamic landscape reflects a blend of institutional adoption, speculative trading, and ongoing innovation in blockchain utility, creating diverse opportunities and trends for traders to watch. Key keywords to monitor include: Bitcoin, Ethereum, Solana, Altcoins, Market Price, Trading Signals, and Crypto News.</p>
     </section>
-    
-    <section id="news-feed" class="news-feed"></section>
+    <section id="news-feed"></section>
   </main>
+  
+  <script type="application/json" id="newsData">
+  [{"source":{"id":null,"name":"GlobeNewswire"},"author":"AlphaPepe","title":"AlphaPepe Presale Reaches Major Milestone With Over 3,000 Early Investors Onboarded","description":"MONACO , Oct. 29, 2025 (GLOBE NEWSWIRE) -- AlphaPepe ($ALPE), a BNB Chain–based meme coin project, has reached a major presale milestone with over 3,000 early investors onboarded. The project reports consistent daily holder growth, instant token delivery, and…","url":"https://www.globenewswire.com/news-release/2025/10/29/3176657/0/en/AlphaPepe-Presale-Reaches-Major-Milestone-With-Over-3-000-Early-Investors-Onboarded.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/800468d2-5f81-4acb-9872-b8c38130ce3b","publishedAt":"2025-10-29T15:07:00Z","content":"MONACO , Oct. 29, 2025 (GLOBE NEWSWIRE) -- AlphaPepe ($ALPE), a BNB Chainbased meme coin project, has reached a major presale milestone with over 3,000 early investors onboarded. The project reports … [+6175 chars]"},{"source":{"id":null,"name":"Bitcoinist"},"author":"Jake Simmons","title":"‘This Is 9/11 For XRP,’ Claims Solana Developer In Viral Post","description":"Western Union has chosen Solana as the exclusive blockchain for its forthcoming US dollar–pegged stablecoin and a broader “Digital Asset Network,” a decision that immediately ricocheted through crypto social media and reignited long-running tribal feuds betwe…","url":"https://bitcoinist.com/this-is-9-11-for-xrp-solana-developer/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2025/10/ChatGPT-Image-Oct-29-2025-08_53_52-AM.png","publishedAt":"2025-10-29T15:00:56Z","content":"Western Union has chosen Solana as the exclusive blockchain for its forthcoming US dollarpegged stablecoin and a broader Digital Asset Network, a decision that immediately ricocheted through crypto s… [+3389 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"AMBCrypto Team","title":"A Tier-1 Exchange Listing Rumor Suggests Digitap ($TAP) Could Catapult 40x Overnight","description":"Tier-1 exchange listing is something most ICOs eagerly wait for. That’s because these listings increase […]","url":"https://ambcrypto.com/a-tier-1-exchange-listing-rumor-suggests-digitap-tap-could-catapult-40x-overnight/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Screenshot-2025-10-29-192510.png","publishedAt":"2025-10-29T15:00:36Z","content":"Tier-1 exchange listing is something most ICOs eagerly wait for. Thats because these listings increase market penetration and adoption, typically pushing tokens soaring to new ATHs. And thats where D… [+4379 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Samyukhtha L KM","title":"Bitcoin FOMO returns after BTC dip – But is it too soon to buy?","description":"Data indicates hidden strength in BTC.","url":"https://ambcrypto.com/bitcoin-fomo-returns-after-btc-dip-but-is-it-too-soon-to-buy/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Samyukhtha-1-1000x600.webp","publishedAt":"2025-10-29T15:00:30Z","content":"Key takeaways\r\nWhy might the real Bitcoin opportunity be hidden from retail traders?\r\nExperienced investors are quietly accumulating BTC, while retail traders chase short-term dips.\r\nWhen do the stro… [+3171 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Sandra White","title":"XRP At $1,000 Is Peanuts If Used To Clear US National Debt; Pundit Explains","description":"A crypto commentator is once again discussing how the United States may use XRP in a key plan. According to his post, XRP could one day reach very high prices and still be small compared to the US national debt. He suggests crypto could one day help solve the…","url":"http://www.newsbtc.com/analysis/xrp/xrp-at-1000-is-peanuts-us-debt/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/09/ChatGPT-Image-12-sept.-2025-22_03_36.png?fit=1024%2C1024","publishedAt":"2025-10-29T15:00:26Z","content":"A crypto commentator is once again discussing how the United States may use XRP in a key plan. According to his post, XRP could one day reach very high prices and still be small compared to the US na… [+2358 chars]"},{"source":{"id":null,"name":"Reason"},"author":"Nick Gillespie, Nick Gillespie, Author at Reason.com","title":"Jake Tapper on Censorship, Media Failings, and Presidential Power","description":"Jake Tapper examines the growing pressure on the news media to serve political interests, Donald Trump’s attacks on the press and peaceful protesters, as well as the lasting damage Joe Biden may have done to the Democratic Party.","url":"https://reason.com/podcast/2025/10/29/jake-tapper-on-censorship-media-failings-and-presidential-power/","urlToImage":"https://d2eehagpk5cl65.cloudfront.net/img/q60/uploads/2025/10/10-27-25-V9-A-2.png","publishedAt":"2025-10-29T15:00:23Z","content":"The Reason Interview goes deep with the artists, activists, entrepreneurs, and policymakers who are making the world a more libertarianor at least more interestingplace by challenging worn-out orthod… [+59250 chars]"},{"source":{"id":null,"name":"Coinjournal.net"},"author":"Collaborations","title":"Mono Protocol opens reward hub as smart contract audit set to go live: participate, earn, and build in Web3","description":"Mono Protocol’s crypto presale focuses on real utility, transparency, and audited smart contracts. Stage 15 presale gains momentum with audits, beta launch, and community reward programs ahead. Mono simplifies DeFi with chain abstraction, unified balances, an…","url":"https://coinjournal.net/news/mono-protocol-opens-reward-hub-as-smart-contract-audit-set-to-go-live-participate-earn-and-build-in-web3/","urlToImage":"https://coinjournal.net/wp-content/uploads/2025/10/Mono-Protocol.png","publishedAt":"2025-10-29T15:00:04Z","content":"<ul><li>Mono Protocol’s crypto presale focuses on real utility, transparency, and audited smart contracts.</li><li>Stage 15 presale gains momentum with audits, beta launch, and community reward progr… [+4738 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"John Tamny, Contributor, \n John Tamny, Contributor\n https://www.forbes.com/sites/johntamny/","title":"U.S. Banks Are Required To Compete With One Arm Tied Behind The Back","description":"The profit motive is rapidly erasing the worth and effectiveness of legislation foisted on banks.","url":"https://www.forbes.com/sites/johntamny/2025/10/29/us-banks-are-required-to-compete-with-one-arm-tied-behind-the-back/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/690225809d9c5af8f231922b/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-29T15:00:00Z","content":"The profit motivated dont wait for permission to innovate. Its essential to remember this with the Bank Secrecy Act top of mind. \r\nThe legislation was passed in 1970 to help the federal government de… [+3374 chars]"},{"source":{"id":null,"name":"Help Net Security"},"author":"Zeljka Zorz","title":"Sanctions won’t stop cyberattacks, but they can still “bite”","description":"Sanctions are one of the tools Western governments use when they want to hit back at state-sponsored cyber threat actors. But do they actually work? That’s the question a group of current and former cybersecurity officials, analysts, and researchers tackled a…","url":"https://www.helpnetsecurity.com/2025/10/29/sanctions-wont-stop-cyberattacks-but-they-can-still-bite/","urlToImage":"https://img.helpnetsecurity.com/wp-content/uploads/2025/10/29130321/digital_earth-1500.webp","publishedAt":"2025-10-29T14:58:35Z","content":"Sanctions are one of the tools Western governments use when they want to hit back at state-sponsored cyber threat actors. But do they actually work?\r\nThats the question a group of current and former … [+4254 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"coindesk.com","title":"Crypto Treasury Activity Still Tepid, but Capital Flows Rebound: B. Riley","description":"Crypto Treasury Activity Still Tepid, but Capital Flows Rebound: B. Riley\nThe broker sees digital asset treasuries stabilizing as U.S.-China trade progress lifts sentiment.\nWhat to know:\n- B. Riley said corporate crypto activity remains subdued, though capita…","url":"https://biztoc.com/x/670564a0177fe3d8","urlToImage":"https://biztoc.com/cdn/670564a0177fe3d8_s.webp","publishedAt":"2025-10-29T14:57:29Z","content":"Crypto Treasury Activity Still Tepid, but Capital Flows Rebound: B. RileyThe broker sees digital asset treasuries stabilizing as U.S.-China trade progress lifts sentiment.What to know:- B. Riley said… [+139 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Olivia Brooke","title":"Solana Beats Ethereum and Polygon to Emerge as the Best-Performing Blockchain‬","description":"Solana recently earned recognition as the top-performing network during the recent Amazon Web Services (AWS) outage.","url":"https://zycrypto.com/solana-beats-ethereum-and-polygon-to-emerge-as-the-best-performing-blockchain/","urlToImage":"https://zycrypto.com/wp-content/uploads/2023/09/Concerns-Abound-As-Over-10-Million-in-Solana-SOL-Other-Cryptos-Leave-FTX-Linked-Wallet.jpg","publishedAt":"2025-10-29T14:55:25Z","content":"Solana recently earned recognition as the top-performing network during the recent Amazon Web Services (AWS) outage.\r\nData from SolanaFloor shows that the blockchain maintained steady throughput thro… [+1875 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"Margaux Nijkerk","title":"The Protocol: ETH’s Fusaka Upgrade Goes Live on Hoodi, Mainnet Next","description":"Also: BOB Unveils BTC Vault Liquidation Engine, Ledger’s Major Overhaul and Google Weighs In on Quantum Computing.","url":"https://www.coindesk.com/tech/2025/10/29/the-protocol-eth-s-fusaka-upgrade-goes-live-on-hoodi-mainnet-next","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/3b1981767618166d531dc18b72d4e4fb56fdf95c-1920x1079.jpg?auto=format","publishedAt":"2025-10-29T14:53:55Z","content":"Welcome to The Protocol, CoinDesk's weekly wrap of the most important stories in cryptocurrency tech development. Im Margaux Nijkerk, a reporter at CoinDesk.\r\nIn this issue:\r\n<ul><li>Ethereums Fusaka… [+9107 chars]"},{"source":{"id":null,"name":"CoinDesk"},"author":"Will Canny, AI Boost","title":"Crypto Treasury Activity Still Tepid, but Capital Flows Rebound: B. Riley","description":"The broker sees digital asset treasuries stabilizing as U.S.-China trade progress lifts sentiment.","url":"https://www.coindesk.com/markets/2025/10/29/crypto-treasury-activity-still-tepid-but-capital-flows-rebound-b-riley","urlToImage":"https://cdn.sanity.io/images/s3y3vcno/production/e552563624043b0efba1853951f1bfba94164795-1920x1080.jpg?auto=format&w=960&h=540&crop=focalpoint&fit=clip&q=75&fm=jpg","publishedAt":"2025-10-29T14:49:18Z","content":"Corporate digital asset activity remained muted week over week amid the fallout from recent crypto deleveraging, with Wall Street broker B. Riley noting capital flows began to normalize as U.S.-China… [+1841 chars]"},{"source":{"id":null,"name":"Finextra"},"author":"Editorial Team","title":"Navigating the Next Era of Global Payments - A Strategic Analysis (Stanley Epstein)","description":"Introduction: Competing Architectures in the New Payments Order The global payments industry stands ...","url":"https://www.finextra.com/blogposting/29697/navigating-the-next-era-of-global-payments---a-strategic-analysis","urlToImage":"https://www.finextra.com/finextra-images/member_photos/thumb_29167_stanley_epstein.jpg","publishedAt":"2025-10-29T14:46:52Z","content":"Introduction: Competing Architectures in the New Payments Order\r\nThe global payments industry stands at a decisive inflection point. For decades, the driving vision was clear to build an interconnect… [+21320 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Aliyu Pokima","title":"Weak Dollar, Not Inflation Fuels Bitcoin’s Gains, NYDIG Knocks Crypto Experts","description":"A new NYDIG research study suggests that Bitcoin (BTC) doesn't directly act as a hedge against inflation, as touted by several experts.","url":"https://zycrypto.com/weak-dollar-not-inflation-fuels-bitcoins-gains-nydig-knocks-crypto-experts/","urlToImage":"https://zycrypto.com/wp-content/uploads/2023/09/Bitcoin-Slides-Below-26000-As-Ether-DOGE-SHIB-Wipe-Weekly-Gains.jpg","publishedAt":"2025-10-29T14:46:16Z","content":"A new NYDIG research study suggests that Bitcoin (BTC) doesn’t serve as a direct hedge against inflation, as several experts have touted. This contradicts a decade-old principle sparking new debates … [+2261 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Trefis Team, Contributor, \n Trefis Team, Contributor\n https://www.forbes.com/sites/greatspeculations/people/trefis/","title":"MP Materials To Benefit If A U.S.-China Trade Deal?","description":"MP Materials has experienced a nearly 10% decline in its stock price over the last five days and is down approximately 30% from its peak on October 14.","url":"https://www.forbes.com/sites/greatspeculations/2025/10/29/mp-materials-to-benefit-if-a-us-china-trade-deal/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/689acf2a997956476da798d1/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-29T14:46:08Z","content":"Photo illustration by Cheng Xin/Getty Images\r\nGetty Images\r\nMP Materials (NYSE:MP)\r\n, a rare-earth materials company, has experienced a nearly 10% decline in its stock price over the last five tradin… [+5138 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Trefis Team, Contributor, \n Trefis Team, Contributor\n https://www.forbes.com/sites/greatspeculations/people/trefis/","title":"Netflix Stock To $500?","description":"Netflix stock (NASDAQ:NFLX) has shown remarkable performance, increasing by 45% in the last 12 months and currently trades at approximately $1,100 for each share.","url":"https://www.forbes.com/sites/greatspeculations/2025/10/29/netflix-stock-to-500/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/6902279bd6ec627dcab16a0a/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-29T14:42:38Z","content":"Photo illustration by Cheng Xin/Getty Images\r\nGetty Images\r\nNetflix stock\r\n (NASDAQ:NFLX) has shown remarkable performance, increasing by 45% in the last 12 months and currently trades at approximate… [+7578 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"DBS and Goldman Sachs execute first-ever crypto options trade between banks","description":"This milestone signifies a growing institutional embrace of crypto, potentially accelerating mainstream adoption and integration with traditional finance.\nThe post DBS and Goldman Sachs execute first-ever crypto options trade between banks appeared first on C…","url":"https://cryptobriefing.com/dbs-goldman-sachs-first-crypto-options-trade-between-banks/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/29103732/96d525e5-27ae-4b03-b98a-79b7bd7c40fb-800x420.jpg","publishedAt":"2025-10-29T14:38:19Z","content":"Key Takeaways\r\n<ul><li>DBS and Goldman Sachs completed the first-ever crypto options trade.</li><li>The trade involved cash-settled, over-the-counter options for Bitcoin and Ether.</li></ul>\r\nShare t… [+525 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"Oluwapelumi Adejumo","title":"Bitcoin fork Zcash up 380% to $5.8B: Does scarce privacy have legs?","description":"Zcash (ZEC) was little more than a historical footnote for most of the past years. The digital asset was seen as a relic of crypto’s cypherpunk age, forgotten amid the rise of AI tokens, restaking narratives, and layer-2 rollups. Yet, it has become 2025’s mos…","url":"https://cryptoslate.com/bitcoin-fork-zcash-up-380-to-5-8b-does-privacy-have-legs/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/zcash-fork.jpg","publishedAt":"2025-10-29T14:30:15Z","content":"Zcash (ZEC) was little more than a historical footnote for most of the past years.\r\nThe digital asset was seen as a relic of cryptos cypherpunk age, forgotten amid the rise of AI tokens, restaking na… [+6112 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Guest Author","title":"8HOURS makes cloud mining simpler and more efficient, easily opening up new experience of intelligent computing power","description":"8HOURS Mining provides users with a professional, one-stop cloud mining solution that makes mining efficient and straightforward. The platform integrates advanced mining machines, intelligent power allocation, and real-time revenue monitoring, enabling users …","url":"https://zycrypto.com/8hours-makes-cloud-mining-simpler-and-more-efficient-easily-opening-up-new-experience-of-intelligent-computing-power/","urlToImage":"https://zycrypto.com/wp-content/uploads/2025/10/8HOURS-makes-cloud-mining-simpler-and-more-efficient-easily-opening-up-new-experience-of-intelligent-computing-power-1.jpg","publishedAt":"2025-10-29T14:27:28Z","content":"Disclaimer: The below article is sponsored, and the views in it do not represent those of ZyCrypto. Readers should conduct independent research before taking any actions related to the project mentio… [+3997 chars]"}
+  ]
+  </script>
 
-  <script type="application/json" id="newsData">[{"source":{"id":null,"name":"pymnts.com"},"author":"PYMNTS","title":"European Central Bank Aims to Launch Digital Euro in 2029","description":"The European Central Bank is reportedly targeting 2029 for the launch of its digital euro. Officials will decide whether to continue preparatory work on the project at a meeting this week in Florence, Italy, Bloomberg reported Wednesday (Oct. 29), citing unna…","url":"https://www.pymnts.com/cbdc/2025/european-central-bank-aims-launch-digital-euro-2029/","urlToImage":"https://www.pymnts.com/wp-content/uploads/2022/08/digital-euro-CBDC-2.jpg","publishedAt":"2025-10-29T14:11:32Z","content":"The European Central Bank is reportedly targeting 2029 for the launch of its digital euro.Officials will decide whether to continue preparatory work on the project at a meeting this week in Florence,… [+2146 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"MEDIROM Healthcare Technologies Inc.","title":"MEDIROM to Launch New Treasury Strategy Utilizing Cryptocurrency","description":"Aimed at incentivize large-scale vital data collection Aimed at incentivize large-scale vital data collection","url":"https://www.globenewswire.com/news-release/2025/10/29/3176597/0/en/MEDIROM-to-Launch-New-Treasury-Strategy-Utilizing-Cryptocurrency.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/6c5821a7-6122-4597-b099-5613e5e214d8","publishedAt":"2025-10-29T14:11:00Z","content":"TOKYO, Oct. 29, 2025 (GLOBE NEWSWIRE) -- MEDIROM Healthcare Technologies Inc., (Headquarters: Minato-ku, Tokyo; President and CEO: Kouji Eguchi; listed on the Nasdaq Stock Market under the ticker sym… [+5817 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Aaron Wood","title":"Trump’s crypto pardons raise ethics and corruption concerns","description":"President Donald Trump has pardoned CZ, marking another act of clemency for a prominent figure in the crypto industry that signals a concerning trend.","url":"https://cointelegraph.com/news/trump-crypto-pardons-corruption-concerns","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-07/0197dad2-72b6-7009-b069-dddff1e13a27","publishedAt":"2025-10-29T14:09:39Z","content":"US President Donald Trump pardoned Changpeng Zhao, also known as CZ, on Oct. 21. The former Binance executive is just the latest on a growing list of convicted crypto executives to receive clemency f… [+8780 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Helen Partz","title":"Germany’s AfD urges government to treat Bitcoin as strategic asset","description":"Germany’s main opposition party, AfD, has warned of MiCA overregulation, urging regulators to treat Bitcoin separately from other crypto assets and consider it as a strategic reserve asset.","url":"https://cointelegraph.com/news/germany-bitcoin-reserve-idea-mica-overreach","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/019a3001-9da9-7b62-be31-d8d952c6a738","publishedAt":"2025-10-29T14:09:21Z","content":"The German parliament is set to review a motion urging the government to recognize Bitcoin as a unique, decentralized digital asset that deserves a strategic approach.\r\nGermanys main opposition party… [+2444 chars]"},{"source":{"id":null,"name":"Finextra"},"author":"Editorial Team","title":"Wealthsimple raises C$750m at C$10bn valuation","description":"Canada's Wealthsimple has raised C$750 million at a post-money valuation of C$10 billion in a funding round led Dragoneer Investment Group and GIC.","url":"https://www.finextra.com/newsarticle/46835/wealthsimple-raises-c750m-at-c10bn--valuation","urlToImage":"https://www.finextra.com/finextra-images/top_pics/xl/ravi-patel-xockvglvbd8-unsplash.jpg","publishedAt":"2025-10-29T14:06:00Z","content":"Canada's Wealthsimple has raised C$750 million at a post-money valuation of C$10 billion in a funding round led Dragoneer Investment Group and GIC.The round, which includes both a C$550 million prima… [+1413 chars]"},{"source":{"id":null,"name":"Coinjournal.net"},"author":"Benson Toti","title":"Deutsche Digital Assets and Safello launch staked Bittensor ETP","description":"Deutsche Digital Assets has teamed up with Safello to list a new Bittensor exchange traded product. The Safello Bittensor Staked TAO ETP offers regulated exposure to Bittensor’s TAO token with staking rewards. Safello’s crypto ETP goes live on SIX Swiss Excha…","url":"https://coinjournal.net/news/deutsche-digital-assets-and-safello-launch-staked-bittensor-etp/","urlToImage":"https://coinjournal.net/wp-content/uploads/2025/10/bittensor-tao.png","publishedAt":"2025-10-29T14:03:10Z","content":"<ul><li>Deutsche Digital Assets has teamed up with Safello to list a new Bittensor exchange traded product.</li><li>The Safello Bittensor Staked TAO ETP offers regulated exposure to Bittensor’s TAO t… [+3231 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Deutsche Digital Assets and Safello Launch Staked TAO ETP — New Wave of Crypto Products?","description":"Deutsche Digital Assets (DDA), a European crypto asset manager, has teamed up with Safello, the Nordic cryptocurrency exchange, to launch the Safello Bittensor Staked TAO exchange traded product (ETP).\nThe product will use Deutsche Digital Assets white-label …","url":"https://biztoc.com/x/78dcbdbaa068ae89","urlToImage":"https://biztoc.com/cdn/78dcbdbaa068ae89_s.webp","publishedAt":"2025-10-29T14:02:47Z","content":"Deutsche Digital Assets (DDA), a European crypto asset manager, has teamed up with Safello, the Nordic cryptocurrency exchange, to launch the Safello Bittensor Staked TAO exchange traded product (ETP… [+150 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"News Desk","title":"TRON DAO Participates in Europol’s 9th Global Conference on Criminal Finances and Cryptoassets","description":"Geneva, Switzerland, October 28, 2025 – TRON DAO, the community-governed DAO dedicated to accelerating the decentralization of the internet through blockchain technology and decentralized applications (dApps), participated in the 9th Global Conference on Crim…","url":"https://cryptoslate.com/tron-dao-participates-in-europols-9th-global-conference-on-criminal-finances-and-cryptoassets/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/tron-pr-2.jpg","publishedAt":"2025-10-29T14:02:25Z","content":"Disclosure: This is a paid article. Readers should conduct further research prior to taking any actions. Learn more ›\r\nGeneva, Switzerland, October 28, 2025TRON DAO, the community-governed DAO dedica… [+3469 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Peter Schiff: Bitcoin Depends On 'Growing Supply Of Fools'—And Technical Analysis Says He's Not Wrong","description":"Bitcoin (CRYPTO: BTC) trades near $113,000 on Wednesday, caught between Peter Schiff's crash warning and a chart setup that could define its next major move.\nSchiff Warns Of Confidence-Driven Fragility\nIn an X post, Schiff said Bitcoin \"works only as long as …","url":"https://biztoc.com/x/3d71b63a3b0c7249","urlToImage":"https://biztoc.com/cdn/3d71b63a3b0c7249_s.webp","publishedAt":"2025-10-29T14:02:18Z","content":"Bitcoin (CRYPTO: BTC) trades near $113,000 on Wednesday, caught between Peter Schiff's crash warning and a chart setup that could define its next major move.Schiff Warns Of Confidence-Driven Fragilit… [+143 chars]"},{"source":{"id":"fortune","name":"Fortune"},"author":"Angelica Ang","title":"HKEX CEO Bonnie Chan says global stock exchanges have to work together to stay relevant in a crypto age","description":"\"We're entering a stage where exchanges are not really competing with one another, but working together,\" HKEX CEO Bonnie Chan said.","url":"https://fortune.com/2025/10/29/hkex-ceo-bonnie-chan-stock-exchanges-crypto/","urlToImage":"https://fortune.com/img-assets/wp-content/uploads/2025/10/54883098311_79d2de8849_o-e1761655553648.jpg?resize=1200,600","publishedAt":"2025-10-29T14:02:13Z","content":"Todays investors have a lot of options for where to invest their money. Between private markets, cryptocurrencies, and other financial instruments, more traditional stocks may look a little old-fashi… [+2637 chars]"},
-    {
-      "source": { "id": null, "name": "GlobeNewswire" },
-      "author": "Bexback co., LTD",
-      "title": "100x Leverage. No KYC. $100 Welcome Bonus. Crypto Futures Trading Made Simple on BexBack",
-      "description": "SINGAPORE, Oct. 29, 2025 (GLOBE NEWSWIRE) -- With Bitcoin hovering around $120,000, many analysts predict sustained volatility in the crypto market. In such unpredictable conditions, traditional spot positions may struggle to generate short-term profits. Ente…",
-      "url": "https://www.globenewswire.com/news-release/2025/10/29/3176588/0/en/100x-Leverage-No-KYC-100-Welcome-Bonus-Crypto-Futures-Trading-Made-Simple-on-BexBack.html",
-      "urlToImage": "https://ml.globenewswire.com/Resource/Download/f47f4d3f-3b6c-4732-930a-6dec4386cb9c",
-      "publishedAt": "2025-10-29T14:01:00Z"
-    },
-    {
-      "source": { "id": null, "name": "Ambcrypto.com" },
-      "author": "Benjamin Njiri",
-      "title": "Bitcoin’s ETF inflows surge 4x – So why does BTC still feel heavy?",
-      "description": "BTC at crossroads as LTH dumping meets sluggish ETF demand.",
-      "url": "https://ambcrypto.com/bitcoins-etf-inflows-surge-4x-so-why-does-btc-still-feel-heavy/",
-      "urlToImage": "https://ambcrypto.com/wp-content/uploads/2025/10/Bitcoin-ETF-FI-1000x600.jpg",
-      "publishedAt": "2025-10-29T14:00:49Z"
-    }
-  ]</script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', () => {
       const newsData = JSON.parse(document.getElementById('newsData').textContent);
       const feed = document.getElementById('news-feed');
-      const searchIcon = document.getElementById('search-icon');
+      const searchToggle = document.getElementById('search-toggle');
       const searchInput = document.getElementById('search-input');
-      const articlesToDisplay = newsData.slice(0, 10);
+      const articles = newsData.slice(0, 10);
 
-      const aiSummaries = [
-        `The European Central Bank (ECB) is strategically planning the launch of its central bank digital currency (CBDC), the digital euro, with a target rollout in 2029. This long-term roadmap underscores the complexity and caution European officials are exercising in transitioning towards a digital financial landscape. A pivotal decision on whether to proceed with the advanced preparatory phases of the project is expected to be made this week during a high-level meeting in Florence, Italy. This development is a significant indicator of the global trend among central banks to explore digital currencies to modernize payment systems, enhance monetary policy tools, and compete with private cryptocurrencies like Bitcoin and stablecoins. The successful implementation of a digital euro could have profound implications for the Eurozone's economy, affecting everything from retail banking to cross-border transactions. For crypto traders and investors, this move signals growing mainstream acceptance of digital asset technology, potentially paving the way for clearer regulations and increased institutional involvement in the broader crypto market. The key challenge remains balancing innovation with financial stability and user privacy.`,
-        `MEDIROM Healthcare Technologies Inc. is embarking on a groundbreaking treasury strategy by incorporating cryptocurrency, a move designed to revolutionize large-scale vital data collection. The Tokyo-based healthcare technology firm, listed on Nasdaq, aims to leverage digital assets to create powerful incentives for individuals to share their health data securely and efficiently. This initiative represents a significant convergence of the healthcare and blockchain sectors, where the inherent properties of cryptocurrency—transparency, security, and immutability—can be used to build trust and encourage participation. By utilizing a crypto-based reward system, MEDIROM can streamline the process of data acquisition, which is crucial for medical research, personalized medicine, and public health analysis. This strategy not only diversifies the company's treasury assets but also positions it at the forefront of health-tech innovation. For the crypto market, this application provides a compelling real-world use case beyond simple trading, demonstrating how blockchain technology and digital currencies like Bitcoin or custom utility tokens can solve complex challenges in major industries, potentially driving further adoption and increasing the perceived value of crypto assets.`,
-        `President Donald Trump's decision to pardon Changpeng 'CZ' Zhao, the former head of a major crypto exchange, has ignited a firestorm of controversy, raising serious questions about ethics, political influence, and potential corruption within the intersection of cryptocurrency and government. This act of clemency is not an isolated incident; it follows a pattern of pardons for prominent figures in the digital asset industry who have faced legal scrutiny. Critics argue that these actions could undermine the rule of law and create a perception that wealth and connections can circumvent justice, particularly in a sector already battling a reputation for regulatory arbitrage. The pardons send a mixed signal to the market: while some may view it as a pro-crypto stance from a potential future administration, others worry it could erode trust and deter institutional investors who prioritize regulatory certainty and a level playing field. This development will be closely watched by traders and compliance officers alike, as it could influence future regulatory approaches and enforcement actions against crypto-related offenses, making the political landscape a key factor in market analysis and risk assessment.`,
-        `Germany's primary opposition party, the Alternative for Germany (AfD), is championing a progressive and strategic approach to cryptocurrency by urging the government to officially recognize Bitcoin as a strategic asset. In a motion set for parliamentary review, the party highlights concerns that the upcoming Markets in Crypto-Assets (MiCA) regulation could lead to overregulation, stifling innovation. The AfD's proposal advocates for treating Bitcoin distinctly from other crypto assets due to its decentralized nature, suggesting it should be considered for inclusion in the nation's strategic reserves, similar to gold. This bold move could position Germany as a leader in European crypto policy, potentially influencing other EU nations to adopt a more nuanced regulatory framework. For investors and the broader market, Germany's potential classification of Bitcoin as a strategic reserve would be a massive validation of the asset's long-term value and role as a store of value. It could trigger a significant increase in institutional demand, boost market confidence, and provide a powerful bullish signal for Bitcoin's price and its legitimacy on the global stage.`,
-        `Canadian fintech and crypto trading platform Wealthsimple has successfully closed a massive C$750 million funding round, achieving a staggering post-money valuation of C$10 billion. The financing was led by prominent investment firms Dragoneer Investment Group and GIC, signaling immense confidence from institutional investors in the company's growth trajectory and the broader digital finance sector. This capital injection, consisting of both primary and secondary share sales, will empower Wealthsimple to aggressively expand its product offerings, enhance its platform technology, and solidify its market position in Canada. The valuation milestone is particularly significant as it reflects the soaring demand for accessible and user-friendly platforms that bridge traditional finance with the burgeoning world of cryptocurrencies like Bitcoin and Ethereum. This news serves as a powerful market indicator, demonstrating that venture capital continues to flow heavily into crypto-adjacent businesses. It underscores the ongoing trend of retail and institutional adoption of digital assets and reinforces the long-term bullish outlook for companies that successfully simplify crypto trading and investing for the masses.`,
-        `Deutsche Digital Assets (DDA) has partnered with Nordic crypto exchange Safello to launch an innovative new investment product: the Safello Bittensor Staked TAO Exchange-Traded Product (ETP). This financial instrument is set to be listed on the prestigious SIX Swiss Exchange, providing regulated and secure exposure to Bittensor's native token, TAO. A key feature of this ETP is that it includes staking rewards, allowing investors to not only gain price exposure to the TAO token but also to benefit from the network's yield-generating mechanism without the technical complexities of direct staking. The launch represents a significant step forward in the maturation of crypto investment products, moving beyond simple Bitcoin and Ethereum trackers. By offering access to promising altcoins involved in decentralized AI, like Bittensor, it caters to a more sophisticated investor demand for diversified crypto portfolios. This development highlights a clear trend towards the creation of more complex and yield-bearing crypto ETPs, which could attract a new wave of capital into the altcoin market and boost the visibility and liquidity of innovative blockchain projects.`,
-        `In a significant move for the European crypto market, asset manager Deutsche Digital Assets (DDA) has collaborated with the Nordic exchange Safello to introduce a groundbreaking exchange-traded product (ETP) for Bittensor's TAO token. The Safello Bittensor Staked TAO ETP offers investors a regulated and accessible way to invest in the burgeoning decentralized AI sector. By listing on a major European exchange, this product simplifies the investment process, allowing individuals and institutions to gain exposure to TAO's price movements and staking rewards through traditional brokerage accounts. This launch is indicative of a broader trend where asset managers are creating a new wave of sophisticated crypto products that go beyond mainstream assets like Bitcoin. The inclusion of staking rewards directly within the ETP structure is a particularly innovative feature, providing a passive income stream that enhances the overall investment proposition. This signals strong institutional belief in the long-term potential of specialized blockchain projects and paves the way for more diverse and complex crypto financial instruments to enter the public markets, thereby expanding the investment universe for crypto traders.`,
-        `The TRON DAO, the governing body behind the TRON blockchain, actively participated in Europol’s 9th Global Conference on Criminal Finances and Cryptoassets. This engagement highlights a crucial and proactive effort from a major blockchain organization to collaborate with international law enforcement agencies. By participating in such a high-profile event, TRON DAO demonstrates its commitment to fostering a secure and compliant ecosystem, addressing concerns about the illicit use of cryptocurrencies, and contributing to the development of effective regulatory frameworks. This move is strategically important for building trust and legitimacy for both the TRON network and the broader crypto industry. For investors and developers, this signals that leading blockchain projects are increasingly recognizing the importance of regulatory cooperation to ensure long-term viability and mainstream adoption. Such collaborations can help demystify blockchain technology for regulators, leading to more informed and balanced policies that support innovation while mitigating risks related to financial crime, ultimately strengthening the entire digital asset market.`,
-        `Prominent gold bug and staunch Bitcoin critic Peter Schiff has once again issued a dire warning, claiming that Bitcoin's value is fundamentally dependent on a "growing supply of fools" willing to buy it at inflated prices. His comments come as Bitcoin (BTC) trades near a formidable $113,000, a level that technical analysts are watching closely. According to some chart analysis, Bitcoin's current market structure could be signaling a major directional move, making Schiff's bearish prediction particularly timely. He argues that Bitcoin lacks intrinsic value and that its price is sustained purely by market confidence and speculative fervor, which he believes is a fragile foundation. This classic clash between fundamental skepticism and bullish technical indicators creates a tense environment for traders. While many in the crypto community dismiss Schiff's views, his consistent warnings serve as a reminder of the market's inherent volatility and the significant debate that still surrounds Bitcoin's long-term viability as an asset class. Investors are now caught between Schiff's crash narrative and chart patterns that could suggest further upside, highlighting the polarized sentiment in the current crypto market.`,
-        `Bonnie Chan, the CEO of the Hong Kong Exchanges and Clearing (HKEX), delivered a powerful message on the evolving financial landscape, stating that global stock exchanges must collaborate to maintain their relevance in the age of cryptocurrency and other alternative investments. Chan emphasized that the competitive dynamic is shifting; exchanges are no longer just competing against each other but are collectively facing a new class of competition from decentralized finance (DeFi), digital assets, and private markets. Her call for cooperation highlights a growing recognition among traditional finance leaders that the rise of crypto is a paradigm shift, not a fleeting trend. To stay relevant, exchanges need to innovate, potentially by integrating blockchain technology, offering crypto-based products like ETFs, or partnering with digital asset firms. This perspective from the head of a major global financial hub underscores the profound impact crypto is having on the entire investment world. It signals that traditional institutions are actively strategizing on how to adapt to and participate in the digital asset economy, which could lead to greater integration and a more seamless flow of capital between traditional and crypto markets in the future.`
+      const summaries = [
+        `The meme coin market continues to show its strength as AlphaPepe ($ALPE), a new project on the BNB Chain, achieves a significant presale milestone. Successfully onboarding over 3,000 early investors, AlphaPepe demonstrates strong community backing and market interest, which are critical trading signals for potential growth. This achievement highlights the project's appeal to traders seeking high-growth altcoins. Analysts are now focusing on its consistent daily growth in holders and efficient token delivery system, key factors for building trust in the competitive crypto landscape. The future success of $ALPE will depend on its post-launch strategy, including exchange listings and sustained community engagement, which could solidify its position in the altcoin market.`,
+        `A groundbreaking partnership between Western Union and Solana has sent shockwaves through the crypto community, igniting a heated debate about the future of blockchain-based payments. Western Union's choice of Solana for its new stablecoin and digital asset network is seen by some as a major blow to competitors like XRP, which has long been positioned for such use cases. This development underscores Solana's growing influence and technical capabilities, attracting significant institutional interest. The move could reshape the landscape for cross-border remittances, highlighting the real-world utility of blockchain technology. The market is now closely watching how this partnership will impact the price and adoption of both SOL and XRP, making it a critical crypto news event.`,
+        `Speculation is running high around Digitap ($TAP) as rumors of an imminent Tier-1 exchange listing circulate within the trading community. Such listings are often a catalyst for explosive price growth, with some analysts predicting a potential 40x increase for $TAP overnight. This kind of rumor generates significant FOMO (Fear Of Missing Out) and can drive massive trading volume as investors look to get in early. The anticipation of increased liquidity, market access, and credibility that comes with a major exchange listing is a powerful market driver. While the rumor remains unconfirmed, it has placed Digitap squarely in the spotlight, making it a key altcoin to watch for traders monitoring market trends and potential breakout opportunities in the crypto space.`,
+        `Bitcoin (BTC) is experiencing a resurgence of "Fear Of Missing Out" (FOMO) among retail traders following a recent price dip, a classic market trend. While some investors are eagerly buying the dip, market analysis reveals a more complex picture. On-chain data suggests that while retail sentiment is bullish, experienced investors and "whales" are accumulating BTC more quietly, indicating a belief in its long-term strength. This divergence in behavior presents a crucial question: is it the right time to buy? The underlying strength in the Bitcoin market, despite short-term volatility, points to a potentially bullish outlook. Traders should monitor key support and resistance levels and consider both macro-economic factors and on-chain metrics before making a decision.`,
+        `The long-standing debate over XRP's potential valuation has been reignited by a commentator's bold claim that a price of $1,000 per XRP would be "peanuts" if the token were used to settle the U.S. national debt. This theoretical use case, while highly speculative, highlights the ambitious vision some proponents have for XRP's role in the global financial system. The argument is based on the massive scale of sovereign debt and the need for a highly liquid and efficient digital asset for settlement. While reaching such a price point faces enormous hurdles, the discussion itself fuels interest in XRP's utility and long-term price potential, keeping it a hot topic in crypto news and among altcoin traders interested in its future market trends.`,
+        `This segment delves into critical issues facing modern media and politics, featuring insights from prominent journalist Jake Tapper. The discussion explores the increasing pressure on news organizations to align with political agendas, the impact of political attacks on the press, and the long-term consequences of executive actions on democratic institutions. While not directly crypto-related, the themes of censorship and information integrity are highly relevant to the decentralized ethos of the blockchain community. Understanding these broader media trends provides context for how information, including crypto news and market analysis, is disseminated and consumed. It highlights the value of independent research and critical thinking in navigating a complex information landscape, whether in politics or trading.`,
+        `Mono Protocol is making significant strides in the DeFi space, preparing for a smart contract audit and the launch of its beta platform. The project is enhancing community engagement by opening a new reward hub, designed to incentivize participation and growth within its ecosystem. Mono Protocol aims to simplify the DeFi experience through innovative features like chain abstraction and unified balances, addressing key pain points for users. With its presale gaining momentum, the project's focus on transparency, security (via audits), and real utility is attracting attention from DeFi enthusiasts and investors. This progress positions Mono Protocol as a noteworthy project in the evolving world of decentralized finance and altcoin investments.`,
+        `The U.S. banking sector operates under a complex web of regulations, such as the Bank Secrecy Act, which can stifle innovation and create competitive disadvantages. This article argues that the inherent drive for profit in a free market often leads to creative workarounds and innovations that make such restrictive legislation less effective over time. As the financial world evolves with the rise of FinTech and digital assets like Bitcoin and Ethereum, traditional banks face increasing pressure to adapt. The ongoing tension between regulatory compliance and the need to innovate is a central theme in the modern financial industry. This analysis provides valuable context for understanding the environment in which the crypto market and traditional finance are beginning to converge.`,
+        `Governments, particularly in the U.S. and other Western nations, are increasingly using sanctions as a tool to counter state-sponsored cyberattacks. However, the effectiveness of these measures is a subject of intense debate among cybersecurity experts. While sanctions may not completely halt cyber threats, they can impose significant economic and political costs on malicious actors, making them "bite." This discussion is relevant to the crypto market, as digital assets are sometimes used to circumvent such financial restrictions. Understanding the landscape of international sanctions and cyber warfare provides insight into the geopolitical risks and regulatory challenges that could impact the blockchain industry and the price of cryptocurrencies like Bitcoin and major altcoins.`,
+        `Recent analysis from B. Riley indicates that while corporate crypto treasury activity remains subdued, there are positive signs of capital flows rebounding in the digital asset market. This recovery is partly attributed to improving sentiment driven by progress in U.S.-China trade relations, which tends to boost investor confidence in riskier assets like cryptocurrencies. The stabilization of digital asset treasuries suggests that the worst of recent market deleveraging may be over. This market trend is a crucial trading signal for institutional and retail investors alike, indicating a potential shift towards a more bullish outlook for Bitcoin, Ethereum, and the broader crypto market in the coming months. Keeping an eye on these capital flows is key to understanding market direction.`
       ];
-      
+
       function timeAgo(dateString) {
-          const date = new Date(dateString);
-          const now = new Date();
-          const seconds = Math.floor((now - date) / 1000);
-          let interval = seconds / 31536000;
-          if (interval > 1) return Math.floor(interval) + "y ago";
-          interval = seconds / 2592000;
-          if (interval > 1) return Math.floor(interval) + "mo ago";
-          interval = seconds / 86400;
-          if (interval > 1) return Math.floor(interval) + "d ago";
-          interval = seconds / 3600;
-          if (interval > 1) return Math.floor(interval) + "h ago";
-          interval = seconds / 60;
-          if (interval > 1) return Math.floor(interval) + "m ago";
-          return Math.floor(seconds) + "s ago";
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + "y ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + "d ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + "h ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return Math.floor(seconds) + "s ago";
       }
 
-      function renderArticles(articles) {
+      function renderArticles(articleList) {
         feed.innerHTML = '';
-        articles.forEach((article, index) => {
-          if (!article.title || article.title === '[Removed]') return;
+        if (articleList.length === 0) {
+            feed.innerHTML = '<p>No articles found.</p>';
+            return;
+        }
+        articleList.forEach((article, index) => {
+          const card = document.createElement('article');
+          card.className = 'news-card';
+          card.style.animationDelay = `${index * 100}ms`;
 
           const imageUrl = article.urlToImage || 'https://via.placeholder.com/800x400?text=Crypto+News';
           const author = article.author || 'N/A';
-          const sourceName = article.source.name || 'Unknown Source';
-          const summary = aiSummaries[index] || article.description || 'No summary available.';
-
-          const card = `
-            <article class="news-card" style="animation-delay: ${index * 100}ms;">
-              <img src="${imageUrl}" alt="${article.title}" class="news-image" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x400?text=Crypto+News';">
-              <div class="card-content">
-                <h3>${article.title}</h3>
-                <div class="card-meta">
-                  <span class="source" data-source="${sourceName}">${sourceName}</span>
-                  <span class="author">By ${author}</span>
-                  <time datetime="${article.publishedAt}">${timeAgo(article.publishedAt)}</time>
-                </div>
-              </div>
-              <div class="article-description">
+          const summary = summaries[articles.indexOf(article)] || article.description;
+          
+          card.innerHTML = `
+            <img src="${imageUrl}" alt="${article.title}" class="card-image" loading="lazy">
+            <div class="card-content">
+              <h3>${article.title}</h3>
+              <div class="card-description">
                 <p>${summary}</p>
                 <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
               </div>
-            </article>
+              <div class="card-meta">
+                <span class="source">${article.source.name}</span>
+                <time datetime="${article.publishedAt}">${timeAgo(article.publishedAt)}</time>
+              </div>
+            </div>
           `;
-          feed.insertAdjacentHTML('beforeend', card);
+          feed.appendChild(card);
         });
       }
 
-      renderArticles(articlesToDisplay);
-      
-      // Click to expand/collapse
-      feed.addEventListener('click', function(e) {
+      // Dynamic SEO Title
+      if (articles.length > 0) {
+        const topTitle = articles[0].title.split('–')[0].trim();
+        const secondTitle = articles[1].title.split('–')[0].trim();
+        document.title = `${topTitle} | ${secondTitle} | PandaLime Crypto News`;
+      } else {
+        document.title = 'Latest Crypto & Trading News | PandaLime.com';
+      }
+
+      // Initial Render
+      renderArticles(articles);
+
+      // Event Listeners
+      feed.addEventListener('click', (e) => {
         const card = e.target.closest('.news-card');
         if (card && !e.target.closest('.read-more-btn')) {
           card.classList.toggle('expanded');
         }
       });
       
-      // Search functionality
-      searchIcon.addEventListener('click', function() {
-          searchInput.classList.toggle('active');
-          if (searchInput.classList.contains('active')) {
+      searchToggle.addEventListener('click', () => {
+          searchInput.classList.toggle('visible');
+          if (searchInput.classList.contains('visible')) {
               searchInput.focus();
           }
       });
-      
-      searchInput.addEventListener('keyup', function() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const allCards = document.querySelectorAll('.news-card');
-        
-        allCards.forEach(card => {
-          const title = card.querySelector('h3').textContent.toLowerCase();
-          const source = card.querySelector('.source').dataset.source.toLowerCase();
-          
-          if (title.includes(searchTerm) || source.includes(searchTerm)) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
 
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredArticles = articles.filter(article => 
+          article.title.toLowerCase().includes(searchTerm) || 
+          article.source.name.toLowerCase().includes(searchTerm)
+        );
+        renderArticles(filteredArticles);
+      });
     });
   </script>
 </body>
-```
