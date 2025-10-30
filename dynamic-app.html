@@ -1,356 +1,384 @@
-```html
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CryptoTrade Live - Latest Trading News</title>
-  <meta name="theme-color" content="#000000">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0b0b0b;
-      --card-bg: #1a1a1a;
-      --accent: #ffd700;
-      --text: #f5f5f5;
-      --text-muted: #aaa;
-      --shadow-glow: 0 0 15px rgba(255, 215, 0, 0.4);
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg-color: #0b0b0b;
+    --primary-accent: #ffd700;
+    --text-color: #f0f0f0;
+    --card-bg: #1a1a1a;
+    --border-color: #2a2a2a;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(11, 11, 11, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .header-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-accent);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-icon {
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    fill: var(--text-color);
+    transition: fill 0.3s ease;
+  }
+  
+  .search-icon:hover {
+    fill: var(--primary-accent);
+  }
+
+  #search-input {
+    width: 0;
+    padding: 0.5rem 0;
+    border: none;
+    border-bottom: 2px solid var(--primary-accent);
+    background: transparent;
+    color: var(--text-color);
+    font-size: 1rem;
+    outline: none;
+    transition: width 0.4s ease-in-out;
+    opacity: 0;
+    margin-left: 0.5rem;
+  }
+
+  #search-input.active {
+    width: 200px;
+    opacity: 1;
+  }
+
+  .content-wrapper {
+    padding: 1.5rem 5%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .intro-summary {
+    background-color: var(--card-bg);
+    border-left: 4px solid var(--primary-accent);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #ccc;
+  }
+  
+  .intro-summary strong {
+    color: var(--primary-accent);
+  }
+
+  #news-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .news-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+  
+  .news-card.hidden-card {
+      display: none;
+  }
+
+  .news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.1);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: var(--text-color);
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .card-source {
+    font-weight: 600;
+    color: #ccc;
+  }
+  
+  .card-author {
+    font-style: italic;
+  }
+
+  .card-description {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+    color: #ccc;
+    font-size: 0.95rem;
+  }
+
+  .news-card.expanded .card-description {
+    max-height: 500px; /* Adjust as needed */
+    margin-top: 1rem;
+  }
+  
+  .card-description strong {
+    color: var(--primary-accent);
+  }
+
+  .read-more-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--primary-accent);
+    color: var(--bg-color);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .read-more-btn:hover {
+    background-color: #fff;
+    transform: scale(1.05);
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 80px 0 20px 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: rgba(11, 11, 11, 0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid #222;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
     .header-title {
       font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--text);
-      text-shadow: 0 0 8px var(--accent);
     }
-    .header-title span {
-      color: var(--accent);
+    .content-wrapper {
+      padding: 1rem 3%;
     }
-    .search-icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      color: var(--accent);
-    }
-    .search-icon-btn svg {
-      width: 24px;
-      height: 24px;
-      transition: transform 0.2s ease-in-out;
-    }
-    .search-icon-btn:hover svg, .search-icon-btn:focus svg {
-      transform: scale(1.1);
-    }
-    #news-feed {
-      display: grid;
-      gap: 1.5rem;
-      padding: 0 1rem;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .news-card {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      border: 1px solid #2a2a2a;
-      display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.5s ease-out forwards;
-      opacity: 0;
-    }
-    .news-card-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-      border-bottom: 1px solid #2a2a2a;
-    }
-    .news-card-content {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-    .news-card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem 0;
-      line-height: 1.4;
-      color: var(--text);
-    }
-    .news-card-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-    .news-card-source {
-      font-weight: 600;
-      color: var(--accent);
-    }
-    .news-card-description {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin: 0 0 1rem 0;
-      flex-grow: 1;
-    }
-    .read-more-btn {
-      display: inline-block;
-      background-color: var(--accent);
-      color: var(--bg);
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      text-align: center;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow-glow);
-    }
-    .read-more-btn:hover, .read-more-btn:focus {
-      transform: translateY(-2px);
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-      filter: brightness(1.1);
-      outline: none;
-    }
-    /* Search Overlay */
-    .search-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      z-index: 2000;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: 20vh;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0s 0.3s linear;
-    }
-    .search-overlay.active {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity 0.3s ease, visibility 0s linear;
-    }
-    .search-container {
-      width: 90%;
-      max-width: 500px;
-      position: relative;
-    }
-    #search-input {
-      width: 100%;
-      padding: 1rem;
+    .card-title {
       font-size: 1.2rem;
-      background-color: var(--card-bg);
-      border: 2px solid var(--accent);
-      border-radius: 8px;
-      color: var(--text);
-      outline: none;
-      box-shadow: var(--shadow-glow);
-      -webkit-appearance: none;
     }
-    #search-input::placeholder {
-      color: var(--text-muted);
+    .card-image {
+      height: 200px;
     }
-    .close-search-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      padding: 8px;
+    #search-input.active {
+      width: 150px;
     }
-    .close-search-btn svg {
-      width: 32px;
-      height: 32px;
-    }
-  </style>
-</head>
-<body>
-  <header class="header">
-    <h1 class="header-title">CryptoTrade<span> Live</span></h1>
-    <button class="search-icon-btn" id="open-search-btn" aria-label="Open search">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-5.3-3.8l-3.2 3.2a1 1 0 0 0 1.4 1.4l3.2-3.2a8 8 0 1 0-1.4-1.4z"></path></svg>
-    </button>
-  </header>
+  }
+</style>
 
-  <div class="search-overlay" id="search-overlay">
-    <button class="close-search-btn" id="close-search-btn" aria-label="Close search">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.6L7.4 6 6 7.4l4.6 4.6L6 16.6 7.4 18l4.6-4.6 4.6 4.6 1.4-1.4-4.6-4.6 4.6-4.6L16.6 6 12 10.6z"></path></svg>
-    </button>
-    <div class="search-container">
-      <input type="text" id="search-input" placeholder="Search by title or source..." autocomplete="off">
-    </div>
+<header class="sticky-header">
+  <h1 class="header-title">World Scale News</h1>
+  <div class="search-container">
+    <svg id="search-icon-trigger" class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <input type="text" id="search-input" placeholder="Search articles...">
   </div>
+</header>
 
-  <main id="news-feed"></main>
+<div class="content-wrapper">
+  <section class="intro-summary" id="market-summary">
+    <!-- AI-generated summary will be injected here -->
+  </section>
+  <main id="news-feed">
+    <!-- News articles will be injected here by JavaScript -->
+  </main>
+</div>
 
-  <script type="application/json" id="newsData">
-  [{"source":{"id":null,"name":"Bitcoinist"},"author":"Sandra White","title":"XRP News: BlackRock, Nasdaq, And Bloomberg Head To Ripple Swell, Here’s The Full List","description":"Anticipation is building ahead of Ripple Swell 2025, the company’s flagship conference scheduled for November 4 to 5 in New York, with a welcome reception on November 3. This year’s edition is set against a backdrop of growing institutional adoption of crypto…","url":"https://bitcoinist.com/xrp-blackrock-nasdaq-ripple/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2024/02/XRP-price-1.jpeg","publishedAt":"2025-10-27T19:30:09Z","content":"Anticipation is building ahead of Ripple Swell 2025, the companys flagship conference scheduled for November 4 to 5 in New York, with a welcome reception on November 3. This years edition is set agai… [+3092 chars]"},{"source":{"id":null,"name":"Coinjournal.net"},"author":"Ananthu C U","title":"Citigroup and Coinbase partner to expand digital-asset payment capabilities","description":"Citigroup teams up with Coinbase to simplify crypto-to-fiat payments for corporate clients. Citi plans to integrate stablecoin payments, boosting speed and 24/7 transaction access. Coinbase expands institutional reach as Wall Street embraces blockchain innova…","url":"https://coinjournal.net/news/citigroup-and-coinbase-partner-to-expand-digital-asset-payment-capabilities/","urlToImage":"https://coinjournal.net/wp-content/uploads/2025/10/20251028_0054_Digital-Finance-Collaboration_simple_compose_01k8khxzpdfq58fwpk5zpvdmp3.png","publishedAt":"2025-10-27T19:28:49Z","content":"<ul><li>Citigroup teams up with Coinbase to simplify crypto-to-fiat payments for corporate clients.</li><li>Citi plans to integrate stablecoin payments, boosting speed and 24/7 transaction access.</l… [+4083 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Bitcoin Holds $115,000 As Fed Rate Cut Hopes Boost Sentiment For Ethereum, XRP, Dogecoin","description":"Bitcoin is consolidating around the $115,000 level amid growing optimism over a Fed rate cut and strong institutional accumulation.\nCryptocurrency\nTicker\nPrice\nBitcoin\n(CRYPTO: BTC)\n$115,432.62\nEthereum\n(CRYPTO: ETH)\n$4,216.49\nSolana\n(CRYPTO: SOL)\n$201.87\nXRP…","url":"https://biztoc.com/x/282f894c44b2873e","urlToImage":"https://biztoc.com/cdn/282f894c44b2873e_s.webp","publishedAt":"2025-10-27T19:18:11Z","content":"Bitcoin is consolidating around the $115,000 level amid growing optimism over a Fed rate cut and strong institutional accumulation.CryptocurrencyTickerPriceBitcoin(CRYPTO: BTC)$115,432.62Ethereum(CRY… [+113 chars]"},{"source":{"id":"financial-post","name":"Financial Post"},"author":"Bloomberg News","title":"Stocks Climb on Hopes US-China Talks Will Go Well: Markets Wrap","description":"Wall Street’s hopes the US and China are nearing a trade deal lifted the riskier corners of the market, with stocks hitting all-time highs amid a rally in the crypto world. As demand for safety waned, gold fell alongside short-term bonds.","url":"https://financialpost.com/pmn/business-pmn/stocks-climb-on-hopes-us-china-talks-will-go-well-markets-wrap","urlToImage":"https://smartcdn.gprod.postmedia.digital/financialpost/wp-content/uploads/2025/10/capex-spending-soars-among-tech-giants-group-is-expected-to.jpg","publishedAt":"2025-10-27T19:17:47Z","content":"While these developments have lifted market spirits, analysts remain skeptical that the underlying issues will be fully resolved, said Fawad Razaqzada at City Index and Forex.com. Nevertheless, trade… [+3269 chars]"},{"source":{"id":null,"name":"Coinjournal.net"},"author":"Benson Toti","title":"Solana boost as Reliance adds SOL to treasury holdings","description":"Reliance Global Group adds Solana to diversify its financial holdings. The company’s crypto portfolio includes exposure to Bitcoin, Ethereum, XRP and Cardano. Investing in Solana allows Reliance to proactively embrace blockchain innovation. Reliance Global Gr…","url":"https://coinjournal.net/news/solana-boost-as-reliance-adds-sol-to-treasury-holdings/","urlToImage":"https://coinjournal.net/wp-content/uploads/2025/08/Aug_29_.jpg","publishedAt":"2025-10-27T19:12:48Z","content":"<ul><li>Reliance Global Group adds Solana to diversify its financial holdings.</li><li>The company’s crypto portfolio includes exposure to Bitcoin, Ethereum, XRP and Cardano.</li><li>Investing in Sol… [+3687 chars]"},{"source":{"id":null,"name":"Yahoo Entertainment"},"author":"Khac Phu Nguyen","title":"Bitcoin Sucks Up $931M in Fresh Cash as Inflation Cools--Ethereum Takes a Hit","description":"Wall Street piles into Bitcoin funds after surprise CPI print, while Ethereum and Grayscale face renewed outflows.","url":"https://finance.yahoo.com/news/bitcoin-sucks-931m-fresh-cash-191239772.html","urlToImage":"https://s.yimg.com/cv/apiv2/cv/apiv2/social/images/yahoo-finance-default-logo.png","publishedAt":"2025-10-27T19:12:39Z","content":"This article first appeared on GuruFocus.\r\nBitcoin (BTC-USD) is back in the drivers seat. Digital asset funds pulled in $921 million over the past week, with Bitcoin alone commanding $931 million in … [+1819 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Vismaya V","title":"China Maintains Scrutiny of Crypto While Asia Embraces Stablecoins","description":"The People's Bank of China Governor’s warning on sovereignty risks comes amid Asia's stablecoin boom and Chinese firms seeking offshore licenses in Hong Kong.","url":"https://decrypt.co/346157/china-crypto-scrutiny-asia-stablecoin-embrace","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/07/china-digital-yuan-stablecoin-decrypt-style-gID_7.jpg","publishedAt":"2025-10-27T19:09:13Z","content":"In brief\r\n<ul><li>China's central bank will continue cracking down on domestic crypto operations while monitoring overseas stablecoin developments.  </li><li>PBOC Governor Pan warned stablecoins \"can… [+3461 chars]"},{"source":{"id":null,"name":"The Conversation Africa"},"author":"Jason Tian, Senior Lecturer, Swinburne University of Technology, Angel Zhong, Professor of Finance, RMIT University","title":"This was the best way to invest $1,000 … back in 2010","description":"We have crunched the numbers on a range of popular investment options to see how they have performed since 2010. The results might surprise you.","url":"https://theconversation.com/this-was-the-best-way-to-invest-1-000-back-in-2010-267739","urlToImage":"https://images.theconversation.com/files/697436/original/file-20251021-56-kkr2in.png?ixlib=rb-4.1.0&rect=25%2C126%2C1547%2C773&q=45&auto=format&w=1356&h=668&fit=crop","publishedAt":"2025-10-27T19:03:22Z","content":"Over the past few years, markets have been on a wild ride. The price of gold has soared to record highs. Bitcoin is trading above US$100,000 (about A$150,000), at levels that once seemed unthinkable.… [+5531 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Sebastian Villafuerte","title":"Digital Yen Goes Live: JPYC EX Integrates Traditional Finance With DeFi","description":"Japan has officially stepped into the regulated stablecoin era with the launch of JPYC EX, the country’s first fully licensed digital yen under the revised Payment Services Act. This milestone marks a pivotal moment for Japan’s financial sector, bridging trad…","url":"http://www.newsbtc.com/stablecoin/digital-yen-goes-live-jpyc-ex-integrates-traditional-finance-with-defi/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/10/Untitled-design-2025-10-27T101730.724.jpg?fit=1792%2C1024","publishedAt":"2025-10-27T19:00:34Z","content":"Japan has officially stepped into the regulated stablecoin era with the launch of JPYC EX, the countrys first fully licensed digital yen under the revised Payment Services Act. This milestone marks a… [+3919 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Akashnath S","title":"Bitcoin’s $116K breakout explained – Here are 2 reasons why crypto is up today!","description":"The $116.6k-$118k area is the next target - will the rally continue?","url":"https://ambcrypto.com/bitcoins-116k-breakout-explained-here-are-2-reasons-why-crypto-is-up-today/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Why-is-crypto-up-today-1000x600.webp","publishedAt":"2025-10-27T19:00:28Z","content":"Key Takeaways\r\nWhy is crypto up today?\r\nThe weekend ending 26th October saw a BTC rally of nearly 4% and the altcoin market followed the short-term bullish sentiment, aided by short liquidations driv… [+2407 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Adewale Olarinde","title":"NYSE certifies Bitwise Solana staking ETF: Hong Kong beats U.S. to market","description":"Bitwise crossed a key milestone toward launching the U.S. market’s first Solana staking ETF, securing NYSE listing certification. However, Hong Kong moved ahead, with ChinaAMC introducing the world’s first spot Solana ETF today.","url":"https://ambcrypto.com/nyse-certifies-bitwise-solana-staking-etf-hong-kong-beats-u-s-to-market/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Solana-4-1000x600.png","publishedAt":"2025-10-27T19:00:15Z","content":"Key Takeaways \r\nDid Bitwise’s Solana ETF just get approved in the U.S.?\r\nBitwise’s Solana Staking ETF received listing certification from NYSE Arca, but trading cannot begin until the U.S. government… [+3060 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"blazpay","title":"Blazpay Announces Phase 2 Milestone: Over 75% of AI Crypto Presale Sold","description":"PANAMA CITY, Oct. 27, 2025 (GLOBE NEWSWIRE) -- The Best Presale Crypto\r\n race is heating up, and Blazpay (BLAZ) is firmly leading. With Phase 2 priced at $0.0075 per token, Blazpay has already sold 119.6M out of 157.3M tokens, reaching 76.1% completion and ra…","url":"https://www.globenewswire.com/news-release/2025/10/27/3174917/0/en/Blazpay-Announces-Phase-2-Milestone-Over-75-of-AI-Crypto-Presale-Sold.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/5c8c611a-e128-4f8a-9e7b-c374d611ba6f","publishedAt":"2025-10-27T19:00:00Z","content":"PANAMA CITY, Oct. 27, 2025 (GLOBE NEWSWIRE) -- The Best Presale Crypto\r\n race is heating up, and Blazpay (BLAZ) is firmly leading. With Phase 2 priced at $0.0075 per token, Blazpay has already sold 1… [+6728 chars]"},{"source":{"id":null,"name":"NerdWallet"},"author":"Sam Taube","title":"There’s a Gold Rush in Crypto and Precious Metals ETFs. Is It Time to Grab a Shovel?","description":"Many of the best-performing funds right now are crypto and precious metals ETFs. Here’s what economists have to say about this trend.","url":"https://www.nerdwallet.com/article/investing/crypto-precious-metals-etfs#article","urlToImage":"https://www.nerdwallet.com/assets/blog/wp-content/uploads/2024/01/GettyImages-502096660-1-1440x864.jpg","publishedAt":"2025-10-27T18:51:11Z","content":"Every week, NerdWallet writers run a screen of inexpensive, U.S.-based, non-leveraged, non-inverse exchange-traded funds for our Best ETFs article. Over the last few weeks, something has jumped out a… [+8763 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"theblock.co","title":"Crypto ETFs tracking SOL, HBAR and Litecoin expected to launch this week despite government shutdown","description":"This follows earlier SEC guidance allowing firms to go public by filing an S-1 without a delaying amendment, enabling a launch after 20 days.","url":"https://biztoc.com/x/f6c6f2cf7e96990d","urlToImage":"https://biztoc.com/cdn/f6c6f2cf7e96990d_s.webp","publishedAt":"2025-10-27T18:45:03Z","content":"This follows earlier SEC guidance allowing firms to go public by filing an S-1 without a delaying amendment, enabling a launch after 20 days.\r\nThis story appeared on theblock.co, 2025-10-27 18:43:31."},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Bitcoin Surges Ahead Of Fed Meeting, Trump-Xi Summit: What's Going On?","description":"Bitcoin (CRYPTO: BTC) is trading near $115,500 on Monday, stabilizing ahead of two pivotal macro events that could shape global liquidity and risk sentiment this week.\nFed's QT Decision Could Shift Liquidity Flows\nMarkets are positioning for Wednesday's Feder…","url":"https://biztoc.com/x/356d3d60b2d42e64","urlToImage":"https://biztoc.com/cdn/356d3d60b2d42e64_s.webp","publishedAt":"2025-10-27T18:44:45Z","content":"Bitcoin (CRYPTO: BTC) is trading near $115,500 on Monday, stabilizing ahead of two pivotal macro events that could shape global liquidity and risk sentiment this week.Fed's QT Decision Could Shift Li… [+141 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Turner Wright","title":"Michael Selig confirms CFTC nomination as agency faces leadership void","description":"Michael Selig will likely face a hearing to consider his nomination as CFTC chair, but with a pending market structure bill, some concerns linger about the regulator’s leadership.","url":"https://cointelegraph.com/news/mike-selig-cftc-chair-nomination-questions","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2024-11/0193329c-9c66-7c82-bc6f-d3f827de1243","publishedAt":"2025-10-27T18:37:50Z","content":"US Securities and Exchange Commission (SEC) official Michael Selig announced that President Donald Trump had nominated him to chair the Commodity Futures Trading Commission (CFTC), citing a focus on … [+2794 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"coindesk.com","title":"Chainlink's LINK Gains as Whales Accumulate $188M After October Crypto Crash","description":"We're verifying your browser\nWe're verifying your browser","url":"https://biztoc.com/x/cdcbae966b77587b","urlToImage":"https://biztoc.com/cdn/cdcbae966b77587b_s.webp","publishedAt":"2025-10-27T18:34:12Z","content":"We're verifying your browserWe're verifying your browser\r\nThis story appeared on coindesk.com, 2025-10-27 18:28:04."},{"source":{"id":"techradar","name":"TechRadar"},"author":"Sead Fadilpašić","title":"Evil scam targets LastPass users with fake death certificate claims","description":"A fake LastPass email is telling users they died, and that a relative is taking over their account.","url":"https://www.techradar.com/pro/security/evil-scam-targets-lastpass-users-with-fake-death-certificate-claims","urlToImage":"https://cdn.mos.cms.futurecdn.net/c4QP7aaNUyPVDArLAi8iTT-1200-80.jpg","publishedAt":"2025-10-27T18:27:00Z","content":"<ul><li>Phishing emails claim victims are dead to steal LastPass master passwords</li><li>Fake site lastpassrecovery[.]com mimics LastPass to harvest credentials and passkeys</li><li>CryptoChameleon … [+2381 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"youtube.com","title":"House Dem introduces bill that would ban elected officials from owning, creating crypto","description":"Vice Chair of the Congressional Progressive Caucus, Rep. Ro Khanna, D-Calif., discusses the government shutdown, the NYC ...","url":"https://biztoc.com/x/5633d055795affc8","urlToImage":"https://biztoc.com/cdn/5633d055795affc8_s.webp","publishedAt":"2025-10-27T18:23:42Z","content":"Vice Chair of the Congressional Progressive Caucus, Rep. Ro Khanna, D-Calif., discusses the government shutdown, the NYC ...\r\nThis story appeared on youtube.com, 2025-10-27 18:10:23."},{"source":{"id":null,"name":"Biztoc.com"},"author":"247wallst.com","title":"Bitcoin or Ethereum: Which Is Better Post Crypto Flash Crash","description":"Key Points\n \n \n \n \n \n \nBitcoin and Ethereum are recovering following the recent crypto flash crash that saw liquidations of about $20 billion in leveraged positions.\n \n \n \n \nThis story examines both cryptocurrencies and how their post-crash performance may fu…","url":"https://biztoc.com/x/6504e7078b0973d4","urlToImage":"https://biztoc.com/cdn/6504e7078b0973d4_s.webp","publishedAt":"2025-10-27T18:23:06Z","content":"Key Points\r\nBitcoin and Ethereum are recovering following the recent crypto flash crash that saw liquidations of about $20 billion in leveraged positions.\r\nThis story examines both cryptocurrencies a… [+126 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Estefano Gomez","title":"Coinbase joins Apollo to bring stablecoin credit to institutional markets","description":"Coinbase Asset Management teams with Apollo to launch tokenized stablecoin credit products, expanding blockchain-based lending in 2026.\nThe post Coinbase joins Apollo to bring stablecoin credit to institutional markets appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/apollo-coinbase-stablecoin-lending-partnership/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/27140932/1641d37e-eef3-4fd6-90f7-e4f74b0523d2-800x420.jpg","publishedAt":"2025-10-27T18:12:13Z","content":"Key Takeaways\r\n<ul><li>Coinbase Asset Management and Apollo will co-develop tokenized stablecoin-credit products set for 2026.</li><li>The partnership bridges traditional credit markets with blockcha… [+578 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"President Trump Just Pardoned the Founder of Leading Crypto Exchange Binance. Here's 1 Implication for the Broader Crypto Market in 2026","description":"President Trump Just Pardoned the Founder of Leading Crypto Exchange Binance. Here's 1 Implication for the Broader Crypto Market in 2026.\nKey Points\n-\nPresident Trump pardoned Binance founder Changpeng Zhao last week.\n-\nZhao is an influential figure in the cr…","url":"https://biztoc.com/x/1026501d6b62ba34","urlToImage":"https://biztoc.com/cdn/1026501d6b62ba34_s.webp","publishedAt":"2025-10-27T18:01:10Z","content":"President Trump Just Pardoned the Founder of Leading Crypto Exchange Binance. Here's 1 Implication for the Broader Crypto Market in 2026.Key Points-President Trump pardoned Binance founder Changpeng … [+144 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"decrypt.co","title":"Morning Minute: Crypto Rips On US China Trade Deal Hopes","description":"Morning Minute is a daily newsletter written by Tyler Warner. The analysis and opinions expressed are his own and do not necessarily reflect those of Decrypt. Subscribe to the Morning Minute on Substack.\nGM!\nToday’s top news:\n- Crypto majors surge 3-5% on tra…","url":"https://biztoc.com/x/a5acd7d41651fe44","urlToImage":"https://biztoc.com/cdn/a5acd7d41651fe44_s.webp","publishedAt":"2025-10-27T18:00:41Z","content":"Morning Minute is a daily newsletter written by Tyler Warner. The analysis and opinions expressed are his own and do not necessarily reflect those of Decrypt. Subscribe to the Morning Minute on Subst… [+140 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Nate Kostar","title":"Tokenization platform tZero eyes 2026 IPO amid surge in crypto listing","description":"tZero, a blockchain firm backed by Intercontinental Exchange, plans a 2026 IPO amid a surge in crypto listings following U.S. regulatory clarity and new legislation.","url":"https://cointelegraph.com/news/tokenization-tzero-2026-ipo-crypto-listing","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-05/0196f4e5-7484-7901-8806-b409c12ad896","publishedAt":"2025-10-27T18:00:41Z","content":"TZero Group, a New Yorkbased blockchain infrastructure company specializing in tokenized securities and real-world assets, has announced plans to go public in 2026. \r\nThe company on Monday disclosed … [+2099 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Elizabeth Warren And Adam Schiff Introduce Senate Resolution Condemning Trump's Pardon Of Changpeng Zhao","description":"Senators Elizabeth Warren (D-Mass.) and Adam Schiff (D-CA) are introducing a Senate resolution condemning President Donald Trump‘s pardon of Binance (CRYPTO: BNB) founder Changpeng \"CZ\" Zhao.\nWhat Happened: The resolution follows Trump's decision to grant cle…","url":"https://biztoc.com/x/6c4b9771134dfcca","urlToImage":"https://biztoc.com/cdn/6c4b9771134dfcca_s.webp","publishedAt":"2025-10-27T18:00:36Z","content":"Senators Elizabeth Warren (D-Mass.) and Adam Schiff (D-CA) are introducing a Senate resolution condemning President Donald Trumps pardon of Binance (CRYPTO: BNB) founder Changpeng \"CZ\" Zhao.What Happ… [+139 chars]"},{"source":{"id":null,"name":"Bitcoinist"},"author":"Scott Matherson","title":"Ripple CEO Highlights Top 5 Acquisitions The Company Has Made As XRP Ledger Usage Rises","description":"Ripple’s rapid expansion across the global finance space, along with the continued growth of the XRP Ledger (XRPL), has drawn significant attention from the broader market. Ripple CEO Brad Garlinghouse recently spotlighted the company’s top five strategic acq…","url":"https://bitcoinist.com/ripple-top-5-acquisitions/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2025/10/XRP-from-iStock-14.jpg","publishedAt":"2025-10-27T18:00:27Z","content":"Ripples rapid expansion across the global finance space, along with the continued growth of the XRP Ledger (XRPL), has drawn significant attention from the broader market. Ripple CEO Brad Garlinghous… [+3374 chars]"},{"source":{"id":null,"name":"Nakedcapitalism.com"},"author":"Nat Wilson Turner","title":"Coffee Break: American Politics Follow the Money & Power Edition","description":"\"Follow the money (plus)\" is an essential guide for those wishing to understand American politics in the Trump 2.0 era. Let's follow the money to The White House bunker and below.","url":"https://www.nakedcapitalism.com/2025/10/follow-the-money-power-trump-mellon-mamdani-east-wing-bunker.html","urlToImage":null,"publishedAt":"2025-10-27T18:00:20Z","content":"Follow the money has been a rule of thumb for understanding American politics since the Watergate scandals of the 1970s, but in the Trump 2.0 era it should be expanded to include following the kineti… [+32330 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"AMBCrypto Team","title":"$1 million raised: Digitap ($TAP) proves unstoppable demand for its Visa Card as TRON (TRX) goes downhill","description":"From a raging presale to a stalling legacy network, the contrast between Digitap ($TAP) and […]","url":"https://ambcrypto.com/1-million-raised-digitap-tap-proves-unstoppable-demand-for-its-visa-card-as-tron-trx-goes-downhill/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Screenshot-2025-10-27-191246.png","publishedAt":"2025-10-27T18:00:17Z","content":"From a raging presale to a stalling legacy network, the contrast between Digitap ($TAP) and TRON (TRX) is quite jarring. Namely, Tron has been struggling to maintain any momentum for weeks now. Meanw… [+4695 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Estefano Gomez","title":"NYSE approves Bitwise Solana Staking ETF listing","description":"NYSE approves Bitwise Solana Staking ETF listing, expanding access to Solana staking for investors and reflecting rising market interest.\nThe post NYSE approves Bitwise Solana Staking ETF listing appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/nyse-approves-bitwise-solana-staking-etf-listing/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/27135723/c967162e-3376-4e1b-a3f5-6f812d3f4a0a-800x420.jpg","publishedAt":"2025-10-27T18:00:16Z","content":"Key Takeaways\r\n<ul><li>The New York Stock Exchange (NYSE) has approved the listing of Bitwise's Solana Staking ETF on NYSE Arca, pending SEC approval before trading can begin.</li><li>Bitwise's ETF w… [+569 chars]"},{"source":{"id":null,"name":"Activistpost.com"},"author":"Editor","title":"Doug Casey on the Global Push for a Digital ID—and Its Threat to Freedom","description":"International Man: Recently, the State Bank of Vietnam deactivated more than 86 million bank accounts as part of its shift toward a new national digital ID system. Officials call it a ‘security upgrade,’ but it effectively cut off millions from their own mone…","url":"https://www.activistpost.com/doug-casey-on-the-global-push-for-a-digital-id-and-its-threat-to-freedom/","urlToImage":"https://www.activistpost.com/wp-content/uploads/2025/10/shutterstock_2535170011-1-2048x1363-1.jpg","publishedAt":"2025-10-27T18:00:00Z","content":"International Man: Recently, the State Bank of Vietnam deactivated more than 86 million bank accounts as part of its shift toward a new national digital ID system.\r\nOfficials call it a security upgra… [+9913 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Rakesh Upadhyay","title":"Price predictions 10/27: SPX, DXY, BTC, ETH, BNB, XRP, SOL, DOGE, ADA, HYPE","description":"Bitcoin and several major altcoins have started a strong recovery, but the relief rally is expected to face significant headwinds near major overhead resistance levels.","url":"https://cointelegraph.com/news/price-predictions-10-27-spx-dxy-btc-eth-bnb-xrp-sol-doge-ada-hype","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/019a2696-7bcd-7197-b45d-1eb5b1c29688","publishedAt":"2025-10-27T17:50:45Z","content":"Key points:\r\n<ul><li>Bitcoins recovery could face selling at $118,000, but if the bulls overcome the resistance, the rally could retest the all-time high of $126,199.\r\n</li><li>Several major altcoins… [+8606 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Crypto Funds Pull in $921M on Fed Rate Cut Optimism","description":"Digital asset investment products saw inflows of $921 million last week, according to CoinShares, as optimism about U.S. interest rate cuts revived investor appetite for crypto-linked funds.\nThe inflows followed several volatile weeks marked by uncertainty ar…","url":"https://biztoc.com/x/a8261b64bd1e7914","urlToImage":"https://biztoc.com/cdn/a8261b64bd1e7914_s.webp","publishedAt":"2025-10-27T17:50:06Z","content":"Digital asset investment products saw inflows of $921 million last week, according to CoinShares, as optimism about U.S. interest rate cuts revived investor appetite for crypto-linked funds.The inflo… [+149 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"James Rubin","title":"Trump Sons' American Bitcoin Stock Jumps After Adding $163 Million to BTC Treasury","description":"The company holds approximately 3,865 Bitcoin acquired through mining and strategic purchases.","url":"https://decrypt.co/346068/trump-sons-american-bitcoin-jumps-adding-163-million-treasury","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/08/bitcoin_conf-E-Trump-gID_7.png","publishedAt":"2025-10-27T17:48:39Z","content":"In brief\r\n<ul><li>American Bitcoin has acquired 1,414 Bitcoin, the company said Monday.</li><li>Bitcoin was trading above $115,500, its highest level in two weeks. </li><li>More than 200 companies ha… [+2845 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Guest Author","title":"Why Are Analysts Indicating EcoYield ($EYE) As The Best Presale Token Right Now?","description":"The crypto presale season is afoot, offering reliable opportunities to acquire tokens at discounted prices before their official launch. Several new projects are vying for attention, with some gaining traction quicker than others. The good news is that more a…","url":"https://zycrypto.com/why-are-analysts-indicating-ecoyield-eye-as-the-best-presale-token-right-now/","urlToImage":"https://zycrypto.com/wp-content/uploads/2025/10/Why-Are-Analysts-Indicating-EcoYield-EYE-As-The-Best-Presale-Token-Right-Now.jpg","publishedAt":"2025-10-27T17:42:00Z","content":"Disclaimer: The below article is sponsored, and the views in it do not represent those of ZyCrypto. Readers should conduct independent research before taking any actions related to the project mentio… [+5051 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Callan Quinn","title":"Crypto Funds Pull in $921M on Fed Rate Cut Optimism","description":"Investor confidence returned to digital assets as softer U.S. inflation data fueled expectations of further monetary easing.","url":"https://decrypt.co/346103/crypto-funds-pull-in-921m-on-fed-rate-cut-optimism","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/05/crypto-trading-decrypt-style-01-gID_7.png","publishedAt":"2025-10-27T17:38:50Z","content":"In brief\r\n<ul><li>Digital asset products attracted $921 million in inflows last week, according to CoinShares.</li><li>U.S. and German markets led gains, while Switzerland saw outflows linked to asse… [+3880 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Scott Matherson","title":"Crypto Analyst Shows The Possibility Of The Ethereum Price Reaching $16,000","description":"Ethereum’s bullish momentum has intensified throughout the weekend, with the price climbing above $4,100. This steady recovery follows a strong rebound from the $3,500 region after a crash earlier in the month.  Investor sentiment, as shown by trading volume …","url":"http://www.newsbtc.com/news/ethereum/ethereum-price-reaching-16000/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/10/Ethereum-from-Getty-Images-23.jpg?fit=612%2C408","publishedAt":"2025-10-27T17:30:49Z","content":"Ethereums bullish momentum has intensified throughout the weekend, with the price climbing above $4,100. This steady recovery follows a strong rebound from the $3,500 region after a crash earlier in … [+3007 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"Liam 'Akiba' Wright","title":"Crypto’s week ahead: Everything you need to know to close out October","description":"Bitcoin price sits around $115,000 as the Federal Reserve meets this week. Policy risk concentrates around Wednesday’s Oct. 29 decision at 2 p.m. ET, followed by Chair Jerome Powell’s press conference at 2:30 p.m. ET. Markets price a 25 basis point cut for th…","url":"https://cryptoslate.com/cryptos-week-ahead-everything-you-need-to-know-to-close-out-october/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/crypto-week-fomc.jpg","publishedAt":"2025-10-27T17:30:02Z","content":"Bitcoin price sits around $115,000 as the Federal Reserve meets this week. Policy risk concentrates around Wednesdays Oct. 29 decision at 2 p.m. ET, followed by Chair Jerome Powells press conference … [+6557 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Spot XRP, Solana, and Litecoin ETFs may launch in next two weeks, expert speculates","description":"The potential launch of these crypto ETFs could significantly enhance institutional access to digital assets, driving broader market adoption.\nThe post Spot XRP, Solana, and Litecoin ETFs may launch in next two weeks, expert speculates appeared first on Crypt…","url":"https://cryptobriefing.com/spot-etf-xrp-sol-ltc-launch-two-weeks/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/27132256/1f61248a-bb40-4927-ad78-9c8d546a1713-800x420.jpg","publishedAt":"2025-10-27T17:25:27Z","content":"Key Takeaways\r\n<ul><li>Spot ETF filings for XRP, SOL, and LTC may be approved once the US government shutdown is resolved.</li><li>The SEC has acknowledged spot ETF filings for XRP from firms like Bi… [+1023 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"crypto-com-sdk 0.0.96","description":"cryptocom crypto exchange api client","url":"https://pypi.org/project/crypto-com-sdk/0.0.96/","urlToImage":null,"publishedAt":"2025-10-27T17:21:23Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"woo-api 0.0.94","description":"woo crypto exchange api client","url":"https://pypi.org/project/woo-api/0.0.94/","urlToImage":null,"publishedAt":"2025-10-27T17:21:23Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"gate-io-api 0.0.97","description":"gate crypto exchange api client","url":"https://pypi.org/project/gate-io-api/0.0.97/","urlToImage":null,"publishedAt":"2025-10-27T17:21:23Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"mexc-exchange-api 0.0.98","description":"mexc crypto exchange api client","url":"https://pypi.org/project/mexc-exchange-api/0.0.98/","urlToImage":null,"publishedAt":"2025-10-27T17:21:22Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"okx-exchange 0.0.98","description":"okx crypto exchange api client","url":"https://pypi.org/project/okx-exchange/0.0.98/","urlToImage":null,"publishedAt":"2025-10-27T17:21:18Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"woofipro-api 0.0.96","description":"woofipro crypto exchange api client","url":"https://pypi.org/project/woofipro-api/0.0.96/","urlToImage":null,"publishedAt":"2025-10-27T17:21:18Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"bybit-api 0.0.97","description":"bybit crypto exchange api client","url":"https://pypi.org/project/bybit-api/0.0.97/","urlToImage":null,"publishedAt":"2025-10-27T17:21:16Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Pypi.org"},"author":"info@ccxt.trade","title":"kucoin-api 0.0.101","description":"kucoin crypto exchange api client","url":"https://pypi.org/project/kucoin-api/0.0.101/","urlToImage":null,"publishedAt":"2025-10-27T17:21:14Z","content":"A required part of this site couldnt load. This may be due to a browser\r\n extension, network issues, or browser settings. Please check your\r\n connection, disable any ad blockers, or try using a diffe… [+12 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Bitcoin Back To $115,000: Why Is It Suddenly Going Up?","description":"Bitcoin's (CRYPTO: BTC) rally to $116,000 has returned millions of coins to profit and reignited optimism for a potential new all-time high.\nWhat Happened: According to CryptoQuant, Bitcoin's breakout above the $112,000–$113,000 resistance reclaimed three key…","url":"https://biztoc.com/x/221a69f87e020b16","urlToImage":"https://biztoc.com/cdn/221a69f87e020b16_s.webp","publishedAt":"2025-10-27T17:16:28Z","content":"Bitcoin's (CRYPTO: BTC) rally to $116,000 has returned millions of coins to profit and reignited optimism for a potential new all-time high.What Happened: According to CryptoQuant, Bitcoin's breakout… [+143 chars]"},{"source":{"id":null,"name":"TheStreet"},"author":"Moz Farooque","title":"Top analyst calls 'kick in the pants' for S&P 500","description":"Following its Oct. 24 close, the S&P 500 index is parked near 6,792, up on the week and continuing to flirt with record highs. Its three-month gain is also...","url":"https://www.thestreet.com/investing/top-analyst-calls-kick-in-the-pants-for-sp-500","urlToImage":"https://media.zenfs.com/en/thestreet_881/d02e527bd63d0bb027850b47c5442df4","publishedAt":"2025-10-27T17:07:00Z","content":"Following its Oct. 24 close, the S&amp;P 500 index is parked near 6,792, up on the week and continuing to flirt with record highs. Its three-month gain is also at a superb 8%, while the six-month tre… [+3703 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Sam Bourgi","title":"Ledn tops $1B in Bitcoin-backed loan originations as crypto lending surges","description":"Ledn reports record Bitcoin-backed lending as investors borrow against BTC holdings. The Bitcoin credit market could reach $45B by 2030.","url":"https://cointelegraph.com/news/ledn-bitcoin-loans-crypto-lending-growth-2025","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/019a2661-d439-7aea-8a08-648e13b83b29","publishedAt":"2025-10-27T17:06:28Z","content":"Digital asset lender Ledn has reported a record quarter for its Bitcoin-backed credit products, as more investors chose to borrow against their holdings amid the ongoing crypto bull market.\r\nThe comp… [+2010 chars]"},{"source":{"id":null,"name":"Gizmodo.com"},"author":"Rhett Jones","title":"Trump Is the Shitcoin President","description":"Trump ran as the bitcoin president, but stablecoins and crypto grifting have taken priority.","url":"https://gizmodo.com/trump-is-the-shitcoin-president-2000677483","urlToImage":"https://gizmodo.com/app/uploads/2025/10/trump_bitcoin-1200x675.jpg","publishedAt":"2025-10-27T17:05:12Z","content":"While campaigning for president, Donald Trump made a stop at the Bitcoin 2024 conference to establish himself as the candidate who would fight for the rights of Bitcoin users and embrace this new fin… [+6626 chars]"},{"source":{"id":null,"name":"Bitcoinist"},"author":"Bogdan Patru","title":"White House GameStop Tweet Causes WLFI Frenzy as Volume Spikes to $222M: Maxi Doge to Soar Next?","description":"What to Know: 1️⃣ A surprise White House post featuring Donald Trump as Halo’s Master Chief sent social media — and GameStop traders — into overdrive, fueling speculation of deeper ties between Trump’s circle and retail-favorite stocks. 2️⃣ Binance founder CZ…","url":"https://bitcoinist.com/white-house-gamestop-tweet-causes-wlfi-frenzy/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2025/10/white-house-gamestop-tweet-causes-wlfi-frenzy.jpg","publishedAt":"2025-10-27T16:54:38Z","content":"What to Know:\r\n<ul><li>1 A surprise White House post featuring Donald Trump as Halos Master Chief sent social media and GameStop traders into overdrive, fueling speculation of deeper ties between Tru… [+4877 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"BMNR Up 5% After 77,000 ETH Purchase—And Another 120% Move May Be In Play","description":"Shares of BitMine Immersion Technologies Inc. (NYSE:BMNR) advanced over 5% on Monday after its record Ethereum (CRYPTO: ETH) accumulation reignited bullish sentiment in crypto-linked equities.\nBitMine Expands Ethereum Treasury to 3.31 Million Tokens\nThe compa…","url":"https://biztoc.com/x/f71ee82a08c8deaf","urlToImage":"https://biztoc.com/cdn/f71ee82a08c8deaf_s.webp","publishedAt":"2025-10-27T16:54:11Z","content":"Shares of BitMine Immersion Technologies Inc. (NYSE:BMNR) advanced over 5% on Monday after its record Ethereum (CRYPTO: ETH) accumulation reignited bullish sentiment in crypto-linked equities.BitMine… [+141 chars]"},{"source":{"id":null,"name":"Coinspeaker"},"author":"Zoran Spirkovski","title":"IBM Launches Digital Asset Haven Platform With Dfns for Enterprise Custody","description":"IBM announced the launch of IBM Digital Asset Haven on Oct. 27, 2025, a platform for financial institutions, governments, and corporations to manage digital ...","url":"https://www.coinspeaker.com/ibm-dfns-digital-asset-haven/","urlToImage":"https://media.zenfs.com/en/coinspeaker_us_106/6ce329b275cc9c213c0574c3e10e3660","publishedAt":"2025-10-27T16:48:32Z","content":"IBM announced the launch of IBM Digital Asset Haven on Oct. 27, 2025, a platform for financial institutions, governments, and corporations to manage digital asset operations. The company developed th… [+2464 chars]"},{"source":{"id":null,"name":"phillymag.com"},"author":"Victor Fiorillo","title":"Philly Congressman Brian Fitzpatrick Romancing Trump’s Most-Hated Fox Reporter","description":"Check phillymag.com each morning Monday through Thursday for the latest edition of Philly Today. And if you have a news tip for our hardworking Philly […]","url":"https://www.phillymag.com/news/2025/10/27/jacqui-heinrich-fox-news/","urlToImage":"https://cdn10.phillymag.com/wp-content/uploads/sites/3/2025/10/Jacqui-Heinrich-fox-news.jpeg","publishedAt":"2025-10-27T16:46:20Z","content":"NewsPlus, the death of pickleball?\r\nLeft: Fox News reporter Jacqui Heinrich (photo via Fox News) | Right: United States Congressman Brian Fitzpatrick (photo via the Office of Brian Fitzpatrick)\r\nChec… [+3795 chars]"},{"source":{"id":null,"name":"pymnts.com"},"author":"PYMNTS","title":"Robinhood to Offer Futures Trading in UK","description":"Robinhood plans to start rolling out futures trading to eligible customers in the United Kingdom in the coming weeks. This offering will allow U.K. customers to trade index, energy, metals and foreign exchange futures in the Robinhood app and on the company’s…","url":"https://www.pymnts.com/stock-index/2025/robinhood-offer-futures-trading-united-kingdom/","urlToImage":"https://www.pymnts.com/wp-content/uploads/2023/09/Robinhood.jpg","publishedAt":"2025-10-27T16:46:05Z","content":"Robinhood plans to start rolling out futures trading to eligible customers in the United Kingdom in the coming weeks.This offering will allow U.K. customers to trade index, energy, metals and foreign… [+2363 chars]"},{"source":{"id":null,"name":"Thefly.com"},"author":null,"title":"Crypto Currents: Markets eye Fed, China trade talks","description":"See the rest of the story here.\n\nthefly.com provides the latest financial news as it breaks. Known as a leader in market intelligence, The Fly's real-time, streaming news feed keeps individual investors, professional money managers, active traders, and corpor…","url":"https://thefly.com/permalinks/entry.php/id4221703/BTC-USD;ETH-USD;XRP-USD;SOL-USD;DOGE-USD;USDC-USD;BNB-USD;COIN;BLK;WU;PYPL;MA;BABA;GOOG;GOOGL;SBET;DBOEY;CRCL-Crypto-Currents-Markets-eye-Fed-China-trade-talks","urlToImage":"https://image.thefly.com/catalog/202203/img_1332.jpg","publishedAt":"2025-10-27T16:43:42Z","content":"Earnings calls, analyst events, roadshows and more"},{"source":{"id":null,"name":"Yahoo Entertainment"},"author":"Yahoo Finance","title":"Robinhood stock pops 5% as analyst raises price target, citing explosive growth in prediction markets","description":"Robinhood stock jumped Monday as Compass Point analysts raised their price target on shares.","url":"https://finance.yahoo.com/news/robinhood-stock-pops-5-as-analyst-raises-price-target-citing-explosive-growth-in-prediction-markets-163728385.html","urlToImage":"https://s.yimg.com/ny/api/res/1.2/dUbc6fLxpjnPHZnCFM1xxA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD05MDA-/https://s.yimg.com/os/creatr-uploaded-images/2023-06/b4862590-0510-11ee-b7be-eaf7937fcb08","publishedAt":"2025-10-27T16:37:28Z","content":"Robinhood (HOOD) stock jumped as much as 5% on Monday as analysts at Compass Point raised their price target on shares to $161 from $105, citing revenue growth from equity transactions, prediction ma… [+2086 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"bloomberg.com","title":"Citigroup and Coinbase say they are exploring on-chain stablecoin payments and simpler crypto-fiat transfers for Citi's institutional clients","description":"","url":"https://biztoc.com/x/976336cd0b9814d5","urlToImage":"https://biztoc.com/cdn/950/og.png","publishedAt":"2025-10-27T16:31:51Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Tesla stock surge recently? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will US-China trade deal impact m… [+717 chars]"},{"source":{"id":null,"name":"Yahoo Entertainment"},"author":"nickthomas2@benzinga.com","title":"The 'Debasement Trade' Just Hit A Wall—And The Bond Market Knows Something Gold Bugs Don't","description":"The narrative sounded perfect: gold soaring past records, Bitcoin rallying, stocks climbing relentlessly—all signs that investors were fleeing the dollar in ...","url":"https://finance.yahoo.com/news/debasement-trade-just-hit-wall-163103160.html","urlToImage":"https://media.zenfs.com/en/benzinga_79/3112d09d344f767b665887ca547cdd1b","publishedAt":"2025-10-27T16:31:03Z","content":"Benzinga and Yahoo Finance LLC may earn commission or revenue on some items through the links below.\r\nThe narrative sounded perfect: gold soaring past records, Bitcoin rallying, stocks climbing relen… [+3823 chars]"},{"source":{"id":null,"name":"Bitcoinist"},"author":"Godspower Owie","title":"Bitcoin Profitability On The Rise — More Coins Back In The Green As Market Recovers","description":"The recent drop in Bitcoin’s price following a market crash appears to have reached its end, as the flagship cryptocurrency asset surges back above the $113,000 once again. While the price of BTC has turned bullish and has recovered from its downward trend, i…","url":"https://bitcoinist.com/bitcoin-profitability-on-the-rise/","urlToImage":"https://bitcoinist.com/wp-content/uploads/2025/10/Bitcoin-from-Pixabay-57.jpg","publishedAt":"2025-10-27T16:30:32Z","content":"The recent drop in Bitcoins price following a market crash appears to have reached its end, as the flagship cryptocurrency asset surges back above the $113,000 once again. While the price of BTC has … [+2903 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Blockchain Life","title":"Blockchain Life 2025 in Dubai: Global Crypto Leaders Gather for the 15th Anniversary Forum Featuring Akon’s Exclusive Performance","description":"Dubai, Oct. 27, 2025 (GLOBE NEWSWIRE) -- The 15th Anniversary Blockchain Life Forum — one of the world’s largest events dedicated to cryptocurrencies, Web3, and mining — will take place on October 28–29, 2025, in Dubai.","url":"https://www.globenewswire.com/news-release/2025/10/27/3174844/0/en/Blockchain-Life-2025-in-Dubai-Global-Crypto-Leaders-Gather-for-the-15th-Anniversary-Forum-Featuring-Akon-s-Exclusive-Performance.html","urlToImage":"https://ml-eu.globenewswire.com/Resource/Download/052937ec-4de4-4256-a7a2-e396823f1d34","publishedAt":"2025-10-27T16:27:00Z","content":"Dubai, Oct. 27, 2025 (GLOBE NEWSWIRE) -- The 15th Anniversary Blockchain Life Forum one of the worlds largest events dedicated to cryptocurrencies, Web3, and mining will take place on October 2829, 2… [+1971 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Sander Lutz","title":"Senators Warren, Schiff Push Resolution Denouncing Trump Pardon of Binance Founder","description":"The senators took issue both with the Binance founder’s failure to implement anti-money laundering measures at the crypto exchange, and Binance’s ties to the Trump family.","url":"https://decrypt.co/346089/senators-warren-schiff-resolution-denouncing-trump-pardon-binance-founder","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/07/elizabeth-warren-decrypt-style-01-scaled-gID_7.jpg","publishedAt":"2025-10-27T16:24:46Z","content":"In brief\r\n<ul><li>Senators Elizabeth Warren and Adam Schiff plan to introduce a resolution condemning President Trumps pardon of Binance founder Changpeng CZ Zhao.</li><li>The pardon has angered Demo… [+3148 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Stacy Elliott","title":"Citi Taps Coinbase to Enhance Crypto Payments for Institutions","description":"Citi partners with Coinbase to boost crypto payment options for institutional clients, bridging traditional finance and digital assets.","url":"https://decrypt.co/346090/citi-coinbase-crypto-payments-institutions","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/10/citi-decrypt-style-gID_7.jpg","publishedAt":"2025-10-27T16:24:18Z","content":"Wall Street bank Citi and crypto exchange Coinbase are teaming up to \"boost digital-asset payment capabilities\" for the bank's institutional clients.\r\nIn the initial phase, the bank aims accelerate f… [+811 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Q3 2025: Bitcoin Surged to ATH But With ‘Notable Laggard’ as Ethereum Led the Quarter","description":"The third quarter of 2025 was a significant one, posting substantial achievements, according to the latest crypto industry report by crypto data aggregator CoinGecko. Yet, despite Bitcoin (BTC)’s surge to a fresh ATH, major altcoins – particularly Ethereum (E…","url":"https://biztoc.com/x/630e8088d7b380b3","urlToImage":"https://biztoc.com/cdn/630e8088d7b380b3_s.webp","publishedAt":"2025-10-27T16:22:47Z","content":"The third quarter of 2025 was a significant one, posting substantial achievements, according to the latest crypto industry report by crypto data aggregator CoinGecko. Yet, despite Bitcoin (BTC)s surg… [+132 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"Oldest crypto exchange under Chapter 15 bankruptcy delays payouts again","description":"Mt. Gox, one of the first crypto trading exchanges to go bankrupt, has once again delayed creditor repayments, and this time it has postponed them by a year.\nOn Oct. 27, the Rehabilitation Trustee announced that it has, with the court's permission, changed th…","url":"https://biztoc.com/x/cacc2f4eb5326835","urlToImage":"https://biztoc.com/cdn/cacc2f4eb5326835_s.webp","publishedAt":"2025-10-27T16:22:31Z","content":"Mt. Gox, one of the first crypto trading exchanges to go bankrupt, has once again delayed creditor repayments, and this time it has postponed them by a year.On Oct. 27, the Rehabilitation Trustee ann… [+151 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Kite","title":"Kite announces investment from Coinbase Ventures to Advance Agentic Payments with the x402 Protocol","description":"SAN FRANCISCO, Oct. 27, 2025 (GLOBE NEWSWIRE) -- Kite\r\n, the company building foundational infrastructure for agentic payments, today announced an investment from Coinbase Ventures. This raise is an extension of Kite's recent $33 million Series A fundraise le…","url":"https://www.globenewswire.com/news-release/2025/10/27/3174837/0/en/Kite-announces-investment-from-Coinbase-Ventures-to-Advance-Agentic-Payments-with-the-x402-Protocol.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/e9cd5532-ac94-4cfa-b08b-1083fd3924f0","publishedAt":"2025-10-27T16:19:00Z","content":"SAN FRANCISCO, Oct. 27, 2025 (GLOBE NEWSWIRE) -- Kite\r\n, the company building foundational infrastructure for agentic payments, today announced an investment from Coinbase Ventures. This raise is an … [+6553 chars]"},{"source":{"id":null,"name":"Thenation.com"},"author":"Hasan Ali","title":"Will Trump’s Threats Destabilize Relations With Pakistan and Afghanistan?","description":"Hasan Ali\n\n\n\nThe president’s stated intentions to take over Bagram Air Base risk a departure from the détente of recent years.\r\n\n\r\n\n\nThe post Will Trump’s Threats Destabilize Relations With Pakistan and Afghanistan? appeared first on The Nation.","url":"https://www.thenation.com/article/world/trump-bagram-afghanistan/","urlToImage":"https://www.thenation.com/wp-content/uploads/2025/10/GettyImages-1233821279.jpg","publishedAt":"2025-10-27T16:16:05Z","content":"The presidents stated intentions to take over Bagram Air Base risk a departure from the détente of recent years.\r\nAd Policy\r\nThe Afghan National Army after US forces left Bagram airfield in the north… [+6529 chars]"},{"source":{"id":null,"name":"CryptoSlate"},"author":"Oluwapelumi Adejumo","title":"New US company completes $1 billion XRP purchase as Ripple celebrates price surge","description":"Less than a week after its debut, Evernorth, a newly formed XRP-focused treasury company, has emerged as one of crypto’s most profitable institutional entrants. The firm’s swift accumulation of nearly $1 billion worth of XRP has already generated an estimated…","url":"https://cryptoslate.com/new-us-company-completes-1-billion-xrp-purchase-as-ripple-celebrates-price-surge/","urlToImage":"https://cryptoslate.com/wp-content/uploads/2025/10/xrp-treasury.jpg","publishedAt":"2025-10-27T16:14:13Z","content":"Less than a week after its debut, Evernorth, a newly formed XRP-focused treasury company, has emerged as one of crypto’s most profitable institutional entrants.\r\nThe firms swift accumulation of nearl… [+6133 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Citigroup collaborates with Coinbase to explore stablecoin payments","description":"This partnership could accelerate the integration of digital currencies in corporate finance, potentially transforming global payment systems.\nThe post Citigroup collaborates with Coinbase to explore stablecoin payments appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/citigroup-coinbase-stablecoin-payment-collaboration/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/27121220/414b8048-6882-455b-8ac8-bc5716ca8115-800x420.jpg","publishedAt":"2025-10-27T16:13:12Z","content":"Key Takeaways\r\n<ul><li>Citigroup, a major US bank, and Coinbase, a leading crypto exchange, are collaborating to explore stablecoin payment solutions for institutional clients.</li><li>The initiative… [+460 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Strive Stock Keeps Climbing As Mike Alfred Calls It The Next Big Bitcoin Play","description":"Strive Inc. (NASDAQ:ASST) shares surged Monday, extending a multi-day rally sparked by investor Mike Alfred's disclosure of a stake exceeding 1 million shares and his endorsement of the company as a top Bitcoin (CRYPTO: BTC/USD) treasury play.\nThe Alfred disc…","url":"https://biztoc.com/x/572b0dd3ff536e2a","urlToImage":"https://biztoc.com/cdn/572b0dd3ff536e2a_s.webp","publishedAt":"2025-10-27T16:10:10Z","content":"Strive Inc. (NASDAQ:ASST) shares surged Monday, extending a multi-day rally sparked by investor Mike Alfred's disclosure of a stake exceeding 1 million shares and his endorsement of the company as a … [+140 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Adewale Olarinde","title":"Gold slides from ATH while Bitcoin rebounds — are investors shifting back to risk assets?","description":"Bitcoin is on a five-day recovery streak while Gold continues to pull back from its all-time high. The contrasting moves signal a potential shift in market sentiment, with traders easing out of safe-haven positioning and returning to higher-risk assets.","url":"https://ambcrypto.com/gold-slides-from-ath-while-bitcoin-rebounds-are-investors-shifting-back-to-risk-assets/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Bitcoin-7-1000x600.png","publishedAt":"2025-10-27T16:05:59Z","content":"Key Takeaways \r\nIs capital rotating from Gold back into Bitcoin?\r\nCurrent price action suggests a shift toward risk-on assets, with investors reducing defensive exposure in Gold while reallocating in… [+3178 chars]"},{"source":{"id":"financial-post","name":"Financial Post"},"author":"Business Wire","title":"Citi and Coinbase Join Forces to Boost Digital Asset Payment Capabilities for Global Clients","description":"Citi and Coinbase are collaborating to develop digital asset payment capabilities for institutional clients The collaboration will first focus on streamlining fiat pay-ins/pay-outs and payments orchestration, enhancing the bridge between traditional and digit…","url":"https://financialpost.com/pmn/business-wire-news-releases-pmn/citi-and-coinbase-join-forces-to-boost-digital-asset-payment-capabilities-for-global-clients","urlToImage":null,"publishedAt":"2025-10-27T16:05:58Z","content":"THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY\r\nSubscribe now to read the latest news in your city and across Canada.\r\n<ul><li>Exclusive articles from Barbara Shecter, Joe O'Connor, Gabriel Friedman, … [+6900 chars]"},{"source":{"id":null,"name":"newsBTC"},"author":"Sandra White","title":"Pundit Says XRP Price Risks Crash Below $1, Here’s Why","description":"Crypto analyst Bobby A is warning that the XRP price may face trouble soon. He says the large monthly chart is showing weak signs, and this could mean the market is turning bearish again. The analyst thinks the price might need to drop further before it can m…","url":"http://www.newsbtc.com/analysis/xrp/xrp-price-risks-crash-below-1/","urlToImage":"https://www.newsbtc.com/wp-content/uploads/2025/09/XRP-Price-Eyes-Breakout-Zone.jpg?fit=1792%2C1024","publishedAt":"2025-10-27T16:00:10Z","content":"Crypto analyst Bobby A is warning that the XRP price may face trouble soon. He says the large monthly chart is showing weak signs, and this could mean the market is turning bearish again. The analyst… [+2482 chars]"},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Mutuum Finance","title":"New Crypto Mutuum Finance (MUTM) Nears $20M Raised After V1 Launch Update","description":"Dubai, UAE, Oct. 27, 2025 (GLOBE NEWSWIRE) -- The crypto market continues to shift its focus toward projects showing real progress and transparent delivery. Among them, Mutuum Finance (MUTM) has become one of the most closely followed new crypto projects in 2…","url":"https://www.globenewswire.com/news-release/2025/10/27/3174827/0/en/New-Crypto-Mutuum-Finance-MUTM-Nears-20M-Raised-After-V1-Launch-Update.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/a940f2b3-fca0-4a80-82b1-a6ec639a8461","publishedAt":"2025-10-27T16:00:00Z","content":"Dubai, UAE, Oct. 27, 2025 (GLOBE NEWSWIRE) -- The crypto market continues to shift its focus toward projects showing real progress and transparent delivery. Among them, Mutuum Finance (MUTM) has beco… [+6439 chars]"},{"source":{"id":"financial-post","name":"Financial Post"},"author":"Bloomberg News","title":"Gambling, Crypto’s Grip on Nigerians Is Hurting Capital Markets","description":"Nigerians’ preference for plowing their money into gambling and cryptocurrencies rather than the capital market is denying the nation of funds that could be used to build key infrastructure, the head of the financial regulator said.","url":"https://financialpost.com/pmn/business-pmn/gambling-cryptos-grip-on-nigerians-is-hurting-capital-markets","urlToImage":null,"publishedAt":"2025-10-27T15:59:09Z","content":"(Bloomberg) Nigerians preference for plowing their money into gambling and cryptocurrencies rather than the capital market is denying the nation of funds that could be used to build key infrastructur… [+3918 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"coindesk.com","title":"South Korean Crypto Exchanges See 1,400x Jump in Flows Linked to Sanctioned Cambodian Entities","description":"We're verifying your browser\nWe're verifying your browser","url":"https://biztoc.com/x/00f95187c01fab3b","urlToImage":"https://biztoc.com/cdn/00f95187c01fab3b_s.webp","publishedAt":"2025-10-27T15:58:56Z","content":"We're verifying your browserWe're verifying your browser\r\nThis story appeared on coindesk.com, 2025-10-27 15:48:51."},{"source":{"id":null,"name":"GlobeNewswire"},"author":"Bittam ltd","title":"Bittam Launches $3,000 New User Reward Program Alongside 100% Deposit Bonus — Redefining Zero-Fee, High-Leverage Crypto Trading","description":"NEW YORK, Oct. 27, 2025 (GLOBE NEWSWIRE) -- {{DATELINECITY_DATE_GLOBENEWSWIRE_BUG} Bittam Exchange\r\n today announced the official launch of its New User Reward Program, offering up to $3,000 in bonuses to new traders, alongside a 100% deposit bonus\r\n and extr…","url":"https://www.globenewswire.com/news-release/2025/10/27/3174814/0/en/Bittam-Launches-3-000-New-User-Reward-Program-Alongside-100-Deposit-Bonus-Redefining-Zero-Fee-High-Leverage-Crypto-Trading.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/6693023f-7ea6-4032-b960-c190d52846a1","publishedAt":"2025-10-27T15:58:00Z","content":"NEW YORK, Oct. 27, 2025 (GLOBE NEWSWIRE) -- {{DATELINECITY_DATE_GLOBENEWSWIRE_BUG} Bittam Exchange\r\n today announced the official launch of its New User Reward Program, offering up to $3,000 in bonus… [+8540 chars]"},{"source":{"id":null,"name":"Cryptonews"},"author":"Sead Fadilpašić","title":"Q3 2025: Bitcoin Surged to ATH But With ‘Notable Laggard’ as Ethereum Led the Quarter","description":"The third quarter of 2025 was a significant one, posting substantial achievements, according to the latest crypto industry report by crypto data aggregator...","url":"https://cryptonews.com/news/q3-2025-bitcoin-surged-to-ath-but-with-notable-laggard-as-ethereum-led-the-quarter/","urlToImage":"https://media.zenfs.com/en/cryptonews_us_711/a7ee539c08ffb408ac13953a8fbadc13","publishedAt":"2025-10-27T15:57:28Z","content":"The third quarter of 2025 was a significant one, posting substantial achievements, according to the latest crypto industry report by crypto data aggregator CoinGecko. Yet, despite Bitcoin (BTC)s surg… [+8264 chars]"},{"source":{"id":null,"name":"TheStreet"},"author":"Anand Sinha","title":"Oldest crypto exchange under Chapter 15 bankruptcy delays payouts again","description":"Mt. Gox, one of the first crypto trading exchanges to go bankrupt, has once again delayed creditor repayments, and this time it has postponed them by a year....","url":"https://www.thestreet.com/crypto/bankruptcy/chapter-15-bankrupt-exchange-delays-payments-again","urlToImage":"https://media.zenfs.com/en/thestreet_881/f60f8f687e06fb4040a9246f3cdb12c7","publishedAt":"2025-10-27T15:57:26Z","content":"Mt. Gox, one of the first crypto trading exchanges to go bankrupt, has once again delayed creditor repayments, and this time it has postponed them by a year.\r\nRelated: What is Crypto? Cryptocurrency … [+2204 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"MetaMask rumored to have registered domain for claiming tokens as airdrop chatter rises","description":"MetaMask's potential token distribution could enhance user engagement and solidify its role in the evolving crypto financial ecosystem.\nThe post MetaMask rumored to have registered domain for claiming tokens as airdrop chatter rises appeared first on Crypto B…","url":"https://cryptobriefing.com/metamask-domain-airdrop-token-claim/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/27115629/df3c966c-f462-4e62-b7c8-e4877d728ba1-800x420.jpg","publishedAt":"2025-10-27T15:57:12Z","content":"Key Takeaways\r\n<ul><li>There is growing speculation that MetaMask has set up a new domain for token claims.</li><li>Anticipation for a MetaMask token is high, driven by the historical precedent of ma… [+965 chars]"},{"source":{"id":"business-insider","name":"Business Insider"},"author":"sobrient@insider.com (Samuel O'Brient)","title":"The Beyond Meat meme investor's next target is a biotech firm that's pivoted to crypto","description":"Dimitri Semenikhin, the retail trader behind the Beyond Meat stock rally is piling into a small biotech that recently pivoted to an ethereum treasury.","url":"https://www.businessinsider.com/ethzilla-stock-beyond-meat-investor-meme-bynd-retail-traders-2025-10","urlToImage":"https://i.insider.com/68ff95b0599d46a4ccc0e65f?width=1200&format=jpeg","publishedAt":"2025-10-27T15:55:30Z","content":"Dimitri Semenikhin became the face of the Beyond Meat stock rally in the last week, but he's already eyeing other opportunities. \r\nThe retail investor says he's got a new target in ETHZilla Corporati… [+2459 chars]"},{"source":{"id":null,"name":"pymnts.com"},"author":"PYMNTS","title":"State AGs Confront SEC Over Digital Asset Turf","description":"Cryptocurrency regulation may shift as 21 state attorneys general (AGs) called on the Securities and Exchange Commission (SEC) to clearly define how digital assets should be regulated, and by whom. Their joint letter, sent Oct. 20 and led by Iowa Attorney Gen…","url":"https://www.pymnts.com/news/regulation/2025/state-attorneys-general-confront-sec-over-digital-asset-turf/","urlToImage":"https://www.pymnts.com/wp-content/uploads/2023/11/SEC-Securities-and-Exchange-Commission.jpg","publishedAt":"2025-10-27T15:54:34Z","content":"Cryptocurrency regulation may shift as 21 state attorneys general (AGs) called on the Securities and Exchange Commission (SEC) to clearly define how digital assets should be regulated, and by whom.Th… [+3778 chars]"},{"source":{"id":null,"name":"pymnts.com"},"author":"PYMNTS","title":"Attorneys General Urge SEC to Clarify Crypto Rules","description":"Cryptocurrency regulation may shift as 21 state attorneys general (AGs) called on the Securities and Exchange Commission (SEC) to clearly define how digital assets should be regulated, and by whom. Their joint letter, sent Oct. 20 and led by Iowa Attorney Gen…","url":"https://www.pymnts.com/news/regulation/2025/attorneys-general-urge-sec-clarify-crypto-rules-without-undermining-states/","urlToImage":"https://www.pymnts.com/wp-content/uploads/2023/11/SEC-Securities-and-Exchange-Commission.jpg","publishedAt":"2025-10-27T15:54:34Z","content":"Cryptocurrency regulation may shift as 21 state attorneys general (AGs) called on the Securities and Exchange Commission (SEC) to clearly define how digital assets should be regulated, and by whom.Th… [+3778 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Sam Bourgi","title":"Canada weighs stablecoin rules ahead of federal budget: Report","description":"Ottawa is reportedly planning to unveil stablecoin regulations in the federal budget, echoing US reforms under the GENIUS Act as global oversight tightens.","url":"https://cointelegraph.com/news/canada-stablecoin-rules-federal-budget-genius-act","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/019a2633-d4e0-778d-8b3e-ebac3c2fe384","publishedAt":"2025-10-27T15:48:04Z","content":"The Canadian federal government is reportedly preparing new rules for stablecoins, with an update potentially coming in next weeks federal budget, signaling that more countries may follow the United … [+2149 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"bloomberg.com","title":"How Zhao’s Binance Aided Trump Family Crypto Venture Before Pardon","description":"","url":"https://biztoc.com/x/0a777d2573f910e1","urlToImage":"https://biztoc.com/cdn/0a777d2573f910e1_s.webp","publishedAt":"2025-10-27T15:48:02Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why did Tesla stock surge recently? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will US-China trade deal impact m… [+717 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Peter Schiff Dismisses BTC Rally To $115,000: 'How Is Bitcoin Digital Gold?'","description":"Gold advocate Peter Schiff reignited debate over Bitcoin's (CRYPTO: BTC) status as \"digital gold,\" questioning how it can serve as gold's modern counterpart when the two assets move in opposite directions.\nWhat Happened: In his latest critique on Monday, Schi…","url":"https://biztoc.com/x/d4472bc700b63263","urlToImage":"https://biztoc.com/cdn/d4472bc700b63263_s.webp","publishedAt":"2025-10-27T15:47:57Z","content":"Gold advocate Peter Schiff reignited debate over Bitcoin's (CRYPTO: BTC) status as \"digital gold,\" questioning how it can serve as gold's modern counterpart when the two assets move in opposite direc… [+142 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"scmp.com","title":"China doubles down on crypto crackdown as central bank vows to expand digital yuan","description":"China on Monday reaffirmed its hardline approach towards virtual currencies at home, warning of the risks of stablecoins, despite growing concerns that the United States might have consolidated its US dollar dominance through them.\nInstead, the world’s second…","url":"https://biztoc.com/x/38f392f5f3190774","urlToImage":"https://biztoc.com/cdn/38f392f5f3190774_s.webp","publishedAt":"2025-10-27T15:47:56Z","content":"China on Monday reaffirmed its hardline approach towards virtual currencies at home, warning of the risks of stablecoins, despite growing concerns that the United States might have consolidated its U… [+137 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Andrew Hayward","title":"Tom Lee’s BitMine Rises as Ethereum Rebounds, Firm Adds $321 Million in ETH","description":"BitMine Immersion Technologies now holds over $13.7 billion worth of Ethereum, widening its ETH treasury lead over SharpLink Gaming.","url":"https://decrypt.co/346076/tom-lees-bitmine-rises-ethereum-rebounds-firm-adds-321-million-eth","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/08/ethereum-decrypt-style-06-gID_7.jpg","publishedAt":"2025-10-27T15:44:40Z","content":"In brief\r\n<ul><li>BitMine Immersion Technologies added $321 million worth of ETH last week.</li><li>The company now holds over $13.8 billion worth of ETH, leading the Ethereum treasury accumulation r… [+2394 chars]"},{"source":{"id":null,"name":"Longreads.com"},"author":"Krista Stevens","title":"Why AI Breaks Bad","description":"\"Once in a while, LLMs turn evil—and no one quite knows why.\"","url":"http://longreads.com/2025/10/27/why-ai-breaks-bad/","urlToImage":null,"publishedAt":"2025-10-27T15:43:09Z","content":"Recently, Anthropic conducted a stress test on its AI model, Claude. When faced with a fictional scenario involving its own demise, Claude “broke bad,” immediately resorting to blackmail. What’s more… [+1404 chars]"},{"source":{"id":null,"name":"SiliconANGLE News"},"author":"Kyt Dotson","title":"IBM unveils Digital Asset Haven to help banks and governments manage crypto securely","description":"Technology giant IBM Corp. today announced the launch of a new blockchain digital asset platform for financial institutions and regulated businesses. The new platform, called Digital Asset Haven, will provide banks, corporations and governments a secure manag…","url":"https://siliconangle.com/2025/10/27/ibm-unveils-digital-asset-haven-help-banks-governments-manage-crypto-securely/","urlToImage":"https://d15shllkswkct0.cloudfront.net/wp-content/blogs.dir/1/files/2025/10/ibm-digital-haven-image.png","publishedAt":"2025-10-27T15:40:49Z","content":"Technology giant IBM Corp. today announced the launch of a new blockchain digital asset platform for financial institutions and regulated businesses.\r\nThe new platform, called Digital Asset Haven, wi… [+4560 chars]"},{"source":{"id":null,"name":"TheStreet"},"author":"Pooja Rajkumari","title":"Trump-backed stock surges after new announcement","description":"Eric Trump has long championed his father, President Donald Trump’s stance on cryptocurrency. On Oct. 22, he said the recent trade tensions with China as...","url":"https://www.thestreet.com/crypto/business/trump-backed-stock-surges-after-new-announcement","urlToImage":"https://media.zenfs.com/en/thestreet_881/6515f1cf738240077b0facf83c82832a","publishedAt":"2025-10-27T15:39:02Z","content":"Eric Trump has long championed his father, President Donald Trumps stance on cryptocurrency. On Oct. 22, he said the recent trade tensions with China as part of the business.\r\nThe American Bitcoin (N… [+2963 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"IBM Debuts 'Digital Asset Haven' Platform for Governments and Institutions","description":"Global computing firm IBM is making a fresh play around blockchain, teaming with the Coinbase-backed crypto infrastructure firm Dfns to launch IBM Digital Asset Haven—a platform built for governments and institutions to securely manage their digital asset ope…","url":"https://biztoc.com/x/ea1cc7cdacaef3fc","urlToImage":"https://biztoc.com/cdn/ea1cc7cdacaef3fc_s.webp","publishedAt":"2025-10-27T15:36:55Z","content":"Global computing firm IBM is making a fresh play around blockchain, teaming with the Coinbase-backed crypto infrastructure firm Dfns to launch IBM Digital Asset Havena platform built for governments … [+145 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"barrons.com","title":"Bitcoin and Crypto Stocks Rise. The 2 Key Things Driving Today’s Rally","description":"","url":"https://biztoc.com/x/3c8b8859feda0b0e","urlToImage":"https://biztoc.com/cdn/950/og.png","publishedAt":"2025-10-27T15:26:20Z","content":"{ window.open(this.href, '_blank'); }, 200); return false;\"&gt;Why is Tesla's $1 trillion pay package controversial? { window.open(this.href, '_blank'); }, 200); return false;\"&gt;How will US-China t… [+724 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"Logan Hitchcock","title":"IBM Debuts 'Digital Asset Haven' Platform for Governments and Institutions","description":"Publicly traded computing firm IBM is rolling out a digital assets management platform targeted at governments and institutions.","url":"https://decrypt.co/346071/ibm-debuts-digital-asset-haven-platform-governments-institutions","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/08/blockchain-decrypt-style-gID_7.jpg","publishedAt":"2025-10-27T15:26:10Z","content":"In brief\r\n<ul><li>IBM is launching a platform called Digital Asset Haven with support from crypto infrastructure firm Dfns. </li><li>The platform will help governments and institutions engage with bl… [+2583 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"MSTR Up 2% As Strategy Buys 390 Bitcoin, But Downtrend Remains Intact","description":"Strategy Inc. (NASDAQ:MSTR) traded near $296 on Monday afternoon, up 2.6%, after the company disclosed a new Bitcoin (CRYPTO: BTC) purchase worth $43.4 million.\nStrategy Adds 390 BTC Worth $43 Million\nThe company announced in its latest SEC Form 8-K filing th…","url":"https://biztoc.com/x/8df1c3a5030b7b58","urlToImage":"https://biztoc.com/cdn/8df1c3a5030b7b58_s.webp","publishedAt":"2025-10-27T15:25:41Z","content":"Strategy Inc. (NASDAQ:MSTR) traded near $296 on Monday afternoon, up 2.6%, after the company disclosed a new Bitcoin (CRYPTO: BTC) purchase worth $43.4 million.Strategy Adds 390 BTC Worth $43 Million… [+142 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"XRP Gains 7% In 1 Week: What Is Going On?","description":"XRP (CRYPTO: XRP) gained 7% over the past week, supported by broader market strength and growing speculation about a potential spot XRP ETF launch in the coming weeks.\nCryptocurrency\nTicker\nPrice\nMarket Cap\n7-Day Trend\nXRP\n(CRYPTO: XRP)\n$2.62\n$157.5 billion\n+…","url":"https://biztoc.com/x/55b0464242c035e5","urlToImage":"https://biztoc.com/cdn/55b0464242c035e5_s.webp","publishedAt":"2025-10-27T15:15:28Z","content":"XRP (CRYPTO: XRP) gained 7% over the past week, supported by broader market strength and growing speculation about a potential spot XRP ETF launch in the coming weeks.CryptocurrencyTickerPriceMarket … [+127 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"benzinga.com","title":"Trump-Linked American Bitcoin Surges 5% After Purchasing 1,414 BTC","description":"American Bitcoin Corp. (NASDAQ:ABTC) climbed more than 11% on Friday to close near $5.62, and extended gains pre-market Monday, up 5% to $5.88, as investors responded to fresh treasury disclosures showing the company's Bitcoin (CRYPTO: BTC) holdings rising to…","url":"https://biztoc.com/x/fc7a5924931d941a","urlToImage":"https://biztoc.com/cdn/fc7a5924931d941a_s.webp","publishedAt":"2025-10-27T15:15:08Z","content":"American Bitcoin Corp. (NASDAQ:ABTC) climbed more than 11% on Friday to close near $5.62, and extended gains pre-market Monday, up 5% to $5.88, as investors responded to fresh treasury disclosures sh… [+139 chars]"},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"BNB Foundation completes 33rd quarterly burn, destroying $1.6B in BNB","description":"The BNB burn enhances token scarcity, potentially boosting value and investor confidence, while reinforcing the deflationary model's impact.\nThe post BNB Foundation completes 33rd quarterly burn, destroying $1.6B in BNB appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/bnb-foundation-33rd-quarterly-burn-1-6-billion/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/27111232/0ac573ea-0585-408c-941d-5500f59de15a-800x420.jpg","publishedAt":"2025-10-27T15:14:57Z","content":"Key Takeaways\r\n<ul><li>BNB Foundation has completed its 33rd quarterly token burn, destroying $1.6 billion worth of BNB.</li><li>Quarterly burns are determined by the BNB Auto-Burn formula, reducing … [+512 chars]"},{"source":{"id":null,"name":"Decrypt"},"author":"André Beganski","title":"Strategy Shares Rise on $43 Million Purchase—Its Largest in Four Weeks","description":"Strategy hasn’t issued common shares in nearly a month.","url":"https://decrypt.co/346070/strategy-shares-rise-43-million-purchase-largest-four-weeks","urlToImage":"https://cdn.decrypt.co/resize/1024/height/512/wp-content/uploads/2025/07/michael-saylor-bitcoin-lightning-x-twitter-gID_7.png","publishedAt":"2025-10-27T15:14:19Z","content":"In brief\r\n<ul><li>Strategy purchased $43 million worth of Bitcoin.</li><li>The purchase was funded through a combination of preferred shares.</li><li>Citi analysts last week said Strategy shares coul… [+2924 chars]"},{"source":{"id":null,"name":"ZyCrypto"},"author":"Guest Author","title":"The $300 Trillion Opportunity: Why ConstructKoin (CTK) Is Bringing Real Estate Finance to Web3","description":"The global real estate market is the largest asset class on Earth, estimated to be worth more than $300 trillion — larger than all global equities and debt securities combined. Yet, despite its size and importance, the way real estate is financed hasn’t chang…","url":"https://zycrypto.com/the-300-trillion-opportunity-why-constructkoin-ctk-is-bringing-real-estate-finance-to-web3/","urlToImage":"https://zycrypto.com/wp-content/uploads/2025/09/From-Property-Development-to-Global-Asset-Lending-How-ConstructKoin-CTK-Is-Redefining-ReFi.jpg","publishedAt":"2025-10-27T15:11:21Z","content":"Disclaimer: The below article is sponsored, and the views in it do not represent those of ZyCrypto. Readers should conduct independent research before taking any actions related to the project mentio… [+4167 chars]"} ]
-  </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const newsFeed = document.getElementById('news-feed');
-        const searchInput = document.getElementById('search-input');
-        const openSearchBtn = document.getElementById('open-search-btn');
-        const closeSearchBtn = document.getElementById('close-search-btn');
-        const searchOverlay = document.getElementById('search-overlay');
+<script type="application/json" id="newsData">
+[{"source":{"id":null,"name":"GlobeNewswire"},"author":"Bexback co., LTD","title":"100x Leverage. No KYC. $100 Welcome Bonus. Crypto Futures Trading Made Simple on BexBack","description":"SINGAPORE, Oct. 29, 2025 (GLOBE NEWSWIRE) -- With Bitcoin hovering around $120,000, many analysts predict sustained volatility in the crypto market. In such unpredictable conditions, traditional spot positions may struggle to generate short-term profits. Ente…","url":"https://www.globenewswire.com/news-release/2025/10/29/3176588/0/en/100x-Leverage-No-KYC-100-Welcome-Bonus-Crypto-Futures-Trading-Made-Simple-on-BexBack.html","urlToImage":"https://ml.globenewswire.com/Resource/Download/f47f4d3f-3b6c-4732-930a-6dec4386cb9c","publishedAt":"2025-10-29T14:01:00Z","content":"SINGAPORE, Oct. 29, 2025 (GLOBE NEWSWIRE) -- With Bitcoin hovering around $120,000, many analysts predict sustained volatility in the crypto market. In such unpredictable conditions, traditional spot… [+6637 chars]"},{"source":{"id":null,"name":"Ambcrypto.com"},"author":"Benjamin Njiri","title":"Bitcoin’s ETF inflows surge 4x – So why does BTC still feel heavy?","description":"BTC at crossroads as LTH dumping meets sluggish ETF demand.","url":"https://ambcrypto.com/bitcoins-etf-inflows-surge-4x-so-why-does-btc-still-feel-heavy/","urlToImage":"https://ambcrypto.com/wp-content/uploads/2025/10/Bitcoin-ETF-FI-1000x600.jpg","publishedAt":"2025-10-29T14:00:49Z","content":"Key Takeaways \r\nWhats next for Bitcoin post-Fed rate decision? \r\nAnalysts were split; some projected a rally toward $160K, while others warned of limited impact due to weak macro data.\r\nCan BTC ETF i… [+2533 chars]"},{"source":{"id":null,"name":"Infosecurity Magazine"},"author":"Kevin  Poireault","title":"Npm Malware Uses Invisible Dependencies to Infect Dozens of Packages","description":"The ongoing ‘PhantomRaven’ malicious campaign has infected 126 npm packages to date, representing 86,000 downloads","url":"https://www.infosecurity-magazine.com/news/npm-malware-invisible-dependencies/","urlToImage":"https://assets.infosecurity-magazine.com/webpage/og/81f69eaf-ec14-4cc9-b091-68f6f4d551f7.jpg","publishedAt":"2025-10-29T14:00:00Z","content":"An ongoing npm credential harvesting campaign operating since August 2025 has been discovered by researchers at Koi Security.\r\nThe malware, dubbed PhantomRaven by the researchers, is actively stealin… [+2368 chars]"},{"source":{"id":"techcrunch","name":"TechCrunch"},"author":"TechCrunch Events","title":"TechCrunch Disrupt 2025: Day 3","description":"This is the third and final day of TechCrunch Disrupt 2025 at Moscone West in San Francisco. Register here to get a 50% discount and don't miss out on innovation and scaling. Disrupt won' come back for another year.","url":"https://techcrunch.com/2025/10/29/techcrunch-disrupt-2025-day-3/","urlToImage":"https://techcrunch.com/wp-content/uploads/2016/08/21618366341_fbe9a8e707_k.jpg?resize=1200,801","publishedAt":"2025-10-29T14:00:00Z","content":"Welcome to the third and final day of TechCrunch Disrupt 2025 at Moscone West in San Francisco! The excitement here is still in full swing, and theres no slowing down.\r\nIf you thought it was too late… [+8839 chars]"},{"source":{"id":null,"name":"Forbes"},"author":"Owen Tedford, Contributor, \n Owen Tedford, Contributor\n https://www.forbes.com/sites/owentedford/","title":"AI Companies Caught In State And Federal Battle Over Regulations","description":"AI regulation is a hot topic at all levels of government, but no consensus on the best path forward exists, putting businesses at risk when they back one approach.","url":"https://www.forbes.com/sites/owentedford/2025/10/29/ai-companies-caught-in-state-and-federal-battle-over-regulations/","urlToImage":"https://imageio.forbes.com/specials-images/imageserve/69021c30a9f0f026e585d1e9/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds","publishedAt":"2025-10-29T13:54:15Z","content":"Photo of the United States Capitol with overlayed computer circuitry. The Intersection of freedom and artificial intelligence\r\ngetty\r\nWhile interest in federal AI regulation remains high, state legis… [+4046 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"theblock.co","title":"21Shares files for Hyperliquid ETF following wave of crypto fund launches","description":"A new proposal for an ETF tracking the performance of Hyperliquid's native token was filed by 21Shares on Wednesday.","url":"https://biztoc.com/x/0fd7439f0eb13f31","urlToImage":"https://biztoc.com/cdn/0fd7439f0eb13f31_s.webp","publishedAt":"2025-10-29T13:51:09Z","content":"A new proposal for an ETF tracking the performance of Hyperliquid's native token was filed by 21Shares on Wednesday.\r\nThis story appeared on theblock.co, 2025-10-29 13:31:39."},{"source":{"id":null,"name":"Crypto Briefing"},"author":"Vivian Nguyen","title":"Taurus expands to US with new New York office","description":"Taurus's US expansion highlights New York's rising status as a key hub for digital asset innovation and crypto industry growth.\nThe post Taurus expands to US with new New York office appeared first on Crypto Briefing.","url":"https://cryptobriefing.com/taurus-expands-us-new-york-office-crypto-hub/","urlToImage":"https://static.cryptobriefing.com/wp-content/uploads/2025/10/29094230/6ebb4b74-f37d-4eaa-b5e0-fa9a3c4c50d1-800x420.jpg","publishedAt":"2025-10-29T13:46:21Z","content":"Key Takeaways\r\n<ul><li>Taurus, a Swiss crypto infrastructure company, has opened a new office in New York.</li><li>The expansion is part of Taurus's strategy to strengthen its position in the US mark… [+403 chars]"},{"source":{"id":null,"name":"Cointelegraph"},"author":"Cointelegraph by Zoltan Vardai","title":"‘Don’t buy the meme,’ warns CZ, as bizarre golden statue memecoin crashes 86%","description":"Binance founder Zhao warned crypto investors not to buy the latest token associated with him after the emergence of a golden statue of the popular crypto founder.","url":"https://cointelegraph.com/news/don-t-buy-the-meme-warns-cz-as-bizarre-golden-statue-memecoin-crashes-86","urlToImage":"https://images.cointelegraph.com/cdn-cgi/image/format=auto,onerror=redirect,quality=90,width=1200/https://s3.cointelegraph.com/uploads/2025-10/019a3008-31d8-7bda-86b9-4b76ac31d03e","publishedAt":"2025-10-29T13:44:54Z","content":"Binance founder Changpeng CZ Zhao warned crypto investors not to buy a new memecoin launched to capitalize on his popularity, cautioning against the financial risks of trading celebrity-linked tokens… [+2163 chars]"},{"source":{"id":null,"name":"Cryptonews"},"author":"Tanzeel Akhtar","title":"Deutsche Digital Assets and Safello Launch Staked TAO ETP — New Wave of Crypto Products?","description":"Deutsche Digital Assets (DDA), a European crypto asset manager, has teamed up with Safello, the Nordic cryptocurrency exchange, to launch the Safello...","url":"https://cryptonews.com/news/deutsche-digital-assets-and-safello-launch-staked-tao-etp-new-wave-of-crypto-products/","urlToImage":"https://media.zenfs.com/en/cryptonews_us_711/a1f9e6d027805935df2c1ddc16e5f377","publishedAt":"2025-10-29T13:42:00Z","content":"Deutsche Digital Assets (DDA), a European crypto asset manager, has teamed up with Safello, the Nordic cryptocurrency exchange, to launch the Safello Bittensor Staked TAO exchange traded product (ETP… [+3457 chars]"},{"source":{"id":null,"name":"Biztoc.com"},"author":"finance.yahoo.com","title":"After Crypto Flash Crash, Is XRP A Buy?","description":"The October 10th crypto flash crash, which wiped out nearly $20 billion in leveraged positions, shocked investors across the crypto market. XRP (CRYPTO: XRP) was hit hard with a 60% downturn, which affected its momentum and disrupted short-term trends.\nHoweve…","url":"https://biztoc.com/x/2dd56472e6c959e8","urlToImage":"https://biztoc.com/cdn/2dd56472e6c959e8_s.webp","publishedAt":"2025-10-29T13:40:55Z","content":"The October 10th crypto flash crash, which wiped out nearly $20 billion in leveraged positions, shocked investors across the crypto market. XRP (CRYPTO: XRP) was hit hard with a 60% downturn, which a… [+150 chars]"}]
+</script>
 
-        let articles = [];
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const newsData = JSON.parse(document.getElementById('newsData').textContent);
+    const newsFeed = document.getElementById('news-feed');
+    const marketSummary = document.getElementById('market-summary');
+    const articles = newsData.slice(0, 10);
 
-        try {
-            const jsonData = document.getElementById('newsData').textContent;
-            articles = JSON.parse(jsonData);
-        } catch (error) {
-            console.error("Error parsing news data:", error);
-            newsFeed.innerHTML = `<p style="text-align: center; color: var(--text-muted);">Failed to load news articles.</p>`;
-            return;
+    // AI-Generated Market Summary
+    marketSummary.innerHTML = `
+      <p>The US crypto market is currently experiencing a period of significant volatility and mixed signals. While <strong>Bitcoin (BTC)</strong> continues to trade at high levels, reports indicate a disconnect between surging ETF inflows and underlying market sentiment, creating a sense of unease. At the same time, traders are exploring high-risk opportunities like <strong>100x leverage futures</strong>, while cautionary tales emerge from crashing memecoins. The market is also seeing a surge in new financial products, such as various crypto ETFs and ETPs, signaling growing institutional interest and infrastructure expansion in key hubs like New York.</p>
+    `;
+
+    // SEO: Dynamically set page title
+    if (articles.length > 0) {
+      document.title = `${articles[0].title} | World Scale News`;
+    } else {
+      document.title = 'Latest Crypto & Trading News | World Scale News';
+    }
+    
+    // Function to calculate time ago
+    function timeAgo(dateString) {
+      const now = new Date();
+      const past = new Date(dateString);
+      const seconds = Math.floor((now - past) / 1000);
+      let interval = seconds / 31536000;
+      if (interval > 1) return Math.floor(interval) + "y ago";
+      interval = seconds / 2592000;
+      if (interval > 1) return Math.floor(interval) + "mo ago";
+      interval = seconds / 86400;
+      if (interval > 1) return Math.floor(interval) + "d ago";
+      interval = seconds / 3600;
+      if (interval > 1) return Math.floor(interval) + "h ago";
+      interval = seconds / 60;
+      if (interval > 1) return Math.floor(interval) + "m ago";
+      return Math.floor(seconds) + "s ago";
+    }
+
+    // AI Function to generate SEO summaries for each card
+    function generateSEOSummary(article) {
+        const title = article.title.toLowerCase();
+        let summary = `<p>This article provides a detailed analysis of <strong>${article.source.name}</strong>'s latest report on the cryptocurrency market. Key topics include `;
+        
+        if (title.includes('bitcoin') || title.includes('btc')) {
+            summary += `the current price action of <strong>Bitcoin</strong>, market trends, and trading signals. `;
+        }
+        if (title.includes('etf')) {
+            summary += `the impact of <strong>Bitcoin ETFs</strong>, institutional inflows, and their effect on market stability. `;
+        }
+        if (title.includes('leverage') || title.includes('futures')) {
+            summary += `advanced trading strategies such as <strong>crypto futures</strong> and the use of leverage in volatile conditions. `;
+        }
+        if (title.includes('xrp')) {
+            summary += `the performance of <strong>Altcoins</strong> like XRP, analyzing its recent price movements after market-wide events. `;
+        }
+        if (title.includes('ai') || title.includes('regulation')) {
+            summary += `the intersection of <strong>Artificial Intelligence</strong> and regulatory frameworks affecting the tech and crypto sectors. `;
+        }
+        if (title.includes('meme')) {
+            summary += `the high-risk nature of <strong>memecoins</strong> and expert advice on navigating this speculative market segment. `;
+        }
+         if (title.includes('malware') || title.includes('security')) {
+            summary += `critical cybersecurity threats within the digital asset space, including malware campaigns targeting developers and investors. `;
         }
 
-        // --- Search UI Logic ---
-        openSearchBtn.addEventListener('click', () => {
-            searchOverlay.classList.add('active');
-            searchInput.focus();
-        });
+        summary += `The report offers valuable insights for both novice and experienced traders looking to understand the latest developments. It explores potential market direction and key factors influencing asset prices, making it a must-read for anyone invested in <strong>Crypto News</strong> and digital finance.</p>`;
+        return summary;
+    }
 
-        closeSearchBtn.addEventListener('click', () => {
-            searchOverlay.classList.remove('active');
-        });
-        
-        searchOverlay.addEventListener('click', (e) => {
-            if (e.target === searchOverlay) {
-                searchOverlay.classList.remove('active');
-            }
-        });
+    let cardHTML = '';
+    articles.forEach((article, index) => {
+      const imageUrl = article.urlToImage || 'https://via.placeholder.com/800x400?text=Crypto+News';
+      const author = article.author ? `<span class="card-author">by ${article.author.split(',')[0]}</span>` : '';
+      const summary = generateSEOSummary(article);
 
-        // --- Search Filtering Logic ---
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const filteredArticles = articles.filter(article => {
-                const title = article.title?.toLowerCase() || '';
-                const source = article.source?.name?.toLowerCase() || '';
-                return title.includes(query) || source.includes(query);
-            });
-            renderArticles(filteredArticles);
-        });
-        
-        // --- Helper Functions ---
-        const formatTimeAgo = (dateString) => {
-            if (!dateString) return '';
-            try {
-                const date = new Date(dateString);
-                const now = new Date();
-                const seconds = Math.floor((now - date) / 1000);
-
-                let interval = seconds / 31536000;
-                if (interval > 1) return Math.floor(interval) + "y ago";
-                interval = seconds / 2592000;
-                if (interval > 1) return Math.floor(interval) + "mo ago";
-                interval = seconds / 86400;
-                if (interval > 1) return Math.floor(interval) + "d ago";
-                interval = seconds / 3600;
-                if (interval > 1) return Math.floor(interval) + "h ago";
-                interval = seconds / 60;
-                if (interval > 1) return Math.floor(interval) + "m ago";
-                return Math.floor(seconds) + "s ago";
-            } catch(e) {
-                console.error("Could not format date: ", dateString);
-                return '';
-            }
-        };
-
-        const truncateDescription = (text, maxLength = 120) => {
-            if (!text || typeof text !== 'string') return 'No description available.';
-            if (text.length <= maxLength) return text;
-            return text.slice(0, maxLength) + '...';
-        };
-
-        // --- Render Function ---
-        const renderArticles = (articlesToRender) => {
-            if (!articlesToRender) return;
-            
-            newsFeed.innerHTML = ''; // Clear existing articles
-
-            if (articlesToRender.length === 0) {
-                newsFeed.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No articles found.</p>`;
-                return;
-            }
-
-            articlesToRender.forEach((article, index) => {
-                const { title, description, url, urlToImage, publishedAt, source } = article;
-                const placeholderImg = 'https://via.placeholder.com/800x400?text=Crypto+News';
-
-                const card = document.createElement('article');
-                card.className = 'news-card';
-                card.style.animationDelay = `${index * 50}ms`;
-
-                card.innerHTML = `
-                    <img src="${urlToImage || placeholderImg}" alt="" class="news-card-image" loading="lazy" onerror="this.onerror=null;this.src='${placeholderImg}';">
-                    <div class="news-card-content">
-                        <div class="news-card-meta">
-                            <span class="news-card-source">${source?.name || 'Unknown Source'}</span>
-                            <span class="news-card-time">${formatTimeAgo(publishedAt)}</span>
-                        </div>
-                        <h2 class="news-card-title">${title || 'No Title'}</h2>
-                        <p class="news-card-description">${truncateDescription(description)}</p>
-                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
-                    </div>
-                `;
-                newsFeed.appendChild(card);
-            });
-        };
-
-        // --- Initial Render ---
-        renderArticles(articles);
+      cardHTML += `
+        <article class="news-card" style="animation-delay: ${index * 100}ms;">
+          <img src="${imageUrl}" alt="${article.title}" class="card-image" loading="lazy">
+          <div class="card-content">
+            <div class="card-meta">
+              <div>
+                <span class="card-source">${article.source.name || 'Unknown Source'}</span>
+                ${author}
+              </div>
+              <time datetime="${article.publishedAt}">${timeAgo(article.publishedAt)}</time>
+            </div>
+            <h3 class="card-title">${article.title}</h3>
+            <div class="card-description">
+              ${summary}
+              <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Read More</a>
+            </div>
+          </div>
+        </article>
+      `;
     });
-  </script>
+
+    newsFeed.innerHTML = cardHTML;
+
+    // Add click listener for expand/collapse
+    newsFeed.addEventListener('click', (e) => {
+      const card = e.target.closest('.news-card');
+      if (card) {
+        // Prevent toggling when "Read More" is clicked
+        if (!e.target.classList.contains('read-more-btn')) {
+          card.classList.toggle('expanded');
+        }
+      }
+    });
+    
+    // Search functionality
+    const searchIcon = document.getElementById('search-icon-trigger');
+    const searchInput = document.getElementById('search-input');
+
+    searchIcon.addEventListener('click', () => {
+        searchInput.classList.toggle('active');
+        if (searchInput.classList.contains('active')) {
+            searchInput.focus();
+        }
+    });
+
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const allCards = document.querySelectorAll('.news-card');
+        
+        allCards.forEach(card => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const source = card.querySelector('.card-source').textContent.toLowerCase();
+            if (title.includes(searchTerm) || source.includes(searchTerm)) {
+                card.classList.remove('hidden-card');
+            } else {
+                card.classList.add('hidden-card');
+            }
+        });
+    });
+
+  });
+</script>
 </body>
-</html>
-```
