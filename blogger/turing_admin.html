@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .leaderboard {
+            grid-column: 1 / -1;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .rank {
+            font-size: 1.5em;
+            font-weight: bold;
+            width: 50px;
+            text-align: center;
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .token-name {
+            flex: 1;
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .score {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            padding: 5px 15px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+        }
+
+        .token-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .token-info {
+            flex: 1;
+        }
+
+        .token-id {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .token-score {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .token-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+            width: auto;
+        }
+
+        .status-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .status-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #4caf50;
+        }
+
+        .status-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            color: #f44336;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-item {
+                padding: 12px 15px;
+            }
+
+            .rank {
+                font-size: 1.2em;
+                width: 40px;
+            }
+
+            .score {
+                font-size: 1.1em;
+            }
+
+            .token-actions {
+                flex-direction: column;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Token Admin Dashboard</h1>
+            <p class="subtitle">Manage tokens and view leaderboard</p>
+        </header>
+
+        <div class="grid">
+            <!-- Add New Token -->
+            <div class="card">
+                <h2 class="card-title"><span class="icon">➕</span> Add New Token</h2>
+                <div id="addStatus" class="status-message"></div>
+                <form id="addTokenForm">
+                    <div class="form-group">
+                        <label for="newTokenId">Token Number</label>
+                        <input type="text" id="newTokenId" placeholder="e.g., tt100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newTokenScore">Initial Score</label>
+                        <input type="number" id="newTokenScore" placeholder="0" value="0" required>
+                    </div>
+                    <button type="submit">Add Token</button>
+                </form>
+            </div>
+
+            <!-- Update Token Score -->
+            <div class="card">
+                <h2 class="card-title"><span class="icon">✏️</span> Update Token Score</h2>
+                <div id="updateStatus" class="status-message"></div>
+                <form id="updateTokenForm">
+                    <div class="form-group">
+                        <label for="updateTokenId">Select Token</label>
+                        <select id="updateTokenId" required>
+                            <option value="">-- Select Token --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateTokenScore">New Score</label>
+                        <input type="number" id="updateTokenScore" placeholder="Enter new score" required>
+                    </div>
+                    <button type="submit" class="btn-warning">Update Score</button>
+                </form>
+            </div>
+
+            <!-- Delete Token -->
+            <div class="card">
+                <h2 class="card-title"><span class="icon">🗑️</span> Delete Token</h2>
+                <div id="deleteStatus" class="status-message"></div>
+                <form id="deleteTokenForm">
+                    <div class="form-group">
+                        <label for="deleteTokenId">Select Token</label>
+                        <select id="deleteTokenId" required>
+                            <option value="">-- Select Token --</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-danger">Delete Token</button>
+                </form>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="card leaderboard">
+                <h2 class="card-title"><span class="icon">🏆</span> Leaderboard</h2>
+                <div id="leaderboardContainer">
+                    <ul id="leaderboardList" class="leaderboard-list"></ul>
+                </div>
+            </div>
+
+            <!-- All Tokens List -->
+            <div class="card leaderboard">
+                <h2 class="card-title"><span class="icon">📋</span> All Tokens</h2>
+                <div id="tokenListContainer" class="token-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const FIREBASE_URL = 'https://turing-test-5959c-default-rtdb.firebaseio.com';
+        
+        let tokensData = {};
+
+        // Fetch all tokens
+        async function fetchTokens() {
+            try {
+                const response = await fetch(`${FIREBASE_URL}/Registered/tokens.json`);
+                const data = await response.json();
+                tokensData = data || {};
+                updateUI();
+            } catch (error) {
+                console.error('Error fetching tokens:', error);
+                showStatus('addStatus', 'Error loading data', 'error');
+            }
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            updateLeaderboard();
+            updateTokenList();
+            updateDropdowns();
+        }
+
+        // Update leaderboard
+        function updateLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboardList');
+            const tokens = Object.entries(tokensData).map(([id, data]) => ({
+                id,
+                score: parseInt(data.score) || 0
+            }));
+
+            tokens.sort((a, b) => b.score - a.score);
+
+            if (tokens.length === 0) {
+                leaderboardList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏆</div>
+                        <p>No tokens yet. Add some to see the leaderboard!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            leaderboardList.innerHTML = tokens.map((token, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                
+                return `
+                    <li class="leaderboard-item">
+                        <span class="rank ${rankClass}">${medal || rank}</span>
+                        <span class="token-name">${token.id}</span>
+                        <span class="score">${token.score}</span>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        // Update token list
+        function updateTokenList() {
+            const tokenListContainer = document.getElementById('tokenListContainer');
+            const tokens = Object.entries(tokensData);
+
+            if (tokens.length === 0) {
+                tokenListContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No tokens found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            tokenListContainer.innerHTML = tokens.map(([id, data]) => `
+                <div class="token-item">
+                    <div class="token-info">
+                        <div class="token-id">${id}</div>
+                        <div class="token-score">Score: ${data.score}</div>
+                    </div>
+                    <div class="token-actions">
+                        <button class="btn-small btn-warning" onclick="quickEdit('${id}', ${data.score})">Edit</button>
+                        <button class="btn-small btn-danger" onclick="quickDelete('${id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update dropdowns
+        function updateDropdowns() {
+            const updateSelect = document.getElementById('updateTokenId');
+            const deleteSelect = document.getElementById('deleteTokenId');
+            
+            const options = Object.keys(tokensData).map(id => 
+                `<option value="${id}">${id}</option>`
+            ).join('');
+
+            updateSelect.innerHTML = '<option value="">-- Select Token --</option>' + options;
+            deleteSelect.innerHTML = '<option value="">-- Select Token --</option>' + options;
+        }
+
+        // Show status message
+        function showStatus(elementId, message, type) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add new token
+        document.getElementById('addTokenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tokenId = document.getElementById('newTokenId').value.trim();
+            const score = document.getElementById('newTokenScore').value;
+
+            if (tokensData[tokenId]) {
+                showStatus('addStatus', 'Token already exists!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${FIREBASE_URL}/Registered/tokens/${tokenId}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ score: score.toString() })
+                });
+
+                if (response.ok) {
+                    showStatus('addStatus', 'Token added successfully!', 'success');
+                    document.getElementById('addTokenForm').reset();
+                    await fetchTokens();
+                } else {
+                    showStatus('addStatus', 'Error adding token', 'error');
+                }
+            } catch (error) {
+                showStatus('addStatus', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Update token score
+        document.getElementById('updateTokenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tokenId = document.getElementById('updateTokenId').value;
+            const score = document.getElementById('updateTokenScore').value;
+
+            try {
+                const response = await fetch(`${FIREBASE_URL}/Registered/tokens/${tokenId}/score.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(score.toString())
+                });
+
+                if (response.ok) {
+                    showStatus('updateStatus', 'Score updated successfully!', 'success');
+                    document.getElementById('updateTokenForm').reset();
+                    await fetchTokens();
+                } else {
+                    showStatus('updateStatus', 'Error updating score', 'error');
+                }
+            } catch (error) {
+                showStatus('updateStatus', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Delete token
+        document.getElementById('deleteTokenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tokenId = document.getElementById('deleteTokenId').value;
+
+            if (!confirm(`Are you sure you want to delete ${tokenId}?`)) return;
+
+            try {
+                const response = await fetch(`${FIREBASE_URL}/Registered/tokens/${tokenId}.json`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showStatus('deleteStatus', 'Token deleted successfully!', 'success');
+                    document.getElementById('deleteTokenForm').reset();
+                    await fetchTokens();
+                } else {
+                    showStatus('deleteStatus', 'Error deleting token', 'error');
+                }
+            } catch (error) {
+                showStatus('deleteStatus', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Quick edit function
+        window.quickEdit = function(tokenId, currentScore) {
+            document.getElementById('updateTokenId').value = tokenId;
+            document.getElementById('updateTokenScore').value = currentScore;
+            document.getElementById('updateTokenScore').focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Quick delete function
+        window.quickDelete = async function(tokenId) {
+            if (!confirm(`Are you sure you want to delete ${tokenId}?`)) return;
+
+            try {
+                const response = await fetch(`${FIREBASE_URL}/Registered/tokens/${tokenId}.json`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await fetchTokens();
+                    alert('Token deleted successfully!');
+                }
+            } catch (error) {
+                alert('Error deleting token: ' + error.message);
+            }
+        };
+
+        // Initial load
+        fetchTokens();
+        
+        // Refresh data every 5 seconds
+        setInterval(fetchTokens, 5000);
+    </script>
+</body>
+</html>
